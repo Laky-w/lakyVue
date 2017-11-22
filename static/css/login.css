@@ -1,0 +1,43 @@
+.message {
+    margin: 10px 0 0 -58px;
+    padding: 18px 10px 18px 60px;
+    background: #27A9E3;
+    position: relative;
+    color: #fff;
+    font-size: 16px;
+}
+
+#darkbannerwrap {
+    background: url(../img/aiwrap.png);
+    width: 18px;
+    height: 10px;
+    margin: 0 0 20px -58px;
+    position: relative;
+}
+
+.ub_user {
+    width: 25px;
+    height: 25px;
+    background-image: url(../img/login_icon.png);
+    background-position: -85px -155px;
+    position: absolute;
+    margin: 12px 13px;
+}
+
+.u_user {
+    width: 25px;
+    height: 25px;
+    background-image: url(../img/login_icon.png);
+    background-position: -125px 0;
+    position: absolute;
+    margin: 12px 13px;
+}
+
+.us_user {
+    width: 25px;
+    height: 25px;
+    background-image: url(../img/login_icon.png);
+    background-position: -125px -34px;
+    position: absolute;
+    margin: 12px 13px;
+}
