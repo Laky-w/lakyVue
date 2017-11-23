@@ -1,6 +1,7 @@
 import axios from 'axios';
-axios.defaults.baseURL = 'http://localhost/laky/';
+axios.defaults.baseURL = 'http://192.168.0.100/laky/';
 axios.defaults.headers.common['token'] = sessionStorage.getItem("token");
+// 表单序列化，IE9+
 HTMLFormElement.prototype.serialize = function() {
     var form = this;
     // 表单数据

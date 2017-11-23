@@ -1,10 +1,10 @@
 <template>
     <div class="header">
-        <div class="logo">{{branchName}}</div>
+        <div class="logo">后台管理系统</div>
         <div class="user-info">
             <el-dropdown trigger="click" @command="handleCommand">
                 <span class="el-dropdown-link">
-                    <img class="user-logo" :src="userHeadLogo" >
+                    <img class="user-logo" src="../../../../../static/img/img.jpg">
                     {{username}}
                 </span>
                 <el-dropdown-menu slot="dropdown">
@@ -18,28 +18,13 @@
     export default {
         data() {
             return {
-                name: 'linxin',
-                branchNameDefault: '大海教育',
-                defaultHeadLogo:'../../../static/img/img.jpg'
+                name: 'linxin'
             }
         },
         computed:{
-            userHeadLogo(){
-                let user = sessionStorage.getItem('userInfo');
-                let userHeadLogo=JSON.parse(user).headLogo;
-                console.debug(userHeadLogo);
-                return userHeadLogo ? userHeadLogo : this.defaultHeadLogo;
-            },
             username(){
-                let user = sessionStorage.getItem('userInfo');
-                let username = JSON.parse(user).nickName;
+                let username = localStorage.getItem('ms_username');
                 return username ? username : this.name;
-            },
-            branchName(){
-                let branch = sessionStorage.getItem('branch');
-                console.debug(branch);
-                let branchName = JSON.parse(branch).branchName;
-                return branchName ? branchName : this.branchNameDefault;
             }
         },
         methods:{

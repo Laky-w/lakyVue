@@ -11,7 +11,7 @@ import "babel-polyfill";
 
 Vue.use(ElementUI);
 Vue.prototype.$axios = axios;
-// 表单序列化，IE9+
+
 
 new Vue({
     router,

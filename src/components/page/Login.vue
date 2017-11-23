@@ -1,7 +1,7 @@
 
 <template>
     <div class="login-wrap">
-        <div class="ms-title">后台管理系统</div>
+        <!-- <div class="ms-title">后台管理系统</div> -->
         <div class="ms-login">
             <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="0px" class="demo-ruleForm">
                 <div class="message">湖之教育</div>
@@ -65,13 +65,14 @@
                             var data = res.data;
                             if (data.code==200) {//登录成功
                                 sessionStorage.setItem("token",data.data["token"]);
-                                sessionStorage.setItem("userInfo",data.data);
-                                self.$router.push('/readme');
+                                sessionStorage.setItem("branch",JSON.stringify(data.data["branch"]));
+                                sessionStorage.setItem("userInfo",JSON.stringify(data.data["userInfo"]));
+                                self.$router.push('/laky');
                             } else {
                                 this.$message.error(data.data);
                             }
                         })
-                        localStorage.setItem('ms_username',self.ruleForm.username);
+                       // localStorage.setItem('ms_username',self.ruleForm.username);
                     } else {
                         //console.log('error submit!!');
                         return false;
