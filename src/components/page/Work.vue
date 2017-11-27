@@ -48,13 +48,13 @@
         },
         data: () => ({
             data:[
-                {name:'2012',value:1141},
-                {name:'2013',value:1499},
-                {name:'2014',value:2260},
-                {name:'2015',value:1170},
-                {name:'2016',value:970},
-                {name:'2017',value:1450}
-            ],
+            {name:'2012',value:1141},
+            {name:'2013',value:1499},
+            {name:'2014',value:2260},
+            {name:'2015',value:1170},
+            {name:'2016',value:970},
+            {name:'2017',value:1450}
+        ],
             line: {
                 color:["#20a0ff","#13CE66","#F7BA2A","#FF4949"],
                 title: {

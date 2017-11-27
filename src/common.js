@@ -1,6 +1,38 @@
 import axios from 'axios';
+import qs from 'qs';
+import router from './router';
 axios.defaults.baseURL = 'http://192.168.0.100/laky/';
-axios.defaults.headers.common['token'] = sessionStorage.getItem("token");
+axios.interceptors.request.use(function(config) {
+    // 在发送请求之前做些什么
+    config.headers.common['token'] = sessionStorage.getItem("token");
+    var data = config.data;
+    config.data = qs.stringify(data);
+    console.debug(qs.stringify(data));
+    return config;
+});
+// 添加响应拦截器
+axios.interceptors.response.use(function(response) {
+    // 对响应数据做点什么
+    return response;
+}, function(error) {
+    if (error.response) {
+        // 请求已发出，但服务器响应的状态码不在 2xx 范围内
+        console.log(error.response.data);
+        console.log(error.response.status);
+        if (error.response.status == "420") { //登录过期
+            sessionStorage.setItem("code", 420);
+            sessionStorage.setItem("message", error.response.data.data);
+            router.push('/login');
+            // self.$message.error(error.response.data.data);
+        }
+    } else {
+        // Something happened in setting up the request that triggered an Error
+        console.log('Error', error.message);
+    }
+    console.log(error);
+    // 对响应错误做点什么
+    return Promise.reject(error);
+});
 // 表单序列化，IE9+
 HTMLFormElement.prototype.serialize = function() {
     var form = this;

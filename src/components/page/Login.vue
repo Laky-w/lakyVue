@@ -15,13 +15,13 @@
                         <template slot="prepend"><i class="el-icon-edu-branch"></i></template>  
                     </el-input>
                 </el-form-item>
-                <el-form-item prop="username">
-                    <el-input v-model="ruleForm.username" name="userName" placeholder="用户名/邮箱/电话">
+                <el-form-item prop="userName">
+                    <el-input v-model="ruleForm.userName" name="userName" placeholder="用户名/邮箱/电话">
                         <template slot="prepend"><i class="el-icon-edu-user"></i></template>  
                     </el-input>
                 </el-form-item>
-                <el-form-item prop="password">
-                    <el-input type="password"  placeholder="密码" name="pwd" v-model="ruleForm.password" @keyup.enter.native="submitForm('ruleForm')">
+                <el-form-item prop="pwd">
+                    <el-input type="password"  placeholder="密码" name="pwd" v-model="ruleForm.pwd" @keyup.enter.native="submitForm('ruleForm')">
                         <template slot="prepend"><i class="el-icon-edu-lock"></i></template>  
                     </el-input>
                 </el-form-item>
@@ -40,28 +40,29 @@
             return {
                 ruleForm: {
                     serial: '',
-                    username: '',
-                    password: ''
+                    userName: '',
+                    pwd: ''
                 },
                 rules: {
                     serial: [
                         { required: true, message: '请输入机构代码', trigger: 'blur' }
                     ],
-                    username: [
+                    userName: [
                         { required: true, message: '请输入用户名', trigger: 'blur' }
                     ],
-                    password: [
+                    pwd: [
                         { required: true, message: '请输入密码', trigger: 'blur' }
                     ]
                 }
             }
         },
+
         methods: {
             submitForm(formName) {
                 const self = this;
                 self.$refs[formName].validate((valid) => {
                     if (valid) {
-                        self.$axios.post("organization/login",self.$refs[formName].$el.serialize()).then( (res) => {
+                        self.$axios.post("organization/login",this.ruleForm).then( (res) => {
                             var data = res.data;
                             if (data.code==200) {//登录成功
                                 sessionStorage.setItem("token",data.data["token"]);
@@ -79,7 +80,19 @@
                     }
                 });
             }
-        }
+        },
+        mounted: function () {
+            var code = sessionStorage.getItem("code");
+            if(code == 420) {
+                this.$message({
+                    showClose: true,
+                    message: sessionStorage.getItem("message"),
+                    type: 'warning'
+                });
+                sessionStorage.removeItem("code");
+                sessionStorage.removeItem("message");
+            }
+        },
     }
 </script>
 

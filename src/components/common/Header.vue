@@ -45,8 +45,16 @@
         methods:{
             handleCommand(command) {
                 if(command == 'loginout'){
-                    localStorage.removeItem('ms_username')
-                    this.$router.push('/login');
+                    sessionStorage.removeItem("userInfo");
+                    sessionStorage.removeItem("branch");
+                    this.$axios.get("organization/loginout").then( (res) => {
+                            var data = res.data;
+                            if (data.code==200) {//退出成功
+                                sessionStorage.removeItem("token");
+                            }
+                            this.$router.push('/login');
+                        })
+                    
                 }
             }
         }

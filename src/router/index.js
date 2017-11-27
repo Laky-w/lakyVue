@@ -52,6 +52,15 @@ export default new Router({
         {
             path: '/laky',
             component: resolve => require(['../components/common/Home.vue'], resolve),
+            children: [{
+                    path: '/',
+                    component: resolve => require(['../components/page/demo/BaseCharts.vue'], resolve)
+                },
+                {
+                    path: '/loginLog',
+                    component: resolve => require(['../components/page/system/LoginLog.vue'], resolve)
+                },
+            ]
         },
         {
             path: '/login',
