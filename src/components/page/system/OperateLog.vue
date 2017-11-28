@@ -3,7 +3,7 @@
         <div class="crumbs">
             <el-breadcrumb separator="/">
                 <el-breadcrumb-item><i class="el-icon-menu"></i> 系统</el-breadcrumb-item>
-                <el-breadcrumb-item>登录日志</el-breadcrumb-item>
+                <el-breadcrumb-item>操作日志</el-breadcrumb-item>
             </el-breadcrumb>
         </div>
         <div class="handle-box">
@@ -19,8 +19,8 @@
                 </el-form-item>
                  <el-form-item >
                     <el-date-picker
-                        v-model="queryForm.theDate" value-format="yyyy-MM-dd"
-                        type="daterange" align="center"unlink-panels range-separator="至"
+                        v-model="queryForm.theDate"
+                        type="daterange" align="right"unlink-panels range-separator="至"
                         start-placeholder="开始日期"
                         end-placeholder="结束日期" :picker-options="pickerOptions2">
                     </el-date-picker>
@@ -30,31 +30,24 @@
             </el-form>
         </div>
         <el-table :data="tableData"  v-loading="loading" :row-class-name="tableRowClassName" border stripe style="width: 100%" >
-            <el-table-column prop="user.name" label="用户名" sortable width="150">
+            <el-table-column prop="accountId" label="用户名" sortable >
             </el-table-column>
-            <el-table-column prop="ip" label="登录IP" width="120">
-            </el-table-column>
-            <el-table-column prop="schoolZone.name" label="校区" >
+            <el-table-column prop="schoolZoneId" label="校区名" >
             </el-table-column>
             <el-table-column prop="theType" label="操作" :formatter="filterType">
             </el-table-column>
-            <el-table-column prop="theDatetime" sortable label="登录时间" >
+            <el-table-column prop="title" sortable label="标题" >
+            </el-table-column>
+            <el-table-column prop="content"  label="内容" width="150">
+            </el-table-column>
+            <el-table-column prop="createTime" sortable label="操作时间" >
             </el-table-column>
         </el-table>
         <div class="pagination">
-            <!-- <el-pagination
-                    @current-change ="handleCurrentChange"
-                    layout="prev, pager, next" :page-sizes="[20, 50, 100, 200]"
-                    :total="totol" :page-size="page_size">
-            </el-pagination> -->
-
             <el-pagination
-                @size-change="handleSizeChange"
-                @current-change ="handleCurrentChange"
-                :page-sizes="[20, 50, 100, 200]"
-                :page-size="page_size"
-                layout="total, sizes, prev, pager, next, jumper"
-                :total="totol">
+                    @current-change ="handleCurrentChange"
+                    layout="prev, pager, next"
+                    :total="totol" :page-size="page_size">
             </el-pagination>
         </div>
     </div>
@@ -78,7 +71,7 @@
                     theDate:'',
                     theType: ''
                 },
-                // loading:true,
+                loading:true,
                 pickerOptions2: {
                     shortcuts: [{
                         text: '最近一周',
@@ -134,11 +127,6 @@
             }
         },
         methods: {
-            handleSizeChange(val){
-                console.log(this.page_size);
-                this.page_size = val;
-                this.getData();
-            },
             handleCurrentChange(val){
                 this.cur_page = val;
                 this.getData();
@@ -146,7 +134,7 @@
             getData(){
                 let self = this;
                 self.loading=true;
-                self.$axios.post("log/findLoginLog/"+this.cur_page+"/"+this.page_size,this.queryForm).then( (res) => {
+                self.$axios.post("log/findOperateLogAll/"+this.cur_page+"/20",this.queryForm).then( (res) => {
                     var data = res.data;
                     if (data.code==200) {
                         self.totol=data.data["total"];
@@ -166,10 +154,8 @@
             search(form){
                 this.cur_page=1;
                 console.debug(this.queryForm.theDate);
-                if(this.queryForm.theDate){
-                    this.queryForm.theDate1=this.queryForm.theDate[0] +" 00:00:00";
-                    this.queryForm.theDate2=this.queryForm.theDate[1] +" 23:59:59";
-                }
+                this.queryForm.theDate1=this.queryForm.theDate[0];
+                this.queryForm.theDate2=this.queryForm.theDate[1];
                 this.getData();
             },
             formatter(row, column) {

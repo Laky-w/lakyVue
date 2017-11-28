@@ -61,9 +61,13 @@ export default new Router({
                     component: resolve => require(['../components/page/system/LoginLog.vue'], resolve)
                 },
                 {
-                    path: '/SchoolZone',
+                    path: '/schoolZone',
                     component: resolve => require(['../components/page/system/SchoolZone.vue'], resolve)
                 },
+                {
+                    path: '/operateLog',
+                    component: resolve => require(['../components/page/system/OperateLog.vue'], resolve)
+                }
             ]
         },
         {

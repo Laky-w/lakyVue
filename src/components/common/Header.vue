@@ -1,6 +1,7 @@
 <template>
     <div class="header">
         <div class="logo">{{branchName}}</div>
+        <div class="notice"><i class="el-icon-location"></i>公告:{{notice}}</div>
         <div class="user-info">
             <el-dropdown trigger="click" @command="handleCommand">
                 <span class="el-dropdown-link">
@@ -20,7 +21,10 @@
             return {
                 name: 'linxin',
                 branchNameDefault: '大海教育',
-                defaultHeadLogo:'../../../static/img/img.jpg'
+                defaultHeadLogo:'../../../static/img/img.jpg',
+                notices:"",
+                notice:"",
+                noticeIndex:0
             }
         },
         computed:{
@@ -42,7 +46,32 @@
                 return branchName ? branchName : this.branchNameDefault;
             }
         },
+        created(){
+            this.loadNotice();
+        },
+
         methods:{
+            loadNotice(){
+                this.getData();
+                let self = this;
+                function setNotice(){
+                    self.notice = self.notices[self.noticeIndex].content;
+                    self.noticeIndex=self.noticeIndex+1;
+                    if(self.noticeIndex==(self.notices.length)){
+                        self.noticeIndex = 0;
+                    }
+                }
+                window.setInterval(setNotice, 1000);
+            },
+            getData(){
+                let self = this;
+                this.$axios.get("organization/findNoticeAll").then( (res) => {
+                    var data = res.data;
+                    if (data.code==200) {
+                        self.notices=data.data;
+                    }
+                })
+            },
             handleCommand(command) {
                 if(command == 'loginout'){
                     sessionStorage.removeItem("userInfo");
@@ -74,6 +103,12 @@
         float: left;
         width:250px;
         text-align: center;
+    }
+    .notice{
+       float: left; 
+       position: absolute;
+       font-size: 18px;
+       left: 45%;
     }
     .user-info {
         float: right;

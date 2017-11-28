@@ -2,3 +2,9 @@
 node_modules/
 dist/
 npm-debug.log
+.idea/workspace.xml
+.idea/lakyVue.iml
+.idea/misc.xml
+.idea/modules.xml
+.idea/vcs.xml
+.gitignore
