@@ -107,7 +107,7 @@
                         title: '拖拽'
                     }
                 ],
-                isCollapse:false
+                isCollapse:true
             }
         },
         methods: {

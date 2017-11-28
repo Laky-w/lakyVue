@@ -29,7 +29,6 @@ axios.interceptors.response.use(function(response) {
         // Something happened in setting up the request that triggered an Error
         console.log('Error', error.message);
     }
-    console.log(error);
     // 对响应错误做点什么
     return Promise.reject(error);
 });

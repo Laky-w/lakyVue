@@ -19,8 +19,8 @@
                 </el-form-item>
                  <el-form-item >
                     <el-date-picker
-                        v-model="queryForm.theDate"
-                        type="daterange" align="right"unlink-panels range-separator="至"
+                        v-model="queryForm.theDate" value-format="yyyy-MM-dd"
+                        type="daterange" align="center"unlink-panels range-separator="至"
                         start-placeholder="开始日期"
                         end-placeholder="结束日期" :picker-options="pickerOptions2">
                     </el-date-picker>
@@ -42,10 +42,19 @@
             </el-table-column>
         </el-table>
         <div class="pagination">
-            <el-pagination
+            <!-- <el-pagination
                     @current-change ="handleCurrentChange"
-                    layout="prev, pager, next"
+                    layout="prev, pager, next" :page-sizes="[20, 50, 100, 200]"
                     :total="totol" :page-size="page_size">
+            </el-pagination> -->
+
+            <el-pagination
+                @size-change="handleSizeChange"
+                @current-change ="handleCurrentChange"
+                :page-sizes="[20, 50, 100, 200]"
+                :page-size="page_size"
+                layout="total, sizes, prev, pager, next, jumper"
+                :total="totol">
             </el-pagination>
         </div>
     </div>
@@ -125,6 +134,11 @@
             }
         },
         methods: {
+            handleSizeChange(val){
+                console.log(this.page_size);
+                this.page_size = val;
+                this.getData();
+            },
             handleCurrentChange(val){
                 this.cur_page = val;
                 this.getData();
@@ -132,7 +146,7 @@
             getData(){
                 let self = this;
                 self.loading=true;
-                self.$axios.post("log/findLoginLog/"+this.cur_page+"/20",this.queryForm).then( (res) => {
+                self.$axios.post("log/findLoginLog/"+this.cur_page+"/"+this.page_size,this.queryForm).then( (res) => {
                     var data = res.data;
                     if (data.code==200) {
                         self.totol=data.data["total"];
@@ -152,8 +166,10 @@
             search(form){
                 this.cur_page=1;
                 console.debug(this.queryForm.theDate);
-                this.queryForm.theDate1=this.queryForm.theDate[0];
-                this.queryForm.theDate2=this.queryForm.theDate[1];
+                if(this.queryForm.theDate){
+                    this.queryForm.theDate1=this.queryForm.theDate[0] +" 00:00:00";
+                    this.queryForm.theDate2=this.queryForm.theDate[1] +" 23:59:59";
+                }
                 this.getData();
             },
             formatter(row, column) {
