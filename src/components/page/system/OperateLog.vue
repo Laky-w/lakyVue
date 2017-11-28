@@ -3,7 +3,7 @@
         <div class="crumbs">
             <el-breadcrumb separator="/">
                 <el-breadcrumb-item><i class="el-icon-menu"></i> 系统</el-breadcrumb-item>
-                <el-breadcrumb-item>登录日志</el-breadcrumb-item>
+                <el-breadcrumb-item>操作日志</el-breadcrumb-item>
             </el-breadcrumb>
         </div>
         <div class="handle-box">
@@ -30,15 +30,17 @@
             </el-form>
         </div>
         <el-table :data="tableData"  v-loading="loading" :row-class-name="tableRowClassName" border stripe style="width: 100%" >
-            <el-table-column prop="user.name" label="用户名" sortable width="150">
+            <el-table-column prop="accountId" label="用户名" sortable >
             </el-table-column>
-            <el-table-column prop="ip" label="登录IP" width="120">
-            </el-table-column>
-            <el-table-column prop="schoolZone.name" label="校区" >
+            <el-table-column prop="schoolZoneId" label="校区名" >
             </el-table-column>
             <el-table-column prop="theType" label="操作" :formatter="filterType">
             </el-table-column>
-            <el-table-column prop="theDatetime" sortable label="登录时间" >
+            <el-table-column prop="title" sortable label="标题" >
+            </el-table-column>
+            <el-table-column prop="content"  label="内容" width="150">
+            </el-table-column>
+            <el-table-column prop="createTime" sortable label="操作时间" >
             </el-table-column>
         </el-table>
         <div class="pagination">
@@ -69,7 +71,7 @@
                     theDate:'',
                     theType: ''
                 },
-                // loading:true,
+                loading:true,
                 pickerOptions2: {
                     shortcuts: [{
                         text: '最近一周',
@@ -132,7 +134,7 @@
             getData(){
                 let self = this;
                 self.loading=true;
-                self.$axios.post("log/findLoginLog/"+this.cur_page+"/20",this.queryForm).then( (res) => {
+                self.$axios.post("log/findOperateLogAll/"+this.cur_page+"/20",this.queryForm).then( (res) => {
                     var data = res.data;
                     if (data.code==200) {
                         self.totol=data.data["total"];
