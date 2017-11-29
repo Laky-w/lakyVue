@@ -67,6 +67,10 @@ export default new Router({
                 {
                     path: '/operateLog',
                     component: resolve => require(['../components/page/system/OperateLog.vue'], resolve)
+                },
+                {
+                    path: '/user',
+                    component: resolve => require(['../components/page/system/User.vue'], resolve)
                 }
             ]
         },
