@@ -10,11 +10,11 @@
             :data="tableData" stripe v-loading="loading"
             style="width: 100%">
             <el-table-column  
-            label="校区" prop="schoolId">
+            label="校区" prop="schoolZone.name">
             </el-table-column>
             <el-table-column
             label="用户名"
-            prop="userId">
+            prop="user.name">
             </el-table-column>
             <el-table-column
             label="发布时间"
@@ -43,23 +43,17 @@
                 @click="handleDelete(scope.$index, scope.row)">删除</el-button>
             </template>
             </el-table-column>
-            <div class="pagination">
-            <!-- <el-pagination
-                    @current-change ="handleCurrentChange"
-                    layout="prev, pager, next" :page-sizes="[20, 50, 100, 200]"
-                    :total="totol" :page-size="page_size">
-            </el-pagination> -->
-
+        </el-table>
+        <div class="pagination">
             <el-pagination
                 @size-change="handleSizeChange"
                 @current-change ="handleCurrentChange"
                 :page-sizes="[20, 50, 100, 200]"
                 :page-size="page_size"
                 layout="total, sizes, prev, pager, next, jumper"
-                :total="totol">
+                :total="total">
             </el-pagination>
         </div>
-        </el-table>
         <el-dialog title="添加公告" :visible.sync="dialogFormVisible">
         <el-form :model="form" ref="ruleForm" v-loading="loadingForm">
             <el-form-item label="名称" :label-width="formLabelWidth" prop="name"  :rules="[{ required: true, message: '名称必填'}]">
@@ -106,11 +100,10 @@ export default {
       dialogFormVisible: false,
       cur_page: 1,
       page_size: 20,
-      totol: 0,
+      total: 0,
       form: {
-        schoolId: "",
         theType: 2,
-        userId: "",
+        userName: "",
         createDatetime: "",
         content: "",
         lastDatetime: ""
@@ -137,13 +130,13 @@ export default {
       let self = this;
       self.loading = true;
       self.$axios
-        .get(
+        .post(
           "/organization/findNoticeAll/" + this.cur_page + "/" + this.page_size
         )
         .then(res => {
           let data = res.data;
           if (data.code == 200) {
-            self.totol = data.data["total"];
+            self.total = data.data["total"];
             self.tableData = data.data.list;
             self.loading = false;
           } else {
@@ -155,6 +148,13 @@ export default {
       this.form.fatherId = row.id;
       this.form.fatherName = row.name;
       this.dialogFormVisible = true;
+    },
+    filterType(value, row) {
+      if(value.theType==1) 
+          row.tag="总校";
+      else
+          row.tag="分校";
+      return row.tag;
     },
     handleDelete(index, row) {}
   }

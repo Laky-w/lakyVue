@@ -10,11 +10,11 @@
             :data="tableData" stripe v-loading="loading" border
             style="width: 100%">
             <el-table-column
-            label="校区" prop="schoolZoneId" >
+            label="校区" prop="schoolZone.name" >
             </el-table-column>
             <el-table-column
             label="用户名"
-            prop="userName">
+            prop="userId">
             </el-table-column>
             <el-table-column
             label="真实姓名"
