@@ -20,6 +20,10 @@ export default new Router({
                     component: resolve => require(['../components/page/demo/BaseTable.vue'], resolve)
                 },
                 {
+                    path: '/tree',
+                    component: resolve => require(['../components/page/demo/common/SchoolTree.vue'], resolve)
+                },
+                {
                     path: '/vuetable',
                     component: resolve => require(['../components/page/demo/VueTable.vue'], resolve) // vue-datasource组件
                 },

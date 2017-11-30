@@ -21,7 +21,7 @@
                     </el-input>
                 </el-form-item>
                 <el-form-item prop="pwd">
-                    <el-input type="password"  placeholder="密码" name="pwd" v-model="ruleForm.pwd" @keyup.enter.native="submitForm('ruleForm')">
+                    <el-input type="password"  placeholder="密码" name="pwd" v-model="ruleForm.pwd" autofocus @keyup.enter.native="submitForm('ruleForm')">
                         <template slot="prepend"><i class="el-icon-edu-lock"></i></template>  
                     </el-input>
                 </el-form-item>
@@ -39,9 +39,9 @@
         data: function(){
             return {
                 ruleForm: {
-                    serial: '',
-                    userName: '',
-                    pwd: ''
+                    serial: '001',
+                    userName: 'admin',
+                    pwd: '123456'
                 },
                 rules: {
                     serial: [

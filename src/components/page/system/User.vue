@@ -41,7 +41,7 @@
             </el-table-column>
             <el-table-column
             label="用户名"
-            prop="userId">
+            prop="userName">
             </el-table-column>
             <el-table-column
             label="真实姓名"
@@ -94,71 +94,46 @@
             </el-pagination>
         </div>
         <el-dialog title="新增员工" :visible.sync="dialogFormVisible">
-        <el-form :model="form" ref="ruleForm" v-loading="loadingForm">
-            <el-form-item label="姓名" :label-width="formLabelWidth" prop="name"  :rules="[{ required: true, message: '名称必填'}]">
-            <el-input v-model="form.name"  autofocus placeholder="真实姓名"  auto-complete="off"></el-input>
-            </el-form-item>
-            <el-form-item label="用户名" :label-width="formLabelWidth" prop="userName"  :rules="[{ required: true, message: '名称必填'}]">
-            <el-input v-model="form.userName"  autofocus placeholder="登录用户名"  auto-complete="off"></el-input>
-            </el-form-item>
-            <el-form-item label="部门" :label-width="formLabelWidth" prop="name"  :rules="[{ required: true, message: '名称必填'}]">
-            <el-input v-model="form.name"  autofocus placeholder="登录用户名"  auto-complete="off"></el-input>
-            </el-form-item>
-            <el-form-item label="性别" :label-width="formLabelWidth"  >
-              <el-radio-group v-model="form.sex">
-                <el-radio :label="1">男</el-radio>
-                <el-radio :label="2">女</el-radio>
-              </el-radio-group>
-            </el-form-item>
-            <el-form-item label="手机号" :label-width="formLabelWidth" prop="phone"  :rules="[{ required: true, message: '名称必填'}]">
-            <el-input v-model="form.phone"  autofocus placeholder="手机号"  auto-complete="off"></el-input>
-            </el-form-item>
-            <el-form-item label="邮箱" :label-width="formLabelWidth" prop="email"  :rules="[{ required: true, message: '名称必填'}]">
-            <el-input v-model="form.email"  autofocus placeholder="邮箱"  auto-complete="off"></el-input>
-            </el-form-item>
-            <el-form-item label="身份证" :label-width="formLabelWidth" prop="name"  :rules="[{ required: true, message: '名称必填'}]">
-            <el-input v-model="form.name"  autofocus placeholder="身份证"  auto-complete="off"></el-input>
-            </el-form-item>
-            <el-form-item label="出生日期" :label-width="formLabelWidth" prop="birthday">
-              <el-date-picker
-                v-model="form.birthday"
-                type="date"
-                placeholder="出生日期">
-              </el-date-picker>
-            </el-form-item>
-            <el-form-item label="权限" :label-width="formLabelWidth" prop="name"  :rules="[{ required: true, message: '名称必填'}]">
-            <el-input v-model="form.name"  autofocus placeholder="出生日期"  auto-complete="off"></el-input>
-            </el-form-item>
-<!--            
-
-
-            <el-form-item label="类型" :label-width="formLabelWidth" required>
-                <el-radio-group v-model="form.theType">
-                    <el-radio :label="2">校区</el-radio>
-                    <el-radio :label="3">部门</el-radio>
+          <el-form :model="form" ref="ruleForm" v-loading="loadingForm">
+              <el-form-item label="姓名" :label-width="formLabelWidth" prop="name"  :rules="[{ required: true, message: '名称必填'}]">
+              <el-input v-model="form.name"  autofocus placeholder="真实姓名"  auto-complete="off"></el-input>
+              </el-form-item>
+              <el-form-item label="用户名" :label-width="formLabelWidth" prop="userName"  :rules="[{ required: true, message: '名称必填'}]">
+              <el-input v-model="form.userName"  autofocus placeholder="登录用户名"  auto-complete="off"></el-input>
+              </el-form-item>
+              <el-form-item label="部门" :label-width="formLabelWidth" prop="schoolName"  :rules="[{ required: true, message: '部门必填'}]">
+                <school-tree @nodeClick="handleSchool" :name="form.schoolName"></school-tree>
+              </el-form-item>
+              <el-form-item label="性别" :label-width="formLabelWidth"  >
+                <el-radio-group v-model="form.sex">
+                  <el-radio :label="1">男</el-radio>
+                  <el-radio :label="2">女</el-radio>
                 </el-radio-group>
-            </el-form-item>
-            <el-form-item label="编号" prop="serial" :label-width="formLabelWidth">
-            <el-input v-model="form.serial" placeholder="内部编号"  auto-complete="off"></el-input>
-            </el-form-item>
-            <el-form-item label="地址" prop="address" :label-width="formLabelWidth">
-            <el-input v-model="form.address" placeholder="地址"  auto-complete="off"></el-input>
-            </el-form-item>
-            <el-form-item label="职能" prop="remarks" :label-width="formLabelWidth">
-            <el-input v-model="form.remarks" placeholder="描述、职能"  auto-complete="off"></el-input>
-            </el-form-item>
-            <el-form-item label="负责人" prop="owner" :label-width="formLabelWidth">
-            <el-input v-model="form.owner" auto-complete="off" placeholder="负责人"></el-input>
-            </el-form-item>
-            <el-form-item label="联系方式" prop="phone" :label-width="formLabelWidth">
-            <el-input v-model="form.phone" auto-complete="off" placeholder="联系方式"></el-input>
-            </el-form-item>
-            <el-form-item label="上级部门" :label-width="formLabelWidth"><el-input v-model="form.fatherName" disabled></el-input></el-form-item> -->
-        </el-form>
-        <div slot="footer" class="dialog-footer">
-            <el-button @click="dialogFormVisible = false">取 消</el-button>
-            <el-button type="primary" @click="submitForm('ruleForm')">确 定</el-button>
-        </div>
+              </el-form-item>
+              <el-form-item label="手机号" :label-width="formLabelWidth" prop="phone">
+              <el-input v-model="form.phone"  autofocus placeholder="手机号"  auto-complete="off"></el-input>
+              </el-form-item>
+              <el-form-item label="邮箱" :label-width="formLabelWidth" prop="email">
+              <el-input v-model="form.email"  autofocus placeholder="邮箱"  auto-complete="off"></el-input>
+              </el-form-item>
+              <el-form-item label="身份证" :label-width="formLabelWidth" prop="idCard">
+              <el-input v-model="form.idCard"  autofocus placeholder="身份证"  auto-complete="off"></el-input>
+              </el-form-item>
+              <el-form-item label="出生日期" :label-width="formLabelWidth" prop="birthday">
+                <el-date-picker
+                  v-model="form.birthday" style="width: 100%;"
+                  type="date" value-format="yyyy-MM-dd"
+                  placeholder="出生日期">
+                </el-date-picker>
+              </el-form-item>
+              <!-- <el-form-item label="权限" :label-width="formLabelWidth" prop="name"  :rules="[{ required: true, message: '名称必填'}]">
+                <el-input v-model="form.name"  autofocus placeholder="出生日期"  auto-complete="off"></el-input>
+              </el-form-item> -->
+          </el-form>
+          <div slot="footer" class="dialog-footer">
+              <el-button @click="dialogFormVisible = false">取 消</el-button>
+              <el-button type="primary" @click="submitForm('ruleForm')">确 定</el-button>
+          </div>
         </el-dialog>
     </div>
 </template>
@@ -185,7 +160,9 @@ table td {
 </style> 
 
 <script>
+import SchoolTree from '../../common/SchoolTree.vue'
 export default {
+  
   data() {
     return {
       tableData: [],
@@ -206,6 +183,9 @@ export default {
         phone:"",
         email:"",
         birthday:"",
+        schoolZoneId:"",
+        schoolName:"",
+        idCard:""
       },
       formLabelWidth: "120px",
       loading: false,
@@ -216,6 +196,33 @@ export default {
     this.getUser();
   },
   methods: {
+    pickerOptions2: {
+        shortcuts: [{
+            text: '最近一周',
+            onClick(picker) {
+            const end = new Date();
+            const start = new Date();
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+            picker.$emit('pick', [start, end]);
+            }
+        }, {
+            text: '最近一个月',
+            onClick(picker) {
+            const end = new Date();
+            const start = new Date();
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+            picker.$emit('pick', [start, end]);
+            }
+        }, {
+            text: '最近三个月',
+            onClick(picker) {
+            const end = new Date();
+            const start = new Date();
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+            picker.$emit('pick', [start, end]);
+            }
+        }]
+    },
     getUser() {
       let self = this;
       self.loading = true;
@@ -238,15 +245,14 @@ export default {
         if (valid) {
           self.loadingForm = true;
           self.$axios
-            .post("organization/createSchoolZone", this.form)
+            .post("organization/createUser", this.form)
             .then(res => {
               var data = res.data;
               if (data.code == 200) {
-                //登录成功
                 self.loadingForm = false;
                 self.$message.success(data.message);
                 self.dialogFormVisible = false;
-                self.getSchool();
+                self.getUser();
                 self.$refs[formName].resetFields();
               } else {
                 this.$message.error(data.data);
@@ -277,7 +283,12 @@ export default {
       this.form.fatherName = row.name;
       this.dialogFormVisible = true;
     },
-    handleDelete(index, row) {}
-  }
+    handleDelete(index, row) {},
+    handleSchool(data){
+      this.form.schoolName=data.name;
+      this.form.schoolZoneId=data.id;
+    }
+  },
+  components: {SchoolTree}
 };
 </script>
