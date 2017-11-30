@@ -3,46 +3,26 @@
         <div class="crumbs">
             <el-breadcrumb separator="/">
                 <el-breadcrumb-item><i class="el-icon-menu"></i> 系统</el-breadcrumb-item>
-                <el-breadcrumb-item>教职员工</el-breadcrumb-item>
+                <el-breadcrumb-item>通知公告</el-breadcrumb-item>
             </el-breadcrumb>
         </div>
         <el-table
             :data="tableData" stripe v-loading="loading" border
             style="width: 100%">
-            <el-table-column
-            label="校区" prop="schoolZoneId" >
+            <el-table-column  
+            label="角色名" prop="name">
             </el-table-column>
             <el-table-column
-            label="用户名"
-            prop="userName">
+            label="创建时间"
+            prop="createTime">
             </el-table-column>
             <el-table-column
-            label="真实姓名"
-            prop="name">
+            label="创建用户"
+            prop="createUserId">
             </el-table-column>
             <el-table-column
-            label="联系方式"
-            prop="phone">
-            </el-table-column>
-            <el-table-column
-            label="邮箱"
-            prop="email">
-            </el-table-column>
-            <el-table-column
-            label="性别"
-            prop="sex">
-            </el-table-column>
-            <el-table-column
-            label="角色"
-            prop="phone">
-            </el-table-column>
-            <el-table-column
-            label="出生日期"
-            prop="birthday">
-            </el-table-column>
-            <el-table-column
-            label="是否超级用户"
-            prop="theStatus">
+            label="校区"
+            prop="schoolId">
             </el-table-column>
             <el-table-column label="操作">
             <template slot-scope="scope">
@@ -66,7 +46,7 @@
                 :total="total">
             </el-pagination>
         </div>
-        <el-dialog title="添加校区/部门" :visible.sync="dialogFormVisible">
+        <el-dialog title="添加公告" :visible.sync="dialogFormVisible">
         <el-form :model="form" ref="ruleForm" v-loading="loadingForm">
             <el-form-item label="名称" :label-width="formLabelWidth" prop="name"  :rules="[{ required: true, message: '名称必填'}]">
             <el-input v-model="form.name"  autofocus placeholder="名称"  auto-complete="off"></el-input>
@@ -102,46 +82,24 @@
     </div>
 </template>
 
-<style scoped>
-.ms-tree-space {
-  position: relative;
-  top: 1px;
-  display: inline-block;
-  font-family: "Glyphicons Halflings";
-  font-style: normal;
-  font-weight: 400;
-  line-height: 1;
-  width: 18px;
-  height: 14px;
-}
-.ms-tree-space::before {
-  content: "";
-}
-table td {
-  line-height: 26px;
-}
-</style> 
+
 
 <script>
 export default {
   data() {
     return {
       tableData: [],
-      treeStructure: true,
       dialogFormVisible: false,
       total: 0,
       cur_page: 1,
-      page_size: 20,
+      page_size: 50,
       form: {
-        name: "",
+        schoolId: "",
         theType: 2,
-        serial: "",
-        remarks: "",
-        owner: "",
-        phone: "",
-        fatherId: "",
-        fatherName: "",
-        address: ""
+        userId: "",
+        createDatetime: "",
+        content: "",
+        lastDatetime: ""
       },
       formLabelWidth: "120px",
       loading: false,
@@ -149,64 +107,35 @@ export default {
     };
   },
   created() {
-    this.getUser();
+    this.getNotice();
   },
   methods: {
-    getUser() {
+    handleSizeChange(val) {
+      console.log(this.page_size);
+      this.page_size = val;
+      this.getData();
+    },
+    handleCurrentChange(val) {
+      this.cur_page = val;
+      this.getData();
+    },
+    getNotice() {
       let self = this;
       self.loading = true;
       self.$axios
-        .post("organization/getUserList/" + this.cur_page + "/" + this.page_size)
+        .post(
+          "/organization/getRoleList/" + this.cur_page + "/" + this.page_size
+        )
         .then(res => {
           let data = res.data;
-          self.loading = false;
           if (data.code == 200) {
+            self.total = data.data["total"];
             self.tableData = data.data.list;
-            self.total=data.data.total;
+            self.loading = false;
           } else {
             self.$message.error(data.data);
           }
         });
-    },
-    submitForm(formName) {
-      const self = this;
-      self.$refs[formName].validate(valid => {
-        if (valid) {
-          self.loadingForm = true;
-          self.$axios
-            .post("organization/createSchoolZone", this.form)
-            .then(res => {
-              var data = res.data;
-              if (data.code == 200) {
-                //登录成功
-                self.loadingForm = false;
-                self.$message.success(data.message);
-                self.dialogFormVisible = false;
-                self.getSchool();
-                self.$refs[formName].resetFields();
-              } else {
-                this.$message.error(data.data);
-              }
-            });
-        } else {
-          return false;
-        }
-      });
-    },
-    filterType(value, row) {
-      if (value.theType == 1) row.tag = "总校";
-      else if (value.theType == 2) row.tag = "分校";
-      else row.tag = "部门";
-      return row.tag;
-    },
-    handleSizeChange(val) {
-      console.log(this.page_size);
-      this.page_size = val;
-      this.getUser();
-    },
-    handleCurrentChange(val) {
-      this.cur_page = val;
-      this.getUser();
     },
     handleEdit(index, row) {
       this.form.fatherId = row.id;

@@ -121,7 +121,7 @@ export default {
     };
   },
   created() {
-    this.getNotice();
+    this.getData();
   },
   methods: {
     handleSizeChange(val) {
@@ -133,7 +133,7 @@ export default {
       this.cur_page = val;
       this.getData();
     },
-    getNotice() {
+    getData() {
       let self = this;
       self.loading = true;
       self.$axios

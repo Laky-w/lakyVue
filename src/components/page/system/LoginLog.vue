@@ -21,12 +21,12 @@
                     <el-date-picker
                         v-model="queryForm.theDate" value-format="yyyy-MM-dd"
                         type="daterange" align="center"unlink-panels range-separator="至"
-                        start-placeholder="开始日期"
-                        end-placeholder="结束日期" :picker-options="pickerOptions2">
+                        start-placeholder="登录日期"
+                        end-placeholder="登录日期" :picker-options="pickerOptions2">
                     </el-date-picker>
                  </el-form-item>
                
-                <el-button type="mini" icon="search" @click="search('queryForm')">搜索</el-button>
+                <el-button type="mini" icon="el-icon-search" @click="search('queryForm')">搜索</el-button>
             </el-form>
         </div>
         <el-table :data="tableData"  v-loading="loading" :row-class-name="tableRowClassName" border stripe style="width: 100%" >
@@ -42,12 +42,6 @@
             </el-table-column>
         </el-table>
         <div class="pagination">
-            <!-- <el-pagination
-                    @current-change ="handleCurrentChange"
-                    layout="prev, pager, next" :page-sizes="[20, 50, 100, 200]"
-                    :total="totol" :page-size="page_size">
-            </el-pagination> -->
-
             <el-pagination
                 @size-change="handleSizeChange"
                 @current-change ="handleCurrentChange"

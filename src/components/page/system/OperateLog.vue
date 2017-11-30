@@ -12,27 +12,28 @@
                     <el-input v-model="queryForm.userName"  placeholder="用户名" class="handle-input mr10"></el-input>
                 </el-form-item>
                 <el-form-item >
-                    <el-select v-model="queryForm.theType"   value=1 clearable placeholder="登录类型" class="handle-select mr10" >
-                        <el-option key="1" label="登录" value="1"></el-option>
-                        <el-option key="2" label="退出" value="2"></el-option>
+                    <el-select v-model="queryForm.theType"   value=1 clearable placeholder="操作类型" class="handle-select mr10" >
+                        <el-option  label="增加" value="1"></el-option>
+                        <el-option  label="删除" value="2"></el-option>
+                        <el-option  label="修改" value="3"></el-option>
                     </el-select>
                 </el-form-item>
                  <el-form-item >
                     <el-date-picker
                         v-model="queryForm.theDate"
                         type="daterange" align="right"unlink-panels range-separator="至"
-                        start-placeholder="开始日期"
-                        end-placeholder="结束日期" :picker-options="pickerOptions2">
+                        start-placeholder="操作日期"
+                        end-placeholder="操作日期" :picker-options="pickerOptions2">
                     </el-date-picker>
                  </el-form-item>
                
-                <el-button type="mini" icon="search" @click="search('queryForm')">搜索</el-button>
+                <el-button type="mini" icon="el-icon-search" @click="search('queryForm')">搜索</el-button>
             </el-form>
         </div>
         <el-table :data="tableData"  v-loading="loading" :row-class-name="tableRowClassName" border stripe style="width: 100%" >
-            <el-table-column prop="accountId" label="用户名" sortable >
+            <el-table-column prop="user.name" label="用户名" sortable >
             </el-table-column>
-            <el-table-column prop="schoolZoneId" label="校区名" >
+            <el-table-column prop="schoolZone.name" label="校区名" >
             </el-table-column>
             <el-table-column prop="theType" label="操作" :formatter="filterType">
             </el-table-column>
@@ -45,9 +46,12 @@
         </el-table>
         <div class="pagination">
             <el-pagination
-                    @current-change ="handleCurrentChange"
-                    layout="prev, pager, next"
-                    :total="totol" :page-size="page_size">
+                @size-change="handleSizeChange"
+                @current-change ="handleCurrentChange"
+                :page-sizes="[20, 50, 100, 200]"
+                :page-size="page_size"
+                layout="total, sizes, prev, pager, next, jumper"
+                :total="total">
             </el-pagination>
         </div>
     </div>
@@ -59,7 +63,7 @@
             return {
                 url: './static/vuetable.json',
                 tableData: [],
-                totol:0,
+                total:0,
                 cur_page: 1,
                 page_size:20,
                 multipleSelection: [],
@@ -127,6 +131,11 @@
             }
         },
         methods: {
+           handleSizeChange(val){
+                console.log(this.page_size);
+                this.page_size = val;
+                this.getData();
+            },
             handleCurrentChange(val){
                 this.cur_page = val;
                 this.getData();
@@ -134,10 +143,10 @@
             getData(){
                 let self = this;
                 self.loading=true;
-                self.$axios.post("log/findOperateLogAll/"+this.cur_page+"/20",this.queryForm).then( (res) => {
+                self.$axios.post("log/findOperateLogAll/"+this.cur_page+"/"+this.page_size,this.queryForm).then( (res) => {
                     var data = res.data;
                     if (data.code==200) {
-                        self.totol=data.data["total"];
+                        self.total=data.data["total"];
                         self.tableData=data.data.list;
                         self.loading=false;
                     } else {
@@ -153,9 +162,13 @@
             },
             search(form){
                 this.cur_page=1;
-                console.debug(this.queryForm.theDate);
-                this.queryForm.theDate1=this.queryForm.theDate[0];
-                this.queryForm.theDate2=this.queryForm.theDate[1];
+                if(this.queryForm.theDate){
+                    this.queryForm.theDate1=this.queryForm.theDate[0];
+                    this.queryForm.theDate2=this.queryForm.theDate[1];
+                }else{
+                    this.queryForm.theDate1="";
+                    this.queryForm.theDate2="";
+                }
                 this.getData();
             },
             formatter(row, column) {
@@ -163,9 +176,11 @@
             },
             filterType(value, row) {
                 if(value.theType==1) 
-                    row.tag="登录";
-                else
-                    row.tag="退出";
+                    row.tag="增加";
+                else if(value.theType==2) 
+                    row.tag="删除";
+                else if(value.theType==3) 
+                    row.tag="修改";
                 return row.tag;
             },
             handleSelectionChange(val) {

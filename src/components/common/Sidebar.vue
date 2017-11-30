@@ -59,7 +59,6 @@
         methods: {
             changeCollapse(){
                 this.isCollapse=!this.isCollapse;
-                console.debug(this.isCollapse);
                 this.$emit("changeCollapseEvent",this.isCollapse);
             }
         },
@@ -93,26 +92,28 @@
         bottom:0;
         /* box-sizing: border-box; */
         overflow-y:scroll;
+        background-color: #f5f7fa;
         /* background: #2E363F; */
     }
     .sidebar > ul {
-        height:100%;
+        height:95%;
     }
-    .active{
+    .active,.unactive{
+        transition: width .28s;
         text-align: center;
         font-size: 25px;
-        width: 64px;    
+            
         cursor: pointer;  
         border-right: solid 1px #e6e6e6;
-        color: #409eff
+        color: #409eff;
+        padding-top: 15px;
+        
+    }
+    .active{
+        width: 64px;
     }
     .unactive{
-        text-align: center;
-        font-size: 18px;
         width: 200px;
-        cursor: pointer;
-        border-right: solid 1px #e6e6e6;
-        color: #409eff
     }
     
 </style>

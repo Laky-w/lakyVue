@@ -52,7 +52,6 @@ export default {
 
   methods: {
     loadNotice() {
-      this.getData();
       let self = this;
       function setNotice() {
         self.notice = self.notices[self.noticeIndex].content;
@@ -61,17 +60,17 @@ export default {
           self.noticeIndex = 0;
         }
       }
-      // window.setInterval(setNotice, 1000);
-    },
-    getData() {
-      let self = this;
-      this.$axios.get("organization/findNoticeAll").then(res => {
+      this.$axios.get("organization/findNewNoticeAll").then(res => {
         var data = res.data;
         if (data.code == 200) {
           self.notices = data.data;
+          if (self.notices) {
+            window.setInterval(setNotice, 1000);
+          }
         }
       });
     },
+    getData() {},
     handleCommand(command) {
       if (command == "loginout") {
         sessionStorage.removeItem("userInfo");

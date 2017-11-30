@@ -14,14 +14,16 @@ body,
 
 body {
     font-family: "Helvetica Neue", Helvetica, "microsoft yahei", arial, STHeiTi, sans-serif;
+    background-color: #f5f7fa;
 }
 
 a {
     text-decoration: none
 }
 
-.content {
-    background: none repeat scroll 0 0 #fff;
+.content,
+.big-content {
+    background: none repeat scroll 0 0 #f5f7fa;
     position: absolute;
     float: left;
     left: 210px;
@@ -29,23 +31,18 @@ a {
     top: 70px;
     bottom: 0;
     width: auto;
-    padding: 40px;
+    padding: 15px;
     box-sizing: border-box;
     overflow-y: scroll;
 }
 
+.content {
+    left: 210px;
+}
+
 .big-content {
-    background: none repeat scroll 0 0 #fff;
-    position: absolute;
-    float: left;
+    transition: left .48s;
     left: 70px;
-    right: 0;
-    top: 70px;
-    bottom: 0;
-    width: auto;
-    padding: 40px;
-    box-sizing: border-box;
-    overflow-y: scroll;
 }
 
 .content-all {
@@ -99,7 +96,7 @@ a {
 
 .el-menu-item.is-active {
     color: #ecf5ff !important;
-    background-color: #66b1ff;
+    background-color: #66b1ff !important;
 }
 
 .el-menu-item:focus,
@@ -112,6 +109,11 @@ a {
 .el-submenu__title:hover {
     background-color: #ecf5ff;
     color: #2d2f33;
+}
+
+.el-table td,
+.el-table th {
+    padding: 5px 0 !important;
 }
 
 
