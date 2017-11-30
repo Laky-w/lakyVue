@@ -116,6 +116,23 @@ a {
     padding: 5px 0 !important;
 }
 
+.el-table th {
+    padding: 5px 0 !important;
+    background-color: #dee0e4 !important;
+    color: #5a5e66;
+    font-size: 15px;
+}
+
+
+/*查询区域*/
+
+.handle-box {
+    background-color: #f5f7fa;
+    padding-top: 10px;
+    padding-left: 5px;
+    margin-bottom: 3px;
+}
+
 
 /*BaseForm*/
 

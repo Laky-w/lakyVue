@@ -6,6 +6,33 @@
                 <el-breadcrumb-item>教职员工</el-breadcrumb-item>
             </el-breadcrumb>
         </div>
+        <div class="handle-box">
+            <el-form ref="queryForm" :inline="true" :model="queryForm" label-width="80px" size="mini">
+                <el-form-item  >
+                    <el-input v-model="queryForm.userName"  placeholder="用户名" class="handle-input mr10"></el-input>
+                </el-form-item>
+                <el-form-item >
+                    <el-select v-model="queryForm.theType"   value=1 clearable placeholder="登录类型" class="handle-select mr10" >
+                        <el-option key="1" label="登录" value="1"></el-option>
+                        <el-option key="2" label="退出" value="2"></el-option>
+                    </el-select>
+                </el-form-item>
+                 <el-form-item >
+                    <el-date-picker
+                        v-model="queryForm.theDate" value-format="yyyy-MM-dd"
+                        type="daterange" align="center"unlink-panels range-separator="至"
+                        start-placeholder="登录日期"
+                        end-placeholder="登录日期" :picker-options="pickerOptions2">
+                    </el-date-picker>
+                 </el-form-item>
+               
+                <el-button type="mini" icon="el-icon-search" @click="search('queryForm')">搜索</el-button>
+            </el-form>
+        </div>
+        <div style="margin:5px;">
+          <el-button type="primary" icon="el-icon-edit" size="mini" @click="dialogFormVisible=true">添加员工</el-button>
+          <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
+        </div>
         <el-table
             :data="tableData" stripe v-loading="loading" border
             style="width: 100%">
@@ -44,7 +71,7 @@
             label="是否超级用户"
             prop="theStatus">
             </el-table-column>
-            <el-table-column label="操作">
+            <!-- <el-table-column label="操作">
             <template slot-scope="scope">
                 <el-button
                 size="mini"
@@ -54,7 +81,7 @@
                 type="danger"
                 @click="handleDelete(scope.$index, scope.row)">删除</el-button>
             </template>
-            </el-table-column>
+            </el-table-column> -->
         </el-table>
         <div class="pagination">
           <el-pagination
@@ -66,11 +93,45 @@
                 :total="total">
             </el-pagination>
         </div>
-        <el-dialog title="添加校区/部门" :visible.sync="dialogFormVisible">
+        <el-dialog title="新增员工" :visible.sync="dialogFormVisible">
         <el-form :model="form" ref="ruleForm" v-loading="loadingForm">
-            <el-form-item label="名称" :label-width="formLabelWidth" prop="name"  :rules="[{ required: true, message: '名称必填'}]">
-            <el-input v-model="form.name"  autofocus placeholder="名称"  auto-complete="off"></el-input>
+            <el-form-item label="姓名" :label-width="formLabelWidth" prop="name"  :rules="[{ required: true, message: '名称必填'}]">
+            <el-input v-model="form.name"  autofocus placeholder="真实姓名"  auto-complete="off"></el-input>
             </el-form-item>
+            <el-form-item label="用户名" :label-width="formLabelWidth" prop="userName"  :rules="[{ required: true, message: '名称必填'}]">
+            <el-input v-model="form.userName"  autofocus placeholder="登录用户名"  auto-complete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="部门" :label-width="formLabelWidth" prop="name"  :rules="[{ required: true, message: '名称必填'}]">
+            <el-input v-model="form.name"  autofocus placeholder="登录用户名"  auto-complete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="性别" :label-width="formLabelWidth"  >
+              <el-radio-group v-model="form.sex">
+                <el-radio :label="1">男</el-radio>
+                <el-radio :label="2">女</el-radio>
+              </el-radio-group>
+            </el-form-item>
+            <el-form-item label="手机号" :label-width="formLabelWidth" prop="phone"  :rules="[{ required: true, message: '名称必填'}]">
+            <el-input v-model="form.phone"  autofocus placeholder="手机号"  auto-complete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="邮箱" :label-width="formLabelWidth" prop="email"  :rules="[{ required: true, message: '名称必填'}]">
+            <el-input v-model="form.email"  autofocus placeholder="邮箱"  auto-complete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="身份证" :label-width="formLabelWidth" prop="name"  :rules="[{ required: true, message: '名称必填'}]">
+            <el-input v-model="form.name"  autofocus placeholder="身份证"  auto-complete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="出生日期" :label-width="formLabelWidth" prop="birthday">
+              <el-date-picker
+                v-model="form.birthday"
+                type="date"
+                placeholder="出生日期">
+              </el-date-picker>
+            </el-form-item>
+            <el-form-item label="权限" :label-width="formLabelWidth" prop="name"  :rules="[{ required: true, message: '名称必填'}]">
+            <el-input v-model="form.name"  autofocus placeholder="出生日期"  auto-complete="off"></el-input>
+            </el-form-item>
+<!--            
+
+
             <el-form-item label="类型" :label-width="formLabelWidth" required>
                 <el-radio-group v-model="form.theType">
                     <el-radio :label="2">校区</el-radio>
@@ -92,7 +153,7 @@
             <el-form-item label="联系方式" prop="phone" :label-width="formLabelWidth">
             <el-input v-model="form.phone" auto-complete="off" placeholder="联系方式"></el-input>
             </el-form-item>
-            <el-form-item label="上级部门" :label-width="formLabelWidth"><el-input v-model="form.fatherName" disabled></el-input></el-form-item>
+            <el-form-item label="上级部门" :label-width="formLabelWidth"><el-input v-model="form.fatherName" disabled></el-input></el-form-item> -->
         </el-form>
         <div slot="footer" class="dialog-footer">
             <el-button @click="dialogFormVisible = false">取 消</el-button>
@@ -120,6 +181,7 @@
 table td {
   line-height: 26px;
 }
+
 </style> 
 
 <script>
@@ -132,16 +194,18 @@ export default {
       total: 0,
       cur_page: 1,
       page_size: 20,
+      queryForm: {
+          userName:'',
+          theDate:'',
+          theType: ''
+      },
       form: {
         name: "",
-        theType: 2,
-        serial: "",
-        remarks: "",
-        owner: "",
-        phone: "",
-        fatherId: "",
-        fatherName: "",
-        address: ""
+        userName:"",
+        sex:1,
+        phone:"",
+        email:"",
+        birthday:"",
       },
       formLabelWidth: "120px",
       loading: false,
