@@ -3,7 +3,7 @@
         <div class="crumbs">
             <el-breadcrumb separator="/">
                 <el-breadcrumb-item><i class="el-icon-menu"></i> 系统</el-breadcrumb-item>
-                <el-breadcrumb-item>通知公告</el-breadcrumb-item>
+                <el-breadcrumb-item>员工职能</el-breadcrumb-item>
             </el-breadcrumb>
         </div>
         <el-table
@@ -18,11 +18,11 @@
             </el-table-column>
             <el-table-column
             label="创建用户"
-            prop="createUserId">
+            prop="createUser.name">
             </el-table-column>
             <el-table-column
             label="校区"
-            prop="schoolId">
+            prop="schoolZone.name">
             </el-table-column>
             <el-table-column label="操作">
             <template slot-scope="scope">

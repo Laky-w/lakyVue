@@ -16,7 +16,7 @@
             :data="tableData" stripe v-loading="loading" border
             style="width: 100%">
             <el-table-column  
-            label="创建人" prop="createUserId">
+            label="创建人" prop="createUser.name ">
             </el-table-column>
             <el-table-column
             label="名称"
