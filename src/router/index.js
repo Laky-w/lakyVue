@@ -71,7 +71,19 @@ export default new Router({
                 {
                     path: '/user',
                     component: resolve => require(['../components/page/system/User.vue'], resolve)
-                }
+                },
+                {
+                    path: '/userRole',
+                    component: resolve => require(['../components/page/system/UserRole.vue'], resolve)
+                },
+                {
+                    path: '/notice',
+                    component: resolve => require(['../components/page/system/Notice.vue'], resolve)
+                },
+                {
+                    path: '/publicData',
+                    component: resolve => require(['../components/page/system/PublicData.vue'], resolve)
+                },
             ]
         },
         {
