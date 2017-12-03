@@ -24,6 +24,10 @@ export default new Router({
                     component: resolve => require(['../components/page/demo/common/SchoolTree.vue'], resolve)
                 },
                 {
+                    path: '/authority',
+                    component: resolve => require(['../components/page/demo/Authority.vue'], resolve)
+                },
+                {
                     path: '/vuetable',
                     component: resolve => require(['../components/page/demo/VueTable.vue'], resolve) // vue-datasource组件
                 },
@@ -87,6 +91,10 @@ export default new Router({
                 {
                     path: '/publicData',
                     component: resolve => require(['../components/page/system/PublicData.vue'], resolve)
+                },
+                {
+                    path: '/authority1',
+                    component: resolve => require(['../components/page/system/Authority.vue'], resolve)
                 },
             ]
         },

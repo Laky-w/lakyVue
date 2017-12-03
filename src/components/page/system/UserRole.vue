@@ -6,6 +6,9 @@
                 <el-breadcrumb-item>员工职能</el-breadcrumb-item>
             </el-breadcrumb>
         </div>
+        <div style="margin:5px;">
+          <el-button type="primary" icon="el-icon-edit" size="mini" @click="$router.push('/authority1');">添加权限</el-button>
+        </div>
         <el-table
             :data="tableData" stripe v-loading="loading" border
             style="width: 100%">
