@@ -17,14 +17,17 @@
                         <el-option key="2" label="退出" value="2"></el-option>
                     </el-select>
                 </el-form-item>
-                 <el-form-item >
-                    <el-date-picker
-                        v-model="queryForm.theDate" value-format="yyyy-MM-dd"
-                        type="daterange" align="center"unlink-panels range-separator="至"
-                        start-placeholder="登录日期"
-                        end-placeholder="登录日期" :picker-options="pickerOptions2">
-                    </el-date-picker>
-                 </el-form-item>
+                <el-form-item >
+                  <el-date-picker
+                      v-model="queryForm.theDate" value-format="yyyy-MM-dd"
+                      type="daterange" align="center"unlink-panels range-separator="至"
+                      start-placeholder="登录日期"
+                      end-placeholder="登录日期" :picker-options="pickerOptions2">
+                  </el-date-picker>
+                </el-form-item>
+                <el-form-item >
+                   <school-tree  :is-show-checkbox=true :name="form.schoolName"></school-tree>
+                </el-form-item>
                
                 <el-button type="mini" icon="el-icon-search" @click="search('queryForm')">搜索</el-button>
             </el-form>
@@ -160,7 +163,7 @@ table td {
 </style> 
 
 <script>
-import SchoolTree from '../../common/SchoolTree.vue'
+import SchoolTree from '../../common/SchoolTree1.vue'
 export default {
   
   data() {

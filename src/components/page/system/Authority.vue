@@ -7,9 +7,11 @@
             </el-breadcrumb>
         </div>
         <div class="handle-box">
-            <el-form ref="queryForm" :inline="true" :model="queryForm" label-width="80px" size="mini">
+            <el-form ref="authorityform" :inline="true" :model="authorityform" label-width="80px" size="mini">
                 <el-form-item  >
-                    <el-input v-model="queryForm.schoolName"  placeholder="角色名称" class="handle-input mr10"></el-input>
+                    <el-input v-model="authorityform.name" :rules="[{ required: true, message: '名称必填'}]" 
+                     placeholder="角色名称" class="handle-input mr10">
+                     </el-input>
                 </el-form-item>
                 <!-- <el-form-item >
                     <el-select v-model="queryForm.theType"   value=1 clearable placeholder="下级类型" class="handle-select mr10" >
@@ -40,14 +42,15 @@
                 <el-checkbox v-if="scope.row.authoritiyCount>0" v-model="scope.row.checkAll"  :indeterminate="scope.row.isIndeterminate"
                 :true-label="scope.row.id+':true'" :false-label="scope.row.id+':false'" @change="handleCheckAllChange">全选</el-checkbox>
                 <el-checkbox-group style="display: inline-block;" v-model="scope.row.checkedAuthorities" @change="handleCheckedCitiesChange">
-                  <el-checkbox v-for="(item, levelIndex) in scope.row.authorities" :label="item.id">{{item.name}}</el-checkbox>
+                  <el-checkbox  v-for="(item, levelIndex) in scope.row.authorities" :label="item.id">{{item.name}}
+                  </el-checkbox>
                 </el-checkbox-group>
             </template>
             </el-table-column>
         </el-table>
         <div style="margin-top: 10px;text-align: right;padding: 5px;">
           <el-button @click="$router.push('/userRole');">取 消</el-button>
-          <el-button type="primary" @click="submitForm('ruleForm')">确 定</el-button>
+          <el-button type="primary" @click="submitForm('authorityform')">确 定</el-button>
         </div>
     </div>
 </template>
@@ -84,19 +87,9 @@ export default {
       tableData: [],
       treeStructure: true,
       dialogFormVisible: false,
-      queryForm: {
-        schoolName: ""
-      },
-      form: {
+      authorityform: {
         name: "",
-        theType: 2,
-        serial: "",
-        remarks: "",
-        owner: "",
-        phone: "",
-        fatherId: "",
-        fatherName: "",
-        address: ""
+        authorities:[]
       },
       formLabelWidth: "120px",
       loading: false,
@@ -225,26 +218,21 @@ export default {
      
       return tmp;
     },
+    getTabsChecked(){
+       let self = this;
+       self.tableData.forEach(record => {
+         if(record.checkedAuthorities&&record.checkedAuthorities.length>0){
+           self.authorityform.authorities=self.authorityform.authorities.concat(record.checkedAuthorities);
+         }
+       })
+    },
     submitForm(formName) {
       const self = this;
+      self.getTabsChecked();
+      console.log(self.authorityform);
       self.$refs[formName].validate(valid => {
         if (valid) {
-          self.loadingForm = true;
-          self.$axios
-            .post("organization/createSchoolZone", this.form)
-            .then(res => {
-              var data = res.data;
-              if (data.code == 200) {
-                //登录成功
-                self.loadingForm = false;
-                self.$message.success(data.message);
-                self.dialogFormVisible = false;
-                self.getSchool();
-                self.$refs[formName].resetFields();
-              } else {
-                this.$message.error(data.data);
-              }
-            });
+
         } else {
           return false;
         }
