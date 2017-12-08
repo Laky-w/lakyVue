@@ -1,19 +1,25 @@
 <template>
     <div class="table">
-        <div class="crumbs">
-            <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="el-icon-menu"></i> 系统</el-breadcrumb-item>
-                <el-breadcrumb-item>员工职能</el-breadcrumb-item>
-            </el-breadcrumb>
+        <!-- 筛选条件创建用户和角色名 -->
+        <div class="handle-box">
+            <el-form ref="queryForm" :inline="true" :model="queryForm" label-width="80px" size="mini">
+                <el-form-item  >
+                    <el-input v-model="queryForm.name"  placeholder="职能名称" class="handle-input mr10"></el-input>
+                </el-form-item>
+                 <el-form-item >
+                   <school-tree  :is-show-checkbox=true @handleCheckChange ="handleCheckChange"></school-tree>
+                </el-form-item>
+                <el-button type="mini" icon="el-icon-search" @click="search('queryForm')">搜索</el-button>
+            </el-form>
         </div>
         <div style="margin:5px;">
-          <el-button type="primary" icon="el-icon-edit" size="mini" @click="$router.push('/authority1');">添加权限</el-button>
+          <el-button type="primary" icon="el-icon-edit" size="mini" @click="$router.push('/authority1');">添加职能</el-button>
         </div>
         <el-table
             :data="tableData" stripe v-loading="loading" border
             style="width: 100%">
-            <el-table-column  
-            label="角色名" prop="name">
+            <el-table-column
+            label="职能名" prop="name">
             </el-table-column>
             <el-table-column
             label="创建时间"
@@ -27,7 +33,7 @@
             label="校区"
             prop="schoolZone.name">
             </el-table-column>
-            <el-table-column label="操作">
+            <!-- <el-table-column label="操作">
             <template slot-scope="scope">
                 <el-button
                 size="mini"
@@ -37,7 +43,7 @@
                 type="danger"
                 @click="handleDelete(scope.$index, scope.row)">删除</el-button>
             </template>
-            </el-table-column>
+            </el-table-column> -->
         </el-table>
         <div class="pagination">
           <el-pagination
@@ -51,7 +57,7 @@
         </div>
         <el-dialog title="添加公告" :visible.sync="dialogFormVisible">
         <el-form :model="form" ref="ruleForm" v-loading="loadingForm">
-            <el-form-item label="名称" :label-width="formLabelWidth" prop="name"  :rules="[{ required: true, message: '名称必填'}]">
+            <el-form-item label="名称" :label-width="formLabelWidth" prop="userName"  :rules="[{ required: true, message: '名称必填'}]">
             <el-input v-model="form.name"  autofocus placeholder="名称"  auto-complete="off"></el-input>
             </el-form-item>
             <el-form-item label="类型" :label-width="formLabelWidth" required>
@@ -88,6 +94,7 @@
 
 
 <script>
+import SchoolTree from "../../common/SchoolTree.vue";
 export default {
   data() {
     return {
@@ -104,15 +111,20 @@ export default {
         content: "",
         lastDatetime: ""
       },
+      queryForm: {
+        name: "",
+        schoolZoneId2: []
+      },
       formLabelWidth: "120px",
       loading: false,
       loadingForm: false
     };
   },
   created() {
-    this.getNotice();
+    this.getData();
   },
   methods: {
+    //分页方法start
     handleSizeChange(val) {
       console.log(this.page_size);
       this.page_size = val;
@@ -122,12 +134,18 @@ export default {
       this.cur_page = val;
       this.getData();
     },
-    getNotice() {
+    //分页方法结束
+    search(form) { //搜索方法
+      this.cur_page = 1;
+      this.getData();
+    },
+    //加载数据
+    getData() {
       let self = this;
       self.loading = true;
       self.$axios
         .post(
-          "/organization/getRoleList/" + this.cur_page + "/" + this.page_size
+          "/organization/getRoleList/" + this.cur_page + "/" + this.page_size,self.queryForm
         )
         .then(res => {
           let data = res.data;
@@ -140,12 +158,20 @@ export default {
           }
         });
     },
+    //控件方法
     handleEdit(index, row) {
       this.form.fatherId = row.id;
       this.form.fatherName = row.name;
       this.dialogFormVisible = true;
     },
-    handleDelete(index, row) {}
-  }
+    handleDelete(index, row) {},
+    handleCheckChange(allNode) {
+      this.queryForm.schoolZoneId2 = [];
+      for (let i = 0; i < allNode.length; i++) {
+        this.queryForm.schoolZoneId2.push(allNode[i].id);
+      }
+    }
+  },
+  components: { SchoolTree } //注入组件
 };
 </script>

@@ -1,15 +1,9 @@
 <template>
     <div class="table">
-        <div class="crumbs">
-            <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="el-icon-menu"></i> 系统</el-breadcrumb-item>
-                <el-breadcrumb-item>通知公告</el-breadcrumb-item>
-            </el-breadcrumb>
-        </div>
         <el-table
             :data="tableData" stripe v-loading="loading"
             style="width: 100%">
-            <el-table-column  
+            <el-table-column
             label="校区" prop="schoolZone.name">
             </el-table-column>
             <el-table-column
@@ -150,7 +144,7 @@ export default {
       this.dialogFormVisible = true;
     },
     filterType(value, row) {
-      if(value.theType==1) 
+      if(value.theType==1)
           row.tag="总校";
       else
           row.tag="分校";

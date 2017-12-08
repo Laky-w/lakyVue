@@ -7,22 +7,22 @@
                 <div class="message">湖之教育</div>
                 <div id="darkbannerwrap"></div>
                 <el-form-item prop="serial">
-                    <!-- <el-input id="password" v-model="password" type="password" placeholder="请输入密码">  
-                        <template slot="prepend">密码</template>  
+                    <!-- <el-input id="password" v-model="password" type="password" placeholder="请输入密码">
+                        <template slot="prepend">密码</template>
                     </el-input>   -->
                     <!-- <el-time-picker type="fixed-time" placeholder="选择时间" v-model="form.date2" style="width: 100%;"></el-time-picker> -->
                     <el-input v-model="ruleForm.serial" name="serial" placeholder="机构代码">
-                        <template slot="prepend"><i class="el-icon-edu-branch"></i></template>  
+                        <template slot="prepend"><i class="el-icon-edu-branch"></i></template>
                     </el-input>
                 </el-form-item>
                 <el-form-item prop="userName">
                     <el-input v-model="ruleForm.userName" name="userName" placeholder="用户名/邮箱/电话">
-                        <template slot="prepend"><i class="el-icon-edu-user"></i></template>  
+                        <template slot="prepend"><i class="el-icon-edu-user"></i></template>
                     </el-input>
                 </el-form-item>
                 <el-form-item prop="pwd">
                     <el-input type="password"  placeholder="密码" name="pwd" v-model="ruleForm.pwd" autofocus @keyup.enter.native="submitForm('ruleForm')">
-                        <template slot="prepend"><i class="el-icon-edu-lock"></i></template>  
+                        <template slot="prepend"><i class="el-icon-edu-lock"></i></template>
                     </el-input>
                 </el-form-item>
                 <div class="login-btn">
@@ -68,7 +68,13 @@
                                 sessionStorage.setItem("token",data.data["token"]);
                                 sessionStorage.setItem("branch",JSON.stringify(data.data["branch"]));
                                 sessionStorage.setItem("userInfo",JSON.stringify(data.data["userInfo"]));
-                                self.$router.push('/laky');
+                                let isOut=sessionStorage.getItem("isOut");
+                                if(isOut==="false"){
+                                    window.history.back(-1);
+                                }else{
+                                    self.$router.push('/laky');
+                                }
+
                             } else {
                                 this.$message.error(data.data);
                             }

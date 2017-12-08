@@ -4,7 +4,8 @@
         <div>
             <v-sidebar v-on:changeCollapseEvent="changeCollapse"></v-sidebar>
             <div :class="{'big-content':isCollapse,'content':!isCollapse}">
-                <div style="background-color:#ffffff;padding:5px;">
+                <div style="background-color:#ffffff;padding:5px;min-height: 98%;">
+                    <nav-bar></nav-bar>
                     <transition name="move" mode="out-in"><router-view></router-view></transition>
                 </div>
             </div>
@@ -15,6 +16,7 @@
 <script>
 import vHead from "./Header.vue";
 import vSidebar from "./Sidebar.vue";
+import NavBar from "./NavBar.vue";
 export default {
   data() {
     return {
@@ -23,7 +25,8 @@ export default {
   },
   components: {
     vHead,
-    vSidebar
+    vSidebar,
+    NavBar
   },
   methods: {
     changeCollapse(data) {

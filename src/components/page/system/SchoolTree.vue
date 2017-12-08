@@ -1,7 +1,7 @@
 <template>
   <div style="height:50px;position:relative;">
     <span @click="isShow=!isShow">
-      <el-input 
+      <el-input
         placeholder="校区/部门" :clearable=true readonly=""
         v-model="filterText">
         <i slot="suffix"  style="cursor: pointer;" class="el-input__icon el-icon-arrow-down"></i>
@@ -10,8 +10,8 @@
     <div :class="{treeDivH:isShow,treeDiv:true}">
       <el-tree
         class="filter-tree" :expand-on-click-node=false
-        :data="data2" node-key="id" 
-        :props="defaultProps" 
+        :data="data2" node-key="id"
+        :props="defaultProps"
         default-expand-all
         :filter-node-method="filterNode"
         @node-click="handleNodeClick" :show-checkbox="isShowCheckbox"
@@ -45,13 +45,13 @@ export default {
     // 点击其他不在的区域触发事件
     document.addEventListener('click', (e) => {
       if (!this.$el.contains(e.target)){
-          this.isShow = true; 
+          this.isShow = true;
       }
     })
     this.getSchool();
   },
   methods: {
-    
+
     filterNode(value, data) {
       if (!value) return true;
       return data.name.indexOf(value) !== -1;
@@ -68,7 +68,14 @@ export default {
         if (data.code == 200) {
           let treeArray = [];
           treeArray.push(data.data)
-          console.debug(treeArray);
+          if(self.defaultValue){//默认值处理
+            for(let i =0;i<treeArray.length;i++){
+                if(self.defaultValue==treeArray[i].id){
+                    self.filterText=treeArray[i].name;
+                    break;
+                }
+            }
+          }
           self.data2 = treeArray;
         } else {
           self.$message.error(data.data);
@@ -76,9 +83,9 @@ export default {
       });
     },
     handleNodeClick(data) {
-      // 
+      //
       if(this.isShowCheckbox){
-        console.log(data);
+        // console.log(data);
         var allNode=this.$refs["tree2"].getCheckedNodes();
         let checked = true;
         for(let i=0;i<allNode.length;i++){
@@ -95,11 +102,11 @@ export default {
       this.$emit("nodeClick",data);
     },
     handleCheckChange(data, checked, indeterminate) {
-      console.log(data, checked, indeterminate);
+    //   console.log(data, checked, indeterminate);
       if(indeterminate){
         this.$refs["tree2"].setChecked(data,true,false,false);
       }
-      
+
       var allNode=this.$refs["tree2"].getCheckedNodes();
       let fileName = "";
       for(let i=0;i<allNode.length;i++){
@@ -128,7 +135,8 @@ export default {
     name:"",
     isShowCheckbox:{
       default:false
-    }
+    },
+    defaultValue:""
   }
 
 };

@@ -1,11 +1,5 @@
 <template>
     <div class="table">
-        <div class="crumbs">
-            <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="el-icon-menu"></i> 系统</el-breadcrumb-item>
-                <el-breadcrumb-item>校区部门</el-breadcrumb-item>
-            </el-breadcrumb>
-        </div>
         <div class="handle-box">
             <el-form ref="queryForm" :inline="true" :model="queryForm" label-width="80px" size="mini">
                 <el-form-item  >
@@ -27,9 +21,9 @@
             label="校区" >
             <template slot-scope="scope">
                 <span  v-for="(space, levelIndex) in scope.row._level" class="ms-tree-space"></span>
-                <span  style="cursor: pointer;color: #3a8ee6;" v-if="toggleIconShow(scope.row)" @click="toggle(scope.$index)">  
-                <i v-if="!scope.row._expanded" class="el-icon-circle-plus-outline" aria-hidden="true"></i>  
-                <i v-if="scope.row._expanded" class="el-icon-remove-outline" aria-hidden="true"></i>  
+                <span  style="cursor: pointer;color: #3a8ee6;" v-if="toggleIconShow(scope.row)" @click="toggle(scope.$index)">
+                <i v-if="!scope.row._expanded" class="el-icon-circle-plus-outline" aria-hidden="true"></i>
+                <i v-if="scope.row._expanded" class="el-icon-remove-outline" aria-hidden="true"></i>
                 </span>
                 <i :class="{ 'el-icon-sort': scope.row.theType ==1 }"></i>
                 <i :class="{ 'el-icon-sold-out': scope.row.theType ==2 }"></i>
@@ -140,7 +134,7 @@
 table td {
   line-height: 15px;
 }
-</style> 
+</style>
 
 <script>
 export default {
@@ -287,7 +281,7 @@ export default {
           self.$axios
             .post("organization/createSchoolZone", this.form)
             .then(res => {
-              var data = res.data;
+              let data = res.data;
               if (data.code == 200) {
                 //登录成功
                 self.loadingForm = false;
@@ -330,7 +324,7 @@ export default {
     },
     filterTag(value, row) {
       if(row.theType===1)return true;
-      
+
       console.debug(row.theType +"==》"+ value+"==>"+(row.theType == value));
       return row.theType == value;
     },

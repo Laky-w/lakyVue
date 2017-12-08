@@ -1,16 +1,10 @@
 <template>
-    <div class="table">
-        <div class="crumbs">
-            <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="el-icon-menu"></i> 系统</el-breadcrumb-item>
-                <el-breadcrumb-item>添加角色</el-breadcrumb-item>
-            </el-breadcrumb>
-        </div>
+    <div class="table" v-loading="loadingForm">
         <div class="handle-box">
             <el-form ref="authorityform" :inline="true" :model="authorityform" label-width="80px" size="mini">
-                <el-form-item  >
-                    <el-input v-model="authorityform.name" :rules="[{ required: true, message: '名称必填'}]" 
-                     placeholder="角色名称" class="handle-input mr10">
+                <el-form-item  prop="name" :rules="[{ required: true, message: '名称必填'}]">
+                    <el-input v-model="authorityform.name"
+                     placeholder="职能名称" class="handle-input mr10">
                      </el-input>
                 </el-form-item>
                 <!-- <el-form-item >
@@ -28,9 +22,9 @@
             label="菜单" >
             <template slot-scope="scope">
                 <span  v-for="(space, levelIndex) in scope.row._level" class="ms-tree-space"></span>
-                <span  style="cursor: pointer;color: #3a8ee6;" v-if="toggleIconShow(scope.row)" @click="toggle(scope.$index)">  
-                <i v-if="!scope.row._expanded" class="el-icon-circle-plus-outline" aria-hidden="true"></i>  
-                <i v-if="scope.row._expanded" class="el-icon-remove-outline" aria-hidden="true"></i>  
+                <span  style="cursor: pointer;color: #3a8ee6;" v-if="toggleIconShow(scope.row)" @click="toggle(scope.$index)">
+                <i v-if="!scope.row._expanded" class="el-icon-circle-plus-outline" aria-hidden="true"></i>
+                <i v-if="scope.row._expanded" class="el-icon-remove-outline" aria-hidden="true"></i>
                 </span>
                 <i :class="scope.row.icon"></i>
                 {{ scope.row.title }}
@@ -48,7 +42,7 @@
             </template>
             </el-table-column>
         </el-table>
-        <div style="margin-top: 10px;text-align: right;padding: 5px;">
+        <div style="margin-top: 10px;text-align: right;padding: 5px;position: fixed;bottom: 0px;z-index: 99;width: 90%; background-color: #dfe4ed;">
           <el-button @click="$router.push('/userRole');">取 消</el-button>
           <el-button type="primary" @click="submitForm('authorityform')">确 定</el-button>
         </div>
@@ -77,19 +71,19 @@
 table td {
   line-height: 15px;
 }
-</style> 
+</style>
 
 <script>
 export default {
   data() {
     return {
-      checkAll:true,
+      checkAll: true,
       tableData: [],
       treeStructure: true,
       dialogFormVisible: false,
       authorityform: {
         name: "",
-        authorities:[]
+        authorities: []
       },
       formLabelWidth: "120px",
       loading: false,
@@ -104,11 +98,13 @@ export default {
       console.debug("showTr");
       let row = tr.row;
       let subsCheckedCount = this.getSubsCheckedCount(row.id);
-      row["isIndeterminate"]=subsCheckedCount>0&&subsCheckedCount<row["authoritiyCount"];
-      row["checkAll"]=(subsCheckedCount==row["authoritiyCount"])?(row.id+":true"):(row.id+":false");
-      let show = row._parent
-        ? this.getParentExpanded((row))
-        : true;
+      row["isIndeterminate"] =
+        subsCheckedCount > 0 && subsCheckedCount < row["authoritiyCount"];
+      row["checkAll"] =
+        subsCheckedCount == row["authoritiyCount"]
+          ? row.id + ":true"
+          : row.id + ":false";
+      let show = row._parent ? this.getParentExpanded(row) : true;
       return show ? "" : "display:none;";
     },
     selectTr(row) {
@@ -117,32 +113,32 @@ export default {
       }
     },
 
-    getSubsCheckedCount(id){
+    getSubsCheckedCount(id) {
       let self = this;
-      let i =0;
+      let i = 0;
       Array.from(self.tableData).forEach(function(record) {
-        if(record.id==id){
-          i+=record.checkedAuthorities?record.checkedAuthorities.length:0;//选中的权限
+        if (record.id == id) {
+          i += record.checkedAuthorities ? record.checkedAuthorities.length : 0; //选中的权限
         }
-        if(record.parentId==id){
-          if(record.subs && record.subs.length>0){
-            i+=self.getSubsCheckedCount(record.id);
+        if (record.parentId == id) {
+          if (record.subs && record.subs.length > 0) {
+            i += self.getSubsCheckedCount(record.id);
           }
-          i+=record.checkedAuthorities?record.checkedAuthorities.length:0;//选中的权限
+          i += record.checkedAuthorities ? record.checkedAuthorities.length : 0; //选中的权限
         }
-      })
+      });
       return i;
     },
 
-    getParentExpanded(row){
-      if(row._parent){
-        if(!(row._parent._expanded && row._parent._show)){
+    getParentExpanded(row) {
+      if (row._parent) {
+        if (!(row._parent._expanded && row._parent._show)) {
           return false;
-        } else{
+        } else {
           return this.getParentExpanded(row._parent);
         }
       } else {
-        return (row._expanded && row._show);
+        return row._expanded && row._show;
       }
     },
     getSchool() {
@@ -187,18 +183,20 @@ export default {
         }
         let _level = 0;
         if (level !== undefined && level !== null) {
-          if(record.theType==2){
+          if (record.theType == 2) {
             _level = level + 1;
-          }else{
+          } else {
             _level = level + 2;
           }
         }
         record["selected"] = false;
         record["_show"] = true;
-        record["checkAll"]=false;
+        record["checkAll"] = false;
         record["_level"] = _level;
-        record["checkedAuthorities"]=[];
-        record["authoritiyCount"] = (record.authorities?record.authorities.length:0);
+        record["checkedAuthorities"] = [];
+        record["authoritiyCount"] = record.authorities
+          ? record.authorities.length
+          : 0;
         tmp.push(record);
         if (record.subs && record.subs.length > 0) {
           let children = self.parseSchoolTree(
@@ -209,30 +207,49 @@ export default {
           );
           tmp = tmp.concat(children);
           let authoritiyCount = 0;
-          Array.from(children).forEach(function(node){
-            authoritiyCount+=(node.authorities?node.authorities.length:0);
-          })
-          record["authoritiyCount"]+=authoritiyCount;
+          Array.from(children).forEach(function(node) {
+            authoritiyCount += node.authorities ? node.authorities.length : 0;
+          });
+          record["authoritiyCount"] += authoritiyCount;
         }
       });
-     
+
       return tmp;
     },
-    getTabsChecked(){
-       let self = this;
-       self.tableData.forEach(record => {
-         if(record.checkedAuthorities&&record.checkedAuthorities.length>0){
-           self.authorityform.authorities=self.authorityform.authorities.concat(record.checkedAuthorities);
-         }
-       })
+    getTabsChecked() {
+      let self = this;
+      self.authorityform.authorities = [];
+      self.tableData.forEach(record => {
+        if (record.checkedAuthorities && record.checkedAuthorities.length > 0) {
+          self.authorityform.authorities = self.authorityform.authorities.concat(
+            record.checkedAuthorities
+          );
+        }
+      });
     },
     submitForm(formName) {
       const self = this;
       self.getTabsChecked();
-      console.log(self.authorityform);
+      console.log(JSON.stringify(self.authorityform.authorities));
+      if (self.authorityform.authorities.length == 0) {
+        self.$message.error("请选择权限！");
+        return;
+      }
       self.$refs[formName].validate(valid => {
         if (valid) {
-
+          this.loadingForm=true;
+          self.$axios
+            .post("organization/createNewRole", self.authorityform)
+            .then(res => {
+              let data =res.data;
+              this.loadingForm =false;
+              if (data.code == 200) {
+                self.$message.success("添加成功");
+                self.$router.push('/userRole');
+              } else {
+                self.$message.error(data.data);
+              }
+            });
         } else {
           return false;
         }
@@ -247,11 +264,7 @@ export default {
     // 点击展开和关闭的时候，图标的切换
     toggleIconShow(record) {
       let me = this;
-      if (
-        me.treeStructure &&
-        record.subs &&
-        record.subs.length > 0
-      ) {
+      if (me.treeStructure && record.subs && record.subs.length > 0) {
         return true;
       }
       return false;
@@ -263,9 +276,11 @@ export default {
       return row.tag;
     },
     filterTag(value, row) {
-      if(row.theType===1)return true;
-      
-      console.debug(row.theType +"==》"+ value+"==>"+(row.theType == value));
+      if (row.theType === 1) return true;
+
+      console.debug(
+        row.theType + "==》" + value + "==>" + (row.theType == value)
+      );
       return row.theType == value;
     },
     handleEdit(index, row) {
@@ -280,43 +295,44 @@ export default {
       //改变选中值。
       let self = this;
       Array.from(self.tableData).forEach(function(record) {
-        if(vals[0]==record.id){
-          let authorities = []; 
+        if (vals[0] == record.id) {
+          let authorities = [];
           console.debug(record.checkAll);
           // record.checkAll="5:true";
-          if(record.subs && record.subs.length >0){
-             self.changeSubsChecked(record.id,vals[1]);
+          if (record.subs && record.subs.length > 0) {
+            self.changeSubsChecked(record.id, vals[1]);
           }
-          for(let i in record.authorities){
+          for (let i in record.authorities) {
             authorities.push(record.authorities[i].id);
           }
           // `let authorities =;
           // record._parent["checkAll"]=true;
-          record.checkedAuthorities = (vals[1]=="true") ? authorities:[];
+          record.checkedAuthorities = vals[1] == "true" ? authorities : [];
           return;
         }
-      })
+      });
       // this.checkedCities = val ? cityOptions : [];
-      
+
       //改变半选状态
       //this.isIndeterminate = false;
     },
-    changeSubsChecked(id,flag){
+    changeSubsChecked(id, flag) {
       let self = this;
       Array.from(self.tableData).forEach(function(record) {
-        if(record.parentId==id){ //
-          let authorities = []; 
-          if(record.subs && record.subs.length >0){
-             self.changeSubsChecked(record.id,flag);
+        if (record.parentId == id) {
+          //
+          let authorities = [];
+          if (record.subs && record.subs.length > 0) {
+            self.changeSubsChecked(record.id, flag);
           }
-          
-          record.checkAll=record.id+":"+flag;
-          for(let i in record.authorities){
+
+          record.checkAll = record.id + ":" + flag;
+          for (let i in record.authorities) {
             authorities.push(record.authorities[i].id);
           }
-          record.checkedAuthorities = (flag=="true") ? authorities:[];
+          record.checkedAuthorities = flag == "true" ? authorities : [];
         }
-      })
+      });
     },
     handleCheckedCitiesChange(value) {
       console.log("====");

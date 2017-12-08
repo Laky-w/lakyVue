@@ -3,13 +3,13 @@ import qs from 'qs';
 import router from './router';
 // axios.defaults.baseURL = 'http://192.168.0.103/laky/';
 // axios.defaults.baseURL = 'http://192.168.0.100/laky/';
-axios.defaults.baseURL = 'http://127.0.0.1/laky/';
+axios.defaults.baseURL = 'http://192.168.0.100/laky/';
 axios.interceptors.request.use(function(config) {
     // 在发送请求之前做些什么
     config.headers.common['token'] = sessionStorage.getItem("token");
-    var data = config.data;
-    config.data = qs.stringify(data);
-    console.debug(qs.stringify(data));
+    let data = qs.stringify(config.data);
+    config.data = data.replace(/\%5B[0-9]\%5D/g, "");
+    console.log(config.data);
     return config;
 });
 // 添加响应拦截器
@@ -24,6 +24,7 @@ axios.interceptors.response.use(function(response) {
         if (error.response.status == "420") { //登录过期
             sessionStorage.setItem("code", 420);
             sessionStorage.setItem("message", error.response.data.data);
+            sessionStorage.setItem("isOut", "false");
             router.push('/login');
             // self.$message.error(error.response.data.data);
         }

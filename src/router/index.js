@@ -65,46 +65,78 @@ export default new Router({
             path: '/laky',
             component: resolve => require(['../components/common/Home.vue'], resolve),
             children: [{
+                    name: "主页",
                     path: '/',
                     component: resolve => require(['../components/page/demo/BaseCharts.vue'], resolve)
                 },
                 {
-                    path: '/loginLog',
-                    component: resolve => require(['../components/page/system/LoginLog.vue'], resolve)
+                    path: '/reload',
+                    component: resolve => require(['../components/common/Reload.vue'], resolve)
+                },
+            ]
+        },
+        {
+            name: "系统",
+            path: "/system",
+            component: resolve => require(['../components/common/Home.vue'], resolve),
+            children: [{
+                    name: "校区设置",
+                    path: "/system/schoolZone",
+                    component: resolve => require(['../components/page/system/index.vue'], resolve),
+                    children: [{
+                            path: '/schoolZone',
+                            name: "校区部门",
+                            component: resolve => require(['../components/page/system/SchoolZone.vue'], resolve)
+                        },
+                        {
+                            path: '/user',
+                            name: "教职员工",
+                            component: resolve => require(['../components/page/system/User.vue'], resolve)
+                        },
+                        {
+                            path: '/userRole',
+                            name: "员工职能",
+                            component: resolve => require(['../components/page/system/UserRole.vue'], resolve)
+                        },
+                        {
+                            path: '/authority1',
+                            name: "添加职能",
+                            component: resolve => require(['../components/page/system/Authority.vue'], resolve)
+                        },
+                        {
+                            path: '/notice',
+                            name: "通知公告",
+                            component: resolve => require(['../components/page/system/Notice.vue'], resolve)
+                        }
+                    ]
                 },
                 {
-                    path: '/schoolZone',
-                    component: resolve => require(['../components/page/system/SchoolZone.vue'], resolve)
-                },
-                {
-                    path: '/operateLog',
-                    component: resolve => require(['../components/page/system/OperateLog.vue'], resolve)
-                },
-                {
-                    path: '/user',
-                    component: resolve => require(['../components/page/system/User.vue'], resolve)
-                },
-                {
-                    path: '/userRole',
-                    component: resolve => require(['../components/page/system/UserRole.vue'], resolve)
-                },
-                {
-                    path: '/notice',
-                    component: resolve => require(['../components/page/system/Notice.vue'], resolve)
-                },
-                {
-                    path: '/publicData',
-                    component: resolve => require(['../components/page/system/PublicData.vue'], resolve)
-                },
-                {
-                    path: '/authority1',
-                    component: resolve => require(['../components/page/system/Authority.vue'], resolve)
-                },
+                    name: "公共设置",
+                    path: "/system/publicData",
+                    component: resolve => require(['../components/page/system/index.vue'], resolve),
+                    children: [{
+                            path: '/loginLog',
+                            name: "登录日志",
+                            component: resolve => require(['../components/page/system/LoginLog.vue'], resolve)
+                        },
+                        {
+                            path: '/operateLog',
+                            name: "操作日志",
+                            component: resolve => require(['../components/page/system/OperateLog.vue'], resolve)
+                        },
+                        {
+                            path: '/publicData',
+                            name: "公共参数",
+                            component: resolve => require(['../components/page/system/PublicData.vue'], resolve)
+                        },
+                    ]
+                }
             ]
         },
         {
             path: '/login',
             component: resolve => require(['../components/page/Login.vue'], resolve)
         },
-    ]
+    ],
+    // mode: 'history',
 })

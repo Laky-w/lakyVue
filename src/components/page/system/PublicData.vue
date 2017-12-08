@@ -1,12 +1,6 @@
 <template>
 <!-- 标题路径 -->
-<div class="table" style="height: 100%;">
-  <div class="crumbs">
-    <el-breadcrumb separator="/">
-        <el-breadcrumb-item><i class="el-icon-menu"></i> 系统</el-breadcrumb-item>
-        <el-breadcrumb-item>机构参数</el-breadcrumb-item>
-    </el-breadcrumb>
-  </div>
+<div class="table" style="height: 90%;">
   <!-- 添加公共参数,导出div -->
   <div style="margin:5px;">
           <el-button type="primary" icon="el-icon-edit" size="mini" @click="dialogFormVisible=true">添加公共参数</el-button>
@@ -15,15 +9,15 @@
   <el-container style="height: 100%; border: 1px solid #eee">
     <!-- 公共参数侧边栏 -->
     <el-aside width="200px" style="background-color:#fff9e7">
-    <p v-for="(space, levelIndex) in parameterData" @click="parameterChange(levelIndex,space)" 
-    :class="{active: activeIndex==levelIndex}">{{space.name}}</p>    
+    <p v-for="(space, levelIndex) in parameterData" @click="parameterChange(levelIndex,space)"
+    :class="{active: activeIndex==levelIndex}">{{space.name}}</p>
     </el-aside>
     <el-container>
       <!-- 公共参数表格信息 -->
       <el-table
             :data="tableData" stripe v-loading="loading" border
             style="width: 100%">
-            <el-table-column  
+            <el-table-column
             label="创建人" prop="createUser.name">
             </el-table-column>
             <el-table-column
@@ -97,9 +91,9 @@ export default {
             element.active = false;
           });
           self.parameterData = data.data;
-          // self.parameterData[0].active=true;
+        //   self.parameterData[0].active=true;
           self.formTitle="添加参数--"+data.data[0].name;
-          
+
           self.getParameterValue(data.data[0].id);
           self.loading = false;
         } else {

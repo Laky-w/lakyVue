@@ -1,34 +1,20 @@
 <template>
     <div class="table">
-        <div class="crumbs">
-            <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="el-icon-menu"></i> 系统</el-breadcrumb-item>
-                <el-breadcrumb-item>教职员工</el-breadcrumb-item>
-            </el-breadcrumb>
-        </div>
         <div class="handle-box">
             <el-form ref="queryForm" :inline="true" :model="queryForm" label-width="80px" size="mini">
                 <el-form-item  >
                     <el-input v-model="queryForm.userName"  placeholder="用户名" class="handle-input mr10"></el-input>
                 </el-form-item>
-                <el-form-item >
+                <!-- <el-form-item >
                     <el-select v-model="queryForm.theType"   value=1 clearable placeholder="登录类型" class="handle-select mr10" >
                         <el-option key="1" label="登录" value="1"></el-option>
                         <el-option key="2" label="退出" value="2"></el-option>
                     </el-select>
-                </el-form-item>
+                </el-form-item> -->
                 <el-form-item >
-                  <el-date-picker
-                      v-model="queryForm.theDate" value-format="yyyy-MM-dd"
-                      type="daterange" align="center"unlink-panels range-separator="至"
-                      start-placeholder="登录日期"
-                      end-placeholder="登录日期" :picker-options="pickerOptions2">
-                  </el-date-picker>
+                   <school-tree  :is-show-checkbox=true @handleCheckChange ="handleCheckChange"></school-tree>
                 </el-form-item>
-                <el-form-item >
-                   <school-tree  :is-show-checkbox=true :name="form.schoolName"></school-tree>
-                </el-form-item>
-               
+
                 <el-button type="mini" icon="el-icon-search" @click="search('queryForm')">搜索</el-button>
             </el-form>
         </div>
@@ -60,10 +46,10 @@
             </el-table-column>
             <el-table-column
             label="性别"
-            prop="sex">
+            prop="sex" :formatter="filterSex">
             </el-table-column>
             <el-table-column
-            label="角色"
+            label="电话号"
             prop="phone">
             </el-table-column>
             <el-table-column
@@ -71,8 +57,8 @@
             prop="birthday">
             </el-table-column>
             <el-table-column
-            label="是否超级用户"
-            prop="theStatus">
+            label="职能"
+            prop="isSuper" :formatter="filterIsSuper">
             </el-table-column>
             <!-- <el-table-column label="操作">
             <template slot-scope="scope">
@@ -105,13 +91,34 @@
               <el-input v-model="form.userName"  autofocus placeholder="登录用户名"  auto-complete="off"></el-input>
               </el-form-item>
               <el-form-item label="部门" :label-width="formLabelWidth" prop="schoolName"  :rules="[{ required: true, message: '部门必填'}]">
-                <school-tree @nodeClick="handleSchool" :name="form.schoolName"></school-tree>
+                <school-tree @nodeClick="handleSchool" :name="form.schoolName" :default-value="schoolId"></school-tree>
               </el-form-item>
-              <el-form-item label="性别" :label-width="formLabelWidth"  >
+              <el-form-item label="性别" :label-width="formLabelWidth" prop="sex"  :rules="[{ required: true, message: '必选项'}]">
                 <el-radio-group v-model="form.sex">
                   <el-radio :label="1">男</el-radio>
                   <el-radio :label="2">女</el-radio>
                 </el-radio-group>
+              </el-form-item>
+              <el-form-item label="超级管理员" :label-width="formLabelWidth" prop="isSuper" :rules="[{ required: true, message: '必选项'}]" >
+                <el-radio-group v-model="form.isSuper">
+                  <el-radio :label="2">否</el-radio>
+                  <el-radio :label="1">是</el-radio>
+                </el-radio-group>
+              </el-form-item>
+              <el-form-item label="职能" :label-width="formLabelWidth" prop="roles" :rules="[{ required: (form.isSuper==2), message: '必选项'}]">
+                <el-select
+                    :disabled="form.isSuper==1"
+                    v-model="form.roles"
+                    multiple no-data-text ="该部门没有职能，请添加。"
+                    collapse-tags
+                    placeholder="请选择权限" style="width:100%">
+                    <el-option
+                        v-for="item in authorityOptions"
+                        :key="item.id"
+                        :label="item.name"
+                        :value="item.id">
+                    </el-option>
+                </el-select>
               </el-form-item>
               <el-form-item label="手机号" :label-width="formLabelWidth" prop="phone">
               <el-input v-model="form.phone"  autofocus placeholder="手机号"  auto-complete="off"></el-input>
@@ -129,9 +136,6 @@
                   placeholder="出生日期">
                 </el-date-picker>
               </el-form-item>
-              <!-- <el-form-item label="权限" :label-width="formLabelWidth" prop="name"  :rules="[{ required: true, message: '名称必填'}]">
-                <el-input v-model="form.name"  autofocus placeholder="出生日期"  auto-complete="off"></el-input>
-              </el-form-item> -->
           </el-form>
           <div slot="footer" class="dialog-footer">
               <el-button @click="dialogFormVisible = false">取 消</el-button>
@@ -159,139 +163,167 @@
 table td {
   line-height: 26px;
 }
-
-</style> 
+</style>
 
 <script>
-import SchoolTree from '../../common/SchoolTree1.vue'
+import SchoolTree from "../../common/SchoolTree.vue";
 export default {
-  
   data() {
     return {
       tableData: [],
-      treeStructure: true,
       dialogFormVisible: false,
       total: 0,
       cur_page: 1,
       page_size: 20,
       queryForm: {
-          userName:'',
-          theDate:'',
-          theType: ''
+        userName: "",
+        theDate: "",
+        theType: "",
+        schoolZoneId2: []
       },
+      authorityOptions: [],
       form: {
+        //表单 v-modle绑定的值
         name: "",
-        userName:"",
-        sex:1,
-        phone:"",
-        email:"",
-        birthday:"",
-        schoolZoneId:"",
-        schoolName:"",
-        idCard:""
+        userName: "",
+        sex: 1,
+        phone: "",
+        email: "",
+        isSuper: 2,
+        birthday: "",
+        schoolZoneId: "",
+        schoolName: "",
+        idCard: "",
+        roles: []
       },
       formLabelWidth: "120px",
       loading: false,
-      loadingForm: false
+      loadingForm: false,
+      schoolId: "" //添加用户默认学校id
     };
   },
   created() {
     this.getUser();
+    this.getSchoolId();
+  },
+  computed: {
+    //实时计算
   },
   methods: {
-    pickerOptions2: {
-        shortcuts: [{
-            text: '最近一周',
-            onClick(picker) {
-            const end = new Date();
-            const start = new Date();
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
-            picker.$emit('pick', [start, end]);
-            }
-        }, {
-            text: '最近一个月',
-            onClick(picker) {
-            const end = new Date();
-            const start = new Date();
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
-            picker.$emit('pick', [start, end]);
-            }
-        }, {
-            text: '最近三个月',
-            onClick(picker) {
-            const end = new Date();
-            const start = new Date();
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
-            picker.$emit('pick', [start, end]);
-            }
-        }]
-    },
-    getUser() {
+    //初始化属性start
+    getSchoolId() {
       let self = this;
-      self.loading = true;
+      let user = JSON.parse(sessionStorage.getItem("userInfo"));
+      self.form.schoolZoneId = user.schoolZoneId;
+      self.form.schoolName = user.schoolZone.name;
+      self.getAuthorityOptions();
+      self.schoolId = user.schoolZoneId;
+    },
+    getAuthorityOptions() {
+      let self = this;
+      console.log(self.authorityOptions);
       self.$axios
-        .post("organization/getUserList/" + this.cur_page + "/" + this.page_size)
+        .get("organization/getRoleListBySchoolZoneId/" + this.form.schoolZoneId)
         .then(res => {
           let data = res.data;
-          self.loading = false;
           if (data.code == 200) {
-            self.tableData = data.data.list;
-            self.total=data.data.total;
+            self.authorityOptions = data.data;
           } else {
             self.$message.error(data.data);
           }
         });
     },
-    submitForm(formName) {
-      const self = this;
-      self.$refs[formName].validate(valid => {
-        if (valid) {
-          self.loadingForm = true;
-          self.$axios
-            .post("organization/createUser", this.form)
-            .then(res => {
-              var data = res.data;
-              if (data.code == 200) {
-                self.loadingForm = false;
-                self.$message.success(data.message);
-                self.dialogFormVisible = false;
-                self.getUser();
-                self.$refs[formName].resetFields();
-              } else {
-                this.$message.error(data.data);
-              }
-            });
-        } else {
-          return false;
-        }
-      });
-    },
-    filterType(value, row) {
-      if (value.theType == 1) row.tag = "总校";
-      else if (value.theType == 2) row.tag = "分校";
-      else row.tag = "部门";
-      return row.tag;
-    },
+    //初始化属性end
+    //分页方法start
     handleSizeChange(val) {
       console.log(this.page_size);
       this.page_size = val;
       this.getUser();
     },
+    //分页方法结束
     handleCurrentChange(val) {
       this.cur_page = val;
       this.getUser();
     },
+    search(form) { //搜索方法
+      this.cur_page = 1;
+      this.getUser();
+    },
+    //加载数据
+    getUser() {
+      let self = this;
+      self.loading = true;
+      self.$axios
+        .post(
+          "organization/getUserList/" + this.cur_page + "/" + this.page_size,self.queryForm
+        )
+        .then(res => {
+          let data = res.data;
+          self.loading = false;
+          if (data.code == 200) {
+            self.tableData = data.data.list;
+            self.total = data.data.total;
+          } else {
+            self.$message.error(data.data);
+          }
+        });
+    },
+    //保存表单
+    submitForm(formName) {
+      let self = this;
+      self.$refs[formName].validate(valid => {
+        if (valid) {
+          self.loadingForm = true;
+          self.$axios.post("organization/createUser", this.form).then(res => {
+            var data = res.data;
+            self.loadingForm = false;
+            if (data.code == 200) {
+              self.$message.success(data.message);
+              self.dialogFormVisible = false;
+              self.getUser();
+              self.$refs[formName].resetFields();
+            } else {
+              this.$message.error(data.data);
+            }
+          });
+        } else {
+          return false;
+        }
+      });
+    },
+    //数据过滤
+    filterSex(value, row) {
+      if (value.sex == 1) row.tag = "男";
+      else row.tag = "女";
+      return row.tag;
+    },
+    filterIsSuper(value, row) {
+      if (value.isSuper == 1) row.tag = "超级管理员";
+      else row.tag = "普通用户";
+      return row.tag;
+    },
+    //控件方法
     handleEdit(index, row) {
       this.form.fatherId = row.id;
       this.form.fatherName = row.name;
       this.dialogFormVisible = true;
     },
     handleDelete(index, row) {},
-    handleSchool(data){
-      this.form.schoolName=data.name;
-      this.form.schoolZoneId=data.id;
+    handleSchool(data) {
+      this.form.schoolName = data.name;
+      this.form.schoolZoneId = data.id;
+      console.log(this.form.schoolZoneId);
+      this.form.roles = [];
+      this.getAuthorityOptions();
+    },
+    handleCheckChange(allNode) {
+      let self = this;
+      self.queryForm.schoolZoneId2=[];
+      for (let i = 0; i < allNode.length; i++) {
+        self.queryForm.schoolZoneId2.push(allNode[i].id);
+      }
     }
   },
-  components: {SchoolTree}
+  components: { SchoolTree } //注入组件
 };
 </script>

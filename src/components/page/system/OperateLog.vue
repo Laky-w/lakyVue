@@ -1,11 +1,5 @@
 <template>
     <div class="table">
-        <div class="crumbs">
-            <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="el-icon-menu"></i> 系统</el-breadcrumb-item>
-                <el-breadcrumb-item>操作日志</el-breadcrumb-item>
-            </el-breadcrumb>
-        </div>
         <div class="handle-box">
             <el-form ref="queryForm" :inline="true" :model="queryForm" label-width="80px" size="mini">
                 <el-form-item  >
@@ -19,14 +13,11 @@
                     </el-select>
                 </el-form-item>
                  <el-form-item >
-                    <el-date-picker
-                        v-model="queryForm.theDate"
-                        type="daterange" align="right"unlink-panels range-separator="至"
-                        start-placeholder="操作日期"
-                        end-placeholder="操作日期" :picker-options="pickerOptions2">
-                    </el-date-picker>
+                    <date-range startPlaceholder="操作日期" v-model="queryForm.theDate" endPlaceholder="操作日期" ></date-range>
                  </el-form-item>
-               
+                <el-form-item >
+                   <school-tree  :is-show-checkbox=true @handleCheckChange ="handleCheckChange"></school-tree>
+                </el-form-item>
                 <el-button type="mini" icon="el-icon-search" @click="search('queryForm')">搜索</el-button>
             </el-form>
         </div>
@@ -58,146 +49,106 @@
 </template>
 
 <script>
-    export default {
-        data() {
-            return {
-                url: './static/vuetable.json',
-                tableData: [],
-                total:0,
-                cur_page: 1,
-                page_size:20,
-                multipleSelection: [],
-                select_cate: '',
-                select_word: '',
-                del_list: [],
-                queryForm: {
-                    userName:'',
-                    theDate:'',
-                    theType: ''
-                },
-                loading:true,
-                pickerOptions2: {
-                    shortcuts: [{
-                        text: '最近一周',
-                        onClick(picker) {
-                        const end = new Date();
-                        const start = new Date();
-                        start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
-                        picker.$emit('pick', [start, end]);
-                        }
-                    }, {
-                        text: '最近一个月',
-                        onClick(picker) {
-                        const end = new Date();
-                        const start = new Date();
-                        start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
-                        picker.$emit('pick', [start, end]);
-                        }
-                    }, {
-                        text: '最近三个月',
-                        onClick(picker) {
-                        const end = new Date();
-                        const start = new Date();
-                        start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
-                        picker.$emit('pick', [start, end]);
-                        }
-                    }]
-                }
-            }
-        },
-        created(){
-            this.getData();
-        },
-        computed: {
-            data(){
-                const self = this;
-                return self.tableData.filter(function(d){
-                    let is_del = false;
-                    for (let i = 0; i < self.tableData.length; i++) {
-                        if(d.name === self.del_list[i].name){
-                            is_del = true;
-                            break;
-                        }
-                    }
-                    if(!is_del){
-                        if(d.address.indexOf(self.select_cate) > -1 && 
-                            (d.name.indexOf(self.select_word) > -1 ||
-                            d.address.indexOf(self.select_word) > -1)
-                        ){
-                            return d;
-                        }
-                    }
-                })
-            }
-        },
-        methods: {
-           handleSizeChange(val){
-                console.log(this.page_size);
-                this.page_size = val;
-                this.getData();
-            },
-            handleCurrentChange(val){
-                this.cur_page = val;
-                this.getData();
-            },
-            getData(){
-                let self = this;
-                self.loading=true;
-                self.$axios.post("log/findOperateLogAll/"+this.cur_page+"/"+this.page_size,this.queryForm).then( (res) => {
-                    var data = res.data;
-                    if (data.code==200) {
-                        self.total=data.data["total"];
-                        self.tableData=data.data.list;
-                        self.loading=false;
-                    } else {
-                        self.$message.error(data.data);
-                    }
-                 })
-            },
-            tableRowClassName({row, rowIndex}) {
-                if (row.theType == 2) {
-                    return 'warning-row';
-                } 
-                return '';
-            },
-            search(form){
-                this.cur_page=1;
-                if(this.queryForm.theDate){
-                    this.queryForm.theDate1=this.queryForm.theDate[0];
-                    this.queryForm.theDate2=this.queryForm.theDate[1];
-                }else{
-                    this.queryForm.theDate1="";
-                    this.queryForm.theDate2="";
-                }
-                this.getData();
-            },
-            formatter(row, column) {
-                return row.address;
-            },
-            filterType(value, row) {
-                if(value.theType==1) 
-                    row.tag="增加";
-                else if(value.theType==2) 
-                    row.tag="删除";
-                else if(value.theType==3) 
-                    row.tag="修改";
-                return row.tag;
-            },
-            handleSelectionChange(val) {
-                this.multipleSelection = val;
-            }
-        }
+import SchoolTree from "../../common/SchoolTree.vue";
+import DateRange from "../../common/Daterange.vue";
+export default {
+  data() {
+    return {
+      url: "./static/vuetable.json",
+      tableData: [],
+      total: 0,
+      cur_page: 1,
+      page_size: 20,
+      multipleSelection: [],
+      select_cate: "",
+      select_word: "",
+      del_list: [],
+      queryForm: {
+        userName: "",
+        theDate: "",
+        theType: "",
+        schoolZoneId2:[]
+      },
+      loading: true,
+    };
+  },
+  created() {
+    this.getData();
+  },
+  methods: {
+    handleSizeChange(val) {
+      console.log(this.page_size);
+      this.page_size = val;
+      this.getData();
+    },
+    handleCurrentChange(val) {
+      this.cur_page = val;
+      this.getData();
+    },
+    getData() {
+      let self = this;
+      self.loading = true;
+      self.$axios
+        .post(
+          "log/findOperateLogAll/" + this.cur_page + "/" + this.page_size,
+          this.queryForm
+        )
+        .then(res => {
+          var data = res.data;
+          if (data.code == 200) {
+            self.total = data.data["total"];
+            self.tableData = data.data.list;
+            self.loading = false;
+          } else {
+            self.$message.error(data.data);
+          }
+        });
+    },
+    tableRowClassName({ row, rowIndex }) {
+      if (row.theType == 2) {
+        return "warning-row";
+      }
+      return "";
+    },
+    search(form) {
+      this.cur_page = 1;
+      this.getData();
+    },
+    formatter(row, column) {
+      return row.address;
+    },
+    filterType(value, row) {
+      if (value.theType == 1) row.tag = "增加";
+      else if (value.theType == 2) row.tag = "删除";
+      else if (value.theType == 3) row.tag = "修改";
+      return row.tag;
+    },
+    handleSelectionChange(val) {
+      this.multipleSelection = val;
+    },
+    handleCheckChange(allNode) {
+      this.queryForm.schoolZoneId2 = [];
+      for (let i = 0; i < allNode.length; i++) {
+        this.queryForm.schoolZoneId2.push(allNode[i].id);
+      }
     }
+  },
+  components: {
+      SchoolTree,
+      DateRange
+  } //注入组件
+};
 </script>
 <style type="text/css">
-    .el-table .warning-row td{
-        background: oldlace !important;
-    }
-   
-    .el-table .success-row {
-        background: #f0f9eb;
-    }
+.el-table .warning-row td {
+  background: oldlace !important;
+}
+
+.el-table .success-row {
+  background: #f0f9eb;
+}
 </style>
 
 <style scoped>
+
 </style>

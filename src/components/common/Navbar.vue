@@ -1,0 +1,132 @@
+<template>
+    <div>
+        <div style="margin-bottom: 5px;">
+            <el-breadcrumb separator-class="el-icon-arrow-right">
+                <el-breadcrumb-item   v-for="(item,index) in levelList">
+                    <span v-if='index==levelList.length-1' class="redirect" @click="reload(index)">{{item.name}}</span>
+                    <span v-else class="no-redirect">{{item.name}}</span>
+                </el-breadcrumb-item>
+            </el-breadcrumb>
+        </div>
+        <div class="sidebar">
+            <router-link style="margin-left: 5px;"  v-for="(item,index) in visitedViews" :to="item.path">
+               <el-tag size="mini" disable-transitions :style="visitedViewsCurrent.path==item.path?'color:#f5f7fa':'color:#2d2f33'"
+                :key="item.name" :color="visitedViewsCurrent.path==item.path?'#67c23a':''" @close.stop="closeTag(item.path,$event)"
+                closable>
+                {{item.name}}
+              </el-tag>
+            </router-link>
+            <!-- <span v-for="(item,index) in visitedViews" >
+                <el-tag size="mini" disable-transitions :style="visitedViewsCurrent.path==item.path?'color:#f5f7fa':'color:#2d2f33'"
+                :key="item.name" :color="visitedViewsCurrent.path==item.path?'#67c23a':''" @close.stop="closeTag(item.path,$event)"
+                closable>
+                {{item.name}}
+              </el-tag>
+            </span> -->
+            <!-- <el-button v-for="(item,index) in visitedViews" size="mini">
+                <router-link :to="item.path">
+                <span :style="visitedViewsCurrent.path==item.path?'color:red':''">{{item.name}}</span>
+                </router-link>
+            </el-button> -->
+        </div>
+    </div>
+</template>
+<script>
+export default {
+  created() {
+    this.getBreadcrumb();
+  },
+  data() {
+    return {
+      levelList: [],
+      visitedViews: [],
+      visitedViewMap: new Map(),
+      visitedViewsCurrent:{}
+    };
+  },
+  watch: {
+    $route() {
+      this.getBreadcrumb();
+    }
+  },
+  methods: {
+    reload(index) {
+      // console.log(this.levelList[index].components.default.created());
+      // this.levelList[index].components.created();
+      // // this.levelList[index].components.default.methods.getData();
+      this.$router.push("reload");
+      // this.$router.push(this.levelList[index].path+"?key="+new Date().getTime());
+    },
+    closeTag(path,event){
+        if(path){
+            console.log(path);
+            for(let i=0;i<this.visitedViews.length;i++){
+                var obj=this.visitedViews[i];
+                if(obj.name==(this.visitedViewMap.get(path).name)){
+                     this.visitedViews.splice(i,1);
+                    break;
+                }
+            }
+            this.visitedViewMap.delete(path);
+        }
+        event.cancelBubble = true;
+        if(this.visitedViews.length>0){
+            // this.$router.push(this.visitedViews[this.visitedViews.length-1]);
+        }else{
+            this.$router.push("/laky");
+        }
+
+        return false;
+
+        // this.$router.push(this.visitedViews[this.visitedViews.length-1]);
+    },
+    getBreadcrumb() {
+      console.log(this.$router);
+      let matched = this.$route.matched.filter(item => item.name);
+      //   const first = matched[0]
+      //   if (first && first.name !== 'dashboard') {
+      //     matched = [{ path: '/dashboard', meta: { title: 'dashboard' }}].concat(matched)
+      //   }
+      if (this.visitedViews.length > 5) {
+        this.visitedViews.shift();
+      }
+      if (matched[matched.length - 1]) {
+        var obj = matched[matched.length - 1];
+        this.visitedViewsCurrent=obj;
+        if (!this.visitedViewMap.get(obj.path)) {
+          this.visitedViewMap.set(obj.path, obj);
+          this.visitedViews.push(obj);
+        }
+      }
+      this.levelList = matched;
+    }
+  }
+};
+</script>
+<style>
+.el-tag .el-icon-close {
+    color: #2d2f33;
+}
+</style>
+
+<style scoped>
+.no-redirect {
+  color: #97a8be;
+  cursor: text;
+}
+.redirect {
+  color: #2d2f33;
+}
+.redirect:hover {
+  cursor: pointer;
+  color: #409eff;
+}
+.sidebar {
+  border: solid 1px #e6ebf5;
+  border-right: 0px;
+  border-left: 0px;
+  margin: 2px -5px;
+  padding: 3px;
+  color:#2d2f33
+}
+</style>
