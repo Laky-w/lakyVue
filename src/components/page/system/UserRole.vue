@@ -4,7 +4,7 @@
         <div class="handle-box">
             <el-form ref="queryForm" :inline="true" :model="queryForm" label-width="80px" size="mini">
                 <el-form-item  >
-                    <el-input v-model="queryForm.name"  placeholder="职能名称" class="handle-input mr10"></el-input>
+                    <el-input v-model="queryForm.name"  placeholder="职能名称" clearable class="handle-input mr10"></el-input>
                 </el-form-item>
                  <el-form-item >
                    <school-tree  :is-show-checkbox=true @handleCheckChange ="handleCheckChange"></school-tree>
@@ -85,7 +85,7 @@
         </el-form>
         <div slot="footer" class="dialog-footer">
             <el-button @click="dialogFormVisible = false">取 消</el-button>
-            <el-button type="primary" @click="submitForm('ruleForm')">确 定</el-button>
+            <el-button type="primary" @click="submitForm('ruleForm')">保 存</el-button>
         </div>
         </el-dialog>
     </div>

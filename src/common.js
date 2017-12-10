@@ -1,6 +1,7 @@
 import axios from 'axios';
 import qs from 'qs';
 import router from './router';
+import { Message } from 'element-ui';
 // axios.defaults.baseURL = 'http://192.168.0.103/laky/';
 axios.defaults.baseURL = 'http://192.168.0.100/laky/';
 // axios.defaults.baseURL = 'http://192.168.0.100:8081/laky/';
@@ -24,15 +25,17 @@ axios.interceptors.response.use(function(response) {
         console.log(error.response.data);
         console.log(error.response.status);
         if (error.response.status == "420") { //登录过期
-            sessionStorage.setItem("code", 420);
-            sessionStorage.setItem("message", error.response.data.data);
+            // sessionStorage.setItem("code", 420);
+            // sessionStorage.setItem("message", error.response.data.data);
             sessionStorage.setItem("isOut", "false");
+            Message.error(error.response.data.data);
             router.push('/login');
             // self.$message.error(error.response.data.data);
         }
     } else {
         // Something happened in setting up the request that triggered an Error
-        console.log('Error', error.message);
+        // console.log('Error', error.message);
+        Message.error("服务器连接超时，请检查您的网络！");
     }
     // 对响应错误做点什么
     return Promise.reject(error);

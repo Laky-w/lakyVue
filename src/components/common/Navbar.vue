@@ -41,7 +41,7 @@ export default {
       levelList: [],
       visitedViews: [],
       visitedViewMap: new Map(),
-      visitedViewsCurrent:{}
+      visitedViewsCurrent: {}
     };
   },
   watch: {
@@ -57,31 +57,31 @@ export default {
       this.$router.push("reload");
       // this.$router.push(this.levelList[index].path+"?key="+new Date().getTime());
     },
-    closeTag(path,event){
-        if(path){
-            console.log(path);
-            for(let i=0;i<this.visitedViews.length;i++){
-                var obj=this.visitedViews[i];
-                if(obj.name==(this.visitedViewMap.get(path).name)){
-                     this.visitedViews.splice(i,1);
-                    break;
-                }
-            }
-            this.visitedViewMap.delete(path);
+    closeTag(path, event) {
+      if (path) {
+        console.log(path);
+        for (let i = 0; i < this.visitedViews.length; i++) {
+          var obj = this.visitedViews[i];
+          if (obj.name == this.visitedViewMap.get(path).name) {
+            this.visitedViews.splice(i, 1);
+            break;
+          }
         }
-        event.cancelBubble = true;
-        if(this.visitedViews.length>0){
-            if(path==this.visitedViewsCurrent.path){ //关闭的是当前选择的标签
-                this.$router.push(this.visitedViews[this.visitedViews.length-1]);
-            }
-
-        }else{
-            this.$router.push("/laky");
+        this.visitedViewMap.delete(path);
+      }
+      event.cancelBubble = true;
+      if (this.visitedViews.length > 0) {
+        if (path == this.visitedViewsCurrent.path) {
+          //关闭的是当前选择的标签
+          this.$router.push(this.visitedViews[this.visitedViews.length - 1]);
         }
+      } else {
+        this.$router.push("/laky");
+      }
 
-        return false;
+      return false;
 
-        // this.$router.push(this.visitedViews[this.visitedViews.length-1]);
+      // this.$router.push(this.visitedViews[this.visitedViews.length-1]);
     },
     getBreadcrumb() {
       console.log(this.$router);
@@ -90,13 +90,18 @@ export default {
       //   if (first && first.name !== 'dashboard') {
       //     matched = [{ path: '/dashboard', meta: { title: 'dashboard' }}].concat(matched)
       //   }
-      if (this.visitedViews.length > 5) {
-        this.visitedViews.shift();
-      }
+
       if (matched[matched.length - 1]) {
         var obj = matched[matched.length - 1];
-        this.visitedViewsCurrent=obj;
+        this.visitedViewsCurrent = obj; //当前路由
+
         if (!this.visitedViewMap.get(obj.path)) {
+          //不存在
+          if (this.visitedViews.length > 5) { //路由数量超出，就删除第一个
+            console.log(this.visitedViews[0].path);
+            this.visitedViewMap.delete(this.visitedViews[0].path);
+            this.visitedViews.shift();
+          }
           this.visitedViewMap.set(obj.path, obj);
           this.visitedViews.push(obj);
         }
@@ -108,7 +113,7 @@ export default {
 </script>
 <style>
 .el-tag .el-icon-close {
-    color: #2d2f33;
+  color: #2d2f33;
 }
 </style>
 
@@ -130,6 +135,6 @@ export default {
   border-left: 0px;
   margin: 2px -5px;
   padding: 3px;
-  color:#2d2f33
+  color: #2d2f33;
 }
 </style>

@@ -64,12 +64,12 @@ export default new Router({
         },
         {
             path: '/laky',
-            name: "帮助",
             component: resolve => require(['../components/common/Home.vue'], resolve),
+            redirect: "/main",
             children: [{
                     name: "主页",
-                    path: '/',
-                    component: resolve => require(['../components/page/demo/BaseCharts.vue'], resolve)
+                    path: '/main',
+                    component: resolve => require(['../components/common/Log.vue'], resolve)
                 },
                 {
                     path: '/reload',
@@ -80,6 +80,55 @@ export default new Router({
                     name: "建设中",
                     component: resolve => require(['../components/common/Wait.vue'], resolve)
                 },
+            ]
+        },
+        {
+            name: "教务",
+            path: "/teach",
+            component: resolve => require(['../components/common/Home.vue'], resolve),
+            children: [{
+                    name: "班级课程",
+                    path: "/teach/course",
+                    component: resolve => require(['../components/page/teach/index.vue'], resolve),
+                    children: [{
+                            path: '/course',
+                            name: "课程管理",
+                            component: resolve => require(['../components/page/teach/Course.vue'], resolve)
+                        },
+                        {
+                            path: '/class',
+                            name: "班级管理",
+                            component: resolve => require(['../components/page/teach/Class.vue'], resolve)
+                        },
+                        {
+                            path: '/schedule',
+                            name: "排课管理",
+                            component: resolve => require(['../components/page/teach/Schedule.vue'], resolve)
+                        },
+                        {
+                            path: '/attendance',
+                            name: "考勤管理",
+                            component: resolve => require(['../components/page/teach/Attendance.vue'], resolve)
+
+                        },
+                    ]
+                },
+                {
+                    name: "基础设置",
+                    path: "/teach/teachData",
+                    component: resolve => require(['../components/page/teach/index.vue'], resolve),
+                    children: [{
+                            path: '/teachData',
+                            name: "基础参数",
+                            component: resolve => require(['../components/page/teach/TeachData.vue'], resolve)
+                        },
+                        {
+                            path: '/room',
+                            name: "教室",
+                            component: resolve => require(['../components/page/teach/Room.vue'], resolve)
+                        }
+                    ]
+                }
             ]
         },
         {

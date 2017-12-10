@@ -2,7 +2,7 @@
   <div style="height:50px;position:relative;">
     <span @click="isShow=!isShow">
       <el-input
-        placeholder="校区/部门" :clearable=true readonly=""
+        placeholder="校区/部门" clearable readonly=""
         v-model="filterText">
         <i slot="suffix"  style="cursor: pointer;" class="el-input__icon el-icon-arrow-down"></i>
       </el-input>

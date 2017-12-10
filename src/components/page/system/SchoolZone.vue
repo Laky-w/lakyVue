@@ -3,7 +3,7 @@
         <div class="handle-box">
             <el-form ref="queryForm" :inline="true" :model="queryForm" label-width="80px" size="mini">
                 <el-form-item  >
-                    <el-input v-model="queryForm.schoolName"  placeholder="校区名称" class="handle-input mr10"></el-input>
+                    <el-input v-model="queryForm.schoolName"  clearable placeholder="校区名称" class="handle-input mr10"></el-input>
                 </el-form-item>
                 <!-- <el-form-item >
                     <el-select v-model="queryForm.theType"   value=1 clearable placeholder="下级类型" class="handle-select mr10" >
@@ -107,7 +107,7 @@
         </el-form>
         <div slot="footer" class="dialog-footer">
             <el-button @click="dialogFormVisible = false">取 消</el-button>
-            <el-button type="primary" @click="submitForm('ruleForm')">确 定</el-button>
+            <el-button type="primary" @click="submitForm('ruleForm')">保 存</el-button>
         </div>
         </el-dialog>
     </div>

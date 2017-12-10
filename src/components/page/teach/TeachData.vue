@@ -41,7 +41,7 @@
 
           <div slot="footer" class="dialog-footer">
               <el-button @click="dialogFormVisible = false">取 消</el-button>
-              <el-button type="primary" @click="submitForm('ruleForm')">保 存</el-button>
+              <el-button type="primary" @click="submitForm('ruleForm')">确 定</el-button>
           </div>
         </el-dialog>
 </div>
@@ -84,7 +84,7 @@ export default {
     getData() {
       let self = this;
       self.loading = true;
-      self.$axios.get("/organization/findBranchParameterAll").then(res => {
+      self.$axios.get("/organization/findBranchParameterByType/2").then(res => {
         let data = res.data;
         if (data.code == 200) {
           data.data.forEach(element => {

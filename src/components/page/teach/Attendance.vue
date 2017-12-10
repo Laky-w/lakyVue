@@ -3,7 +3,7 @@
         <div class="handle-box">
             <el-form ref="queryForm" :inline="true" :model="queryForm" label-width="80px" size="mini">
                 <el-form-item  >
-                    <el-input v-model="queryForm.userName"  placeholder="用户名" clearable class="handle-input mr10"></el-input>
+                    <el-input v-model="queryForm.userName" clearable placeholder="用户名" class="handle-input mr10"></el-input>
                 </el-form-item>
                 <!-- <el-form-item >
                     <el-select v-model="queryForm.theType"   value=1 clearable placeholder="登录类型" class="handle-select mr10" >
@@ -19,7 +19,7 @@
             </el-form>
         </div>
         <div style="margin:5px;">
-          <el-button type="primary" icon="el-icon-edit" size="mini" @click="dialogFormVisible=true;">添加员工</el-button>
+          <el-button type="primary" icon="el-icon-edit" size="mini" @click="dialogFormVisible=true">添加员工</el-button>
           <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
         </div>
         <el-table
@@ -85,10 +85,10 @@
         <el-dialog title="新增员工" :visible.sync="dialogFormVisible">
           <el-form :model="form" ref="ruleForm" v-loading="loadingForm">
               <el-form-item label="姓名" :label-width="formLabelWidth" prop="name"  :rules="[{ required: true, message: '名称必填'}]">
-              <el-input v-model="form.name"  :autofocus="formFocus" placeholder="真实姓名"  auto-complete="off"></el-input>
+              <el-input v-model="form.name"  autofocus placeholder="真实姓名"  auto-complete="off"></el-input>
               </el-form-item>
               <el-form-item label="用户名" :label-width="formLabelWidth" prop="userName"  :rules="[{ required: true, message: '名称必填'}]">
-              <el-input v-model="form.userName"   placeholder="登录用户名"  auto-complete="off"></el-input>
+              <el-input v-model="form.userName"  autofocus placeholder="登录用户名"  auto-complete="off"></el-input>
               </el-form-item>
               <el-form-item label="部门" :label-width="formLabelWidth" prop="schoolName"  :rules="[{ required: true, message: '部门必填'}]">
                 <school-tree @nodeClick="handleSchool" :name="form.schoolName" :default-value="schoolId"></school-tree>
@@ -121,13 +121,13 @@
                 </el-select>
               </el-form-item>
               <el-form-item label="手机号" :label-width="formLabelWidth" prop="phone">
-              <el-input v-model="form.phone"   placeholder="手机号"  auto-complete="off"></el-input>
+              <el-input v-model="form.phone"  autofocus placeholder="手机号"  auto-complete="off"></el-input>
               </el-form-item>
               <el-form-item label="邮箱" :label-width="formLabelWidth" prop="email">
-              <el-input v-model="form.email"   placeholder="邮箱"  auto-complete="off"></el-input>
+              <el-input v-model="form.email"  autofocus placeholder="邮箱"  auto-complete="off"></el-input>
               </el-form-item>
               <el-form-item label="身份证" :label-width="formLabelWidth" prop="idCard">
-              <el-input v-model="form.idCard"   placeholder="身份证"  auto-complete="off"></el-input>
+              <el-input v-model="form.idCard"  autofocus placeholder="身份证"  auto-complete="off"></el-input>
               </el-form-item>
               <el-form-item label="出生日期" :label-width="formLabelWidth" prop="birthday">
                 <el-date-picker
@@ -139,7 +139,7 @@
           </el-form>
           <div slot="footer" class="dialog-footer">
               <el-button @click="dialogFormVisible = false">取 消</el-button>
-              <el-button type="primary" @click="submitForm('ruleForm')">保 存</el-button>
+              <el-button type="primary" @click="submitForm('ruleForm')">确 定</el-button>
           </div>
         </el-dialog>
     </div>
@@ -182,7 +182,6 @@ export default {
         schoolZoneId2: []
       },
       authorityOptions: [],
-      formFocus:false,
       form: {
         //表单 v-modle绑定的值
         name: "",
@@ -206,13 +205,6 @@ export default {
   created() {
     this.getUser();
     this.getSchoolId();
-  },
-  watch:{
-    dialogFormVisible(){
-        // console.log(this.dialogFormVisible);
-        this.formFocus=this.dialogFormVisible;
-        console.log(this.formFocus);
-    }
   },
   computed: {
     //实时计算

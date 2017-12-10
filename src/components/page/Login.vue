@@ -70,6 +70,7 @@
                                 sessionStorage.setItem("userInfo",JSON.stringify(data.data["userInfo"]));
                                 let isOut=sessionStorage.getItem("isOut");
                                 if(isOut==="false"){
+                                    sessionStorage.removeItem("isOut");
                                     window.history.back(-1);
                                 }else{
                                     self.$router.push('/laky');
@@ -88,16 +89,16 @@
             }
         },
         mounted: function () {
-            var code = sessionStorage.getItem("code");
-            if(code == 420) {
-                this.$message({
-                    showClose: true,
-                    message: sessionStorage.getItem("message"),
-                    type: 'warning'
-                });
-                sessionStorage.removeItem("code");
-                sessionStorage.removeItem("message");
-            }
+            // var code = sessionStorage.getItem("code");
+            // if(code == 420) {
+            //     this.$message({
+            //         showClose: true,
+            //         message: sessionStorage.getItem("message"),
+            //         type: 'warning'
+            //     });
+            //     sessionStorage.removeItem("code");
+            //     sessionStorage.removeItem("message");
+            // }
         },
     }
 </script>

@@ -75,7 +75,7 @@ export default {
       if (command == "loginout") {
         sessionStorage.removeItem("userInfo");
         sessionStorage.removeItem("branch");
-        this.$axios.get("organization/loginout").then(res => {
+        this.$axios.get("organization/loginOut").then(res => {
           var data = res.data;
           if (data.code == 200) {
             //退出成功

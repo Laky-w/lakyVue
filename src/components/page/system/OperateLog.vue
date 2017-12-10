@@ -3,7 +3,7 @@
         <div class="handle-box">
             <el-form ref="queryForm" :inline="true" :model="queryForm" label-width="80px" size="mini">
                 <el-form-item  >
-                    <el-input v-model="queryForm.userName"  placeholder="用户名" class="handle-input mr10"></el-input>
+                    <el-input v-model="queryForm.userName" clearable  placeholder="用户名" class="handle-input mr10"></el-input>
                 </el-form-item>
                 <el-form-item >
                     <el-select v-model="queryForm.theType"   value=1 clearable placeholder="操作类型" class="handle-select mr10" >
@@ -24,7 +24,7 @@
         <el-table :data="tableData"  v-loading="loading" :row-class-name="tableRowClassName" border stripe style="width: 100%" >
             <el-table-column prop="user.name" label="用户名" sortable >
             </el-table-column>
-            <el-table-column prop="schoolZone.name" label="校区名" >
+            <el-table-column prop="schoolZone.name" label="操作校区" >
             </el-table-column>
             <el-table-column prop="theType" label="操作" :formatter="filterType">
             </el-table-column>

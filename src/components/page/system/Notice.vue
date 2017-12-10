@@ -3,7 +3,7 @@
       <div class="handle-box">
             <el-form ref="queryForm" :inline="true" :model="queryForm" label-width="80px" size="mini">
                 <el-form-item  >
-                    <el-input v-model="queryForm.content"  placeholder="公告内容" class="handle-input mr10"></el-input>
+                    <el-input v-model="queryForm.content" clearable placeholder="公告内容" class="handle-input mr10"></el-input>
                 </el-form-item>
                 <el-form-item >
                     <el-select v-model="queryForm.theType"   value=1 clearable placeholder="通知范围" class="handle-select mr10" >
@@ -75,7 +75,7 @@
         </div>
         <el-dialog title="添加公告" :visible.sync="dialogFormVisible">
         <el-form :model="form" ref="ruleForm" v-loading="loadingForm">
-           
+
             <el-form-item label="公告范围" :label-width="formLabelWidth" required>
                 <el-radio-group v-model="form.theType">
                     <el-radio :label="1">机构公告</el-radio>
@@ -85,14 +85,15 @@
             <el-form-item label="有效时间"  prop="lastDatetime" :label-width="formLabelWidth">
             <el-date-picker style="width:100%" v-model="form.lastDatetime" value-format="yyyy-MM-dd HH:mm:ss" type="datetime"  placeholder="有效时间"  auto-complete="off"></el-date-picker>
             </el-form-item>
-            <el-form-item label="公告内容" prop="content" :label-width="formLabelWidth" :rules="[{ required: true, message: '必选项'} ,{ min: 10, max: 50, message: '长度在 10 到 50 个字符', trigger: 'blur' }]">
+            <el-form-item label="公告内容" prop="content" :label-width="formLabelWidth" +
+            :rules="[{ required: true, message: '必选项'} ,{ min: 10, max: 50, message: '长度在 10 到 50 个字符', trigger: 'blur' }]">
             <el-input v-model="form.content"  :rows=5 type="textarea" placeholder="请输入公告内容" auto-complete="off"></el-input>
             </el-form-item>
-            
+
         </el-form>
         <div slot="footer" class="dialog-footer">
             <el-button @click="dialogFormVisible = false">取 消</el-button>
-            <el-button type="primary" @click="submitForm('ruleForm')">确 定</el-button>
+            <el-button type="primary" @click="submitForm('ruleForm')">保 存</el-button>
         </div>
         </el-dialog>
     </div>

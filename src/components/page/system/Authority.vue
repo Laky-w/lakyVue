@@ -3,7 +3,7 @@
         <div class="handle-box">
             <el-form ref="authorityform" :inline="true" :model="authorityform" label-width="80px" size="mini">
                 <el-form-item  prop="name" :rules="[{ required: true, message: '名称必填'}]">
-                    <el-input v-model="authorityform.name"
+                    <el-input v-model="authorityform.name" clearable
                      placeholder="职能名称" class="handle-input mr10">
                      </el-input>
                 </el-form-item>
@@ -44,7 +44,7 @@
         </el-table>
         <div style="margin-top: 10px;text-align: right;padding: 5px;position: fixed;bottom: 0px;z-index: 99;width: 90%; background-color: #dfe4ed;">
           <el-button @click="$router.push('/userRole');">取 消</el-button>
-          <el-button type="primary" @click="submitForm('authorityform')">确 定</el-button>
+          <el-button type="primary" @click="submitForm('authorityform')">保 存</el-button>
         </div>
     </div>
 </template>
