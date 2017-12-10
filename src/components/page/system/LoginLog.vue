@@ -12,12 +12,6 @@
                     </el-select>
                 </el-form-item>
                  <el-form-item >
-                    <!-- <el-date-picker
-                        v-model="queryForm.theDate" value-format="yyyy-MM-dd"
-                        type="daterange" align="center"unlink-panels range-separator="至"
-                        start-placeholder="登录日期"
-                        end-placeholder="登录日期" :picker-options="pickerOptions2">
-                    </el-date-picker> -->
                     <date-range startPlaceholder="登录日期" v-model="queryForm.theDate" endPlaceholder="结束日期" ></date-range>
                  </el-form-item>
                  <el-form-item >
