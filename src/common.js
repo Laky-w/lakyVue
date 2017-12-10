@@ -3,7 +3,9 @@ import qs from 'qs';
 import router from './router';
 // axios.defaults.baseURL = 'http://192.168.0.103/laky/';
 // axios.defaults.baseURL = 'http://192.168.0.100/laky/';
-axios.defaults.baseURL = 'http://192.168.0.100/laky/';
+// axios.defaults.baseURL = 'http://192.168.0.100:8081/laky/';
+axios.defaults.baseURL = 'http://jjs7av.natappfree.cc/laky/';
+
 axios.interceptors.request.use(function(config) {
     // 在发送请求之前做些什么
     config.headers.common['token'] = sessionStorage.getItem("token");

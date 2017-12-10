@@ -9,7 +9,7 @@
             </el-breadcrumb>
         </div>
         <div class="sidebar">
-            <router-link style="margin-left: 5px;"  v-for="(item,index) in visitedViews" :to="item.path">
+            <router-link style="margin-left: 5px;cursor: pointer;" tag="span" v-for="(item,index) in visitedViews" :to="item.path">
                <el-tag size="mini" disable-transitions :style="visitedViewsCurrent.path==item.path?'color:#f5f7fa':'color:#2d2f33'"
                 :key="item.name" :color="visitedViewsCurrent.path==item.path?'#67c23a':''" @close.stop="closeTag(item.path,$event)"
                 closable>
@@ -71,7 +71,10 @@ export default {
         }
         event.cancelBubble = true;
         if(this.visitedViews.length>0){
-            // this.$router.push(this.visitedViews[this.visitedViews.length-1]);
+            if(path==this.visitedViewsCurrent.path){ //关闭的是当前选择的标签
+                this.$router.push(this.visitedViews[this.visitedViews.length-1]);
+            }
+
         }else{
             this.$router.push("/laky");
         }

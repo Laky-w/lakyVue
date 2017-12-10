@@ -8,6 +8,7 @@ export default new Router({
             path: '/',
             redirect: '/login'
         },
+        { path: '*', component: resolve => require(['../components/common/Wait.vue'], resolve) },
         {
             path: '/demo',
             component: resolve => require(['../components/page/demo/common/Home.vue'], resolve),
@@ -63,6 +64,7 @@ export default new Router({
         },
         {
             path: '/laky',
+            name: "帮助",
             component: resolve => require(['../components/common/Home.vue'], resolve),
             children: [{
                     name: "主页",
@@ -72,6 +74,11 @@ export default new Router({
                 {
                     path: '/reload',
                     component: resolve => require(['../components/common/Reload.vue'], resolve)
+                },
+                {
+                    path: '/wait',
+                    name: "建设中",
+                    component: resolve => require(['../components/common/Wait.vue'], resolve)
                 },
             ]
         },
