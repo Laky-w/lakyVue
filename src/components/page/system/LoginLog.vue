@@ -46,7 +46,7 @@
 </template>
 
 <script>
-import SchoolTree from "../../common/SchoolTree.vue";
+import SchoolTree from "../../common/system/SchoolTree.vue";
 import DateRange from "../../common/Daterange.vue";
 export default {
   data() {

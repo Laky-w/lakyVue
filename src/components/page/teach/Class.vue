@@ -12,14 +12,14 @@
                     </el-select>
                 </el-form-item> -->
                 <el-form-item >
-                   <school-tree  :is-show-checkbox=true @handleCheckChange ="handleCheckChange"></school-tree>
+                   <school-tree  :is-show-checkbox=true :the-type="2" place-text="校区" @handleCheckChange ="handleCheckChange"></school-tree>
                 </el-form-item>
 
                 <el-button type="mini" icon="el-icon-search" @click="search('queryForm')">搜索</el-button>
             </el-form>
         </div>
         <div style="margin:5px;">
-          <el-button type="primary" icon="el-icon-edit" size="mini" @click="dialogFormVisible=true">添加员工</el-button>
+          <el-button type="primary" icon="el-icon-edit" size="mini" @click="dialogFormVisible=true">开班</el-button>
           <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
         </div>
         <el-table
@@ -29,36 +29,28 @@
             label="校区" prop="schoolZone.name" >
             </el-table-column>
             <el-table-column
-            label="用户名"
-            prop="userName">
-            </el-table-column>
-            <el-table-column
-            label="真实姓名"
+            label="名称"
             prop="name">
             </el-table-column>
             <el-table-column
-            label="联系方式"
-            prop="phone">
+            label="课程"
+            prop="courseId">
             </el-table-column>
             <el-table-column
-            label="邮箱"
-            prop="email">
+            label="班主任"
+            prop="teacherId">
             </el-table-column>
             <el-table-column
-            label="性别"
-            prop="sex" :formatter="filterSex">
+            label="主教"
+            prop="mainTeacherId">
             </el-table-column>
             <el-table-column
-            label="电话号"
-            prop="phone">
+            label="计划开班日期"
+            prop="startDate">
             </el-table-column>
             <el-table-column
-            label="出生日期"
-            prop="birthday">
-            </el-table-column>
-            <el-table-column
-            label="职能"
-            prop="isSuper" :formatter="filterIsSuper">
+            label="计划结课日期"
+            prop="endDate">
             </el-table-column>
             <!-- <el-table-column label="操作">
             <template slot-scope="scope">
@@ -84,57 +76,34 @@
         </div>
         <el-dialog title="新增员工" :visible.sync="dialogFormVisible">
           <el-form :model="form" ref="ruleForm" v-loading="loadingForm">
-              <el-form-item label="姓名" :label-width="formLabelWidth" prop="name"  :rules="[{ required: true, message: '名称必填'}]">
-              <el-input v-model="form.name"  autofocus placeholder="真实姓名"  auto-complete="off"></el-input>
+              <el-form-item label="名称" :label-width="formLabelWidth" prop="name"  >
+                <el-input v-model="form.name"   placeholder="班级名称"  ></el-input>
               </el-form-item>
-              <el-form-item label="用户名" :label-width="formLabelWidth" prop="userName"  :rules="[{ required: true, message: '名称必填'}]">
-              <el-input v-model="form.userName"  autofocus placeholder="登录用户名"  auto-complete="off"></el-input>
+              <el-form-item label="课程" :label-width="formLabelWidth" prop="courseId" >
+                <course v-model="form.courseId"></course>
               </el-form-item>
-              <el-form-item label="部门" :label-width="formLabelWidth" prop="schoolName"  :rules="[{ required: true, message: '部门必填'}]">
-                <school-tree @nodeClick="handleSchool" :name="form.schoolName" :default-value="schoolId"></school-tree>
+              <el-form-item label="校区" :label-width="formLabelWidth" prop="schoolName"  :rules="[{ required: true, message: '部门必填'}]">
+                <school-tree @nodeClick="handleSchool" :name="form.schoolName" :the-type="2" place-text="校区" :default-value="schoolId"></school-tree>
               </el-form-item>
-              <el-form-item label="性别" :label-width="formLabelWidth" prop="sex"  :rules="[{ required: true, message: '必选项'}]">
-                <el-radio-group v-model="form.sex">
-                  <el-radio :label="1">男</el-radio>
-                  <el-radio :label="2">女</el-radio>
-                </el-radio-group>
+              <el-form-item label="主教" :label-width="formLabelWidth" prop="mainTeachId"  >
+                <el-input v-model="form.mainTeachId"   placeholder="主教" ></el-input>
               </el-form-item>
-              <el-form-item label="超级管理员" :label-width="formLabelWidth" prop="isSuper" :rules="[{ required: true, message: '必选项'}]" >
-                <el-radio-group v-model="form.isSuper">
-                  <el-radio :label="2">否</el-radio>
-                  <el-radio :label="1">是</el-radio>
-                </el-radio-group>
+              <el-form-item label="班主任" :label-width="formLabelWidth" prop="teachId"  >
+                <el-input v-model="form.teachId"   placeholder="班主任"  ></el-input>
               </el-form-item>
-              <el-form-item label="职能" :label-width="formLabelWidth" prop="roles" :rules="[{ required: (form.isSuper==2), message: '必选项'}]">
-                <el-select
-                    :disabled="form.isSuper==1"
-                    v-model="form.roles"
-                    multiple no-data-text ="该部门没有职能，请添加。"
-                    collapse-tags
-                    placeholder="请选择权限" style="width:100%">
-                    <el-option
-                        v-for="item in authorityOptions"
-                        :key="item.id"
-                        :label="item.name"
-                        :value="item.id">
-                    </el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item label="手机号" :label-width="formLabelWidth" prop="phone">
-              <el-input v-model="form.phone"  autofocus placeholder="手机号"  auto-complete="off"></el-input>
-              </el-form-item>
-              <el-form-item label="邮箱" :label-width="formLabelWidth" prop="email">
-              <el-input v-model="form.email"  autofocus placeholder="邮箱"  auto-complete="off"></el-input>
-              </el-form-item>
-              <el-form-item label="身份证" :label-width="formLabelWidth" prop="idCard">
-              <el-input v-model="form.idCard"  autofocus placeholder="身份证"  auto-complete="off"></el-input>
-              </el-form-item>
-              <el-form-item label="出生日期" :label-width="formLabelWidth" prop="birthday">
+              <el-form-item label="计划开班日期" :label-width="formLabelWidth" prop="startDate"  >
                 <el-date-picker
-                  v-model="form.birthday" style="width: 100%;"
-                  type="date" value-format="yyyy-MM-dd"
-                  placeholder="出生日期">
+                    v-model="form.startDate"
+                    type="date"
+                    placeholder="计划开班日期" :picker-options="pickerOptions1">
                 </el-date-picker>
+              </el-form-item>
+              <el-form-item label="计划结课日期" :label-width="formLabelWidth" prop="endDate" >
+                <el-date-picker
+                    v-model="form.endDate"
+                    type="date"
+                    placeholder="计划结课日期">
+                </el-date-picker :picker-options="pickerOptions1">
               </el-form-item>
           </el-form>
           <div slot="footer" class="dialog-footer">
@@ -166,7 +135,8 @@ table td {
 </style>
 
 <script>
-import SchoolTree from "../../common/SchoolTree.vue";
+import SchoolTree from "../../common/system/SchoolTree.vue";
+import Course from "../../common/teach/Course.vue";
 export default {
   data() {
     return {
@@ -181,20 +151,21 @@ export default {
         theType: "",
         schoolZoneId2: []
       },
-      authorityOptions: [],
+      pickerOptions1: {
+        disabledDate(time) {
+          return time.getTime() > Date.now();
+        }
+      },
       form: {
         //表单 v-modle绑定的值
         name: "",
-        userName: "",
-        sex: 1,
-        phone: "",
-        email: "",
-        isSuper: 2,
-        birthday: "",
+        courseId: "",
+        mainTeachId: "",
+        teachId: "",
+        startDate: "",
+        endDate: "",
         schoolZoneId: "",
-        schoolName: "",
-        idCard: "",
-        roles: []
+        schoolName: ""
       },
       formLabelWidth: "120px",
       loading: false,
@@ -203,7 +174,7 @@ export default {
     };
   },
   created() {
-    this.getUser();
+    this.getData();
     this.getSchoolId();
   },
   computed: {
@@ -216,46 +187,33 @@ export default {
       let user = JSON.parse(sessionStorage.getItem("userInfo"));
       self.form.schoolZoneId = user.schoolZoneId;
       self.form.schoolName = user.schoolZone.name;
-      self.getAuthorityOptions();
       self.schoolId = user.schoolZoneId;
-    },
-    getAuthorityOptions() {
-      let self = this;
-      console.log(self.authorityOptions);
-      self.$axios
-        .get("organization/getRoleListBySchoolZoneId/" + this.form.schoolZoneId)
-        .then(res => {
-          let data = res.data;
-          if (data.code == 200) {
-            self.authorityOptions = data.data;
-          } else {
-            self.$message.error(data.data);
-          }
-        });
     },
     //初始化属性end
     //分页方法start
     handleSizeChange(val) {
       console.log(this.page_size);
       this.page_size = val;
-      this.getUser();
+      this.getData();
     },
     //分页方法结束
     handleCurrentChange(val) {
       this.cur_page = val;
-      this.getUser();
+      this.getData();
     },
-    search(form) { //搜索方法
+    search(form) {
+      //搜索方法
       this.cur_page = 1;
-      this.getUser();
+      this.getData();
     },
     //加载数据
-    getUser() {
+    getData() {
       let self = this;
       self.loading = true;
       self.$axios
         .post(
-          "organization/getUserList/" + this.cur_page + "/" + this.page_size,self.queryForm
+          "teach/getSchoolClassList/" + this.cur_page + "/" + this.page_size,
+          self.queryForm
         )
         .then(res => {
           let data = res.data;
@@ -270,6 +228,8 @@ export default {
     },
     //保存表单
     submitForm(formName) {
+        console.log(this.form.courseId);
+        return;
       let self = this;
       self.$refs[formName].validate(valid => {
         if (valid) {
@@ -280,7 +240,7 @@ export default {
             if (data.code == 200) {
               self.$message.success(data.message);
               self.dialogFormVisible = false;
-              self.getUser();
+              self.getData();
               self.$refs[formName].resetFields();
             } else {
               this.$message.error(data.data);
@@ -313,17 +273,15 @@ export default {
       this.form.schoolName = data.name;
       this.form.schoolZoneId = data.id;
       console.log(this.form.schoolZoneId);
-      this.form.roles = [];
-      this.getAuthorityOptions();
     },
     handleCheckChange(allNode) {
       let self = this;
-      self.queryForm.schoolZoneId2=[];
+      self.queryForm.schoolZoneId2 = [];
       for (let i = 0; i < allNode.length; i++) {
         self.queryForm.schoolZoneId2.push(allNode[i].id);
       }
     }
   },
-  components: { SchoolTree } //注入组件
+  components: { SchoolTree,Course } //注入组件
 };
 </script>

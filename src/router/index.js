@@ -80,6 +80,10 @@ export default new Router({
                     name: "建设中",
                     component: resolve => require(['../components/common/Wait.vue'], resolve)
                 },
+                {
+                    path: '/courseTree',
+                    component: resolve => require(['../components/common/teach/Course.vue'], resolve)
+                },
             ]
         },
         {

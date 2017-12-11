@@ -5,7 +5,7 @@ import { Message } from 'element-ui';
 axios.defaults.baseURL = 'http://192.168.0.103/laky/';
 // axios.defaults.baseURL = 'http://192.168.0.100/laky/';
 // axios.defaults.baseURL = 'http://192.168.0.100:8081/laky/';
-// axios.defaults.baseURL = 'http://jjs7av.natappfree.cc/laky/';
+// axios.defaults.baseURL = 'http://8gyfye.natappfree.cc/';
 
 axios.interceptors.request.use(function(config) {
     // 在发送请求之前做些什么

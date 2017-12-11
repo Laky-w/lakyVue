@@ -6,7 +6,7 @@
                     <el-input v-model="queryForm.name" clearable placeholder="教室名称" class="handle-input mr10"></el-input>
                 </el-form-item>
                 <el-form-item >
-                   <school-tree  :is-show-checkbox=true @handleCheckChange ="handleCheckChange"></school-tree>
+                   <school-tree  :is-show-checkbox=true @handleCheckChange ="handleCheckChange" :the-type="2" place-text="校区" ></school-tree>
                 </el-form-item>
 
                 <el-button type="mini" icon="el-icon-search" @click="search('queryForm')">搜索</el-button>
@@ -68,7 +68,7 @@
                 <el-input v-model="form.maxCount"   placeholder="容纳人数"  auto-complete="off"></el-input>
               </el-form-item>
               <el-form-item label="校区" :label-width="formLabelWidth" prop="schoolName"  :rules="[{ required: true, message: '部门必填'}]">
-                <school-tree @nodeClick="handleSchool" :name="form.schoolName" :default-value="schoolId"></school-tree>
+                <school-tree @nodeClick="handleSchool" :name="form.schoolName" :the-type="2" place-text="校区" :default-value="schoolId"></school-tree>
               </el-form-item>
               <el-form-item label="排序" :label-width="formLabelWidth" prop="sort"  >
                 <el-input v-model="form.sort"   placeholder="排序"  ></el-input>
@@ -84,7 +84,7 @@
 
 
 <script>
-import SchoolTree from "../../common/SchoolTree.vue";
+import SchoolTree from "../../common/system/SchoolTree.vue";
 export default {
   data() {
     return {
