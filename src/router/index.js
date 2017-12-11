@@ -83,6 +83,50 @@ export default new Router({
             ]
         },
         {
+            name: "招生",
+            path: "/supply",
+            component: resolve => require(['../components/common/Home.vue'], resolve),
+            children: [{
+                    name: "意向学员",
+                    path: "/supply/intention",
+                    component: resolve => require(['../components/page/teach/index.vue'], resolve),
+                    children: [{
+                            path: '/customer',
+                            name: "生源管理",
+                            component: resolve => require(['../components/page/supply/Customer.vue'], resolve)
+                        },
+                        {
+                            path: '/case',
+                            name: "跟进情况",
+                            component: resolve => require(['../components/page/supply/Case.vue'], resolve)
+                        },
+                        {
+                            path: '/audition',
+                            name: "邀约试听",
+                            component: resolve => require(['../components/page/supply/Audition.vue'], resolve)
+                        },
+                        
+                    ]
+                },
+                {
+                    name: "基础设置",
+                    path: "/supply/supplyData",
+                    component: resolve => require(['../components/page/supply/index.vue'], resolve),
+                    // children: [{
+                    //         path: '/supplyData',
+                    //         name: "参数设置",
+                    //         component: resolve => require(['../components/page/supply/SupplyData.vue'], resolve)
+                    //     },
+                    // ]
+                },
+                {
+                    name: "报表统计",
+                    path: "/supply/statementData",
+                    component: resolve => require(['../components/page/supply/index.vue'], resolve)
+                }
+            ]
+        },
+        {
             name: "教务",
             path: "/teach",
             component: resolve => require(['../components/common/Home.vue'], resolve),
@@ -126,6 +170,11 @@ export default new Router({
                             path: '/room',
                             name: "教室",
                             component: resolve => require(['../components/page/teach/Room.vue'], resolve)
+                        },
+                        {
+                            path: '/room1',
+                            name: "教室",
+                            component: resolve => require(['../components/page/teach/Room1.vue'], resolve)
                         }
                     ]
                 }
