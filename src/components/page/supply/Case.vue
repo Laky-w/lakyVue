@@ -117,7 +117,7 @@ table td {
 </style>
 
 <script>
-import SchoolTree from "../../common/SchoolTree.vue";
+import SchoolTree from "../../common/system/SchoolTree.vue";
 export default {
   data() {
     return {

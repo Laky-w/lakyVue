@@ -116,12 +116,12 @@ export default new Router({
                     name: "基础设置",
                     path: "/supply/supplyData",
                     component: resolve => require(['../components/page/supply/index.vue'], resolve),
-                    // children: [{
-                    //         path: '/supplyData',
-                    //         name: "参数设置",
-                    //         component: resolve => require(['../components/page/supply/SupplyData.vue'], resolve)
-                    //     },
-                    // ]
+                    children: [{
+                            path: '/supplyData',
+                            name: "参数设置",
+                            component: resolve => require(['../components/page/supply/SupplyData.vue'], resolve)
+                        },
+                    ]
                 },
                 {
                     name: "报表统计",
@@ -174,11 +174,6 @@ export default new Router({
                             path: '/room',
                             name: "教室",
                             component: resolve => require(['../components/page/teach/Room.vue'], resolve)
-                        },
-                        {
-                            path: '/room1',
-                            name: "教室",
-                            component: resolve => require(['../components/page/teach/Room1.vue'], resolve)
                         }
                     ]
                 }
