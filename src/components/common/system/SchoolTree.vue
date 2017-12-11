@@ -2,7 +2,7 @@
   <div style="height:50px;position:relative;">
     <span @click="isShow=!isShow">
       <el-input
-        placeholder="校区/部门" clearable readonly=""
+        :placeholder="this.placeText"  readonly=""
         v-model="filterText">
         <i slot="suffix"  style="cursor: pointer;" class="el-input__icon el-icon-arrow-down"></i>
       </el-input>
@@ -62,7 +62,7 @@ export default {
     getSchool() {
       let self = this;
       self.loading = true;
-      self.$axios.get("organization/findSchoolZoneAll").then(res => {
+      self.$axios.get("organization/findSchoolZoneAll/"+this.theType).then(res => {
         let data = res.data;
         self.loading = false;
         if (data.code == 200) {
@@ -136,7 +136,13 @@ export default {
     isShowCheckbox:{
       default:false
     },
-    defaultValue:""
+    defaultValue:"",
+    theType:{
+        default:0
+    },
+    placeText:{
+        default:"校区/部门"
+    }
   }
 
 };

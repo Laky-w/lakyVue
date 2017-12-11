@@ -192,7 +192,7 @@ export default {
     getSchool() {
       let self = this;
       self.loading = true;
-      self.$axios.get("organization/findSchoolZoneAll").then(res => {
+      self.$axios.get("organization/findSchoolZoneAll/0").then(res => {
         let data = res.data;
         self.loading = false;
         if (data.code == 200) {

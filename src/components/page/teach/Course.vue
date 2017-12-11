@@ -3,7 +3,7 @@
         <div class="handle-box">
             <el-form ref="queryForm" :inline="true" :model="queryForm" label-width="80px" size="mini">
                 <el-form-item  >
-                    <el-input v-model="queryForm.name" clearable  placeholder="xx名称"
+                    <el-input v-model="queryForm.name" clearable  placeholder="课程名称"
                     class="handle-input mr10"></el-input>
                 </el-form-item>
                 <el-form-item >
@@ -117,7 +117,7 @@ table td {
 </style>
 
 <script>
-import SchoolTree from "../../common/SchoolTree.vue";
+import SchoolTree from "../../common/system/SchoolTree.vue";
 export default {
   data() {
     return {
