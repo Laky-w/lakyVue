@@ -145,7 +145,7 @@ export default {
       self.loading = true;
       self.$axios
         .post(
-          "/organization/getRoleList/" + this.cur_page + "/" + this.page_size,self.queryForm
+          "organization/getRoleList/" + this.cur_page + "/" + this.page_size,self.queryForm
         )
         .then(res => {
           let data = res.data;

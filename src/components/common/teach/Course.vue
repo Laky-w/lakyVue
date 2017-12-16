@@ -12,13 +12,16 @@ export default {
   data() {
     return {
       options: [],
-      selectedOptions: [],
+      selectedOptions: []
     };
   },
   watch: {
+    value(val) {
+      if (!val) this.selectedOptions = [];
+    },
     selectedOptions(val) {
       console.log(val);
-      this.$emit("input", val[2]);
+      if (val.length>0 ) this.$emit("input", val[2]);
     }
   },
   created() {
@@ -26,13 +29,16 @@ export default {
   },
   methods: {
     getData() {
-      this.$axios.get("/teach/getCourseTreeList").then(res => {
+      this.$axios.get("teach/getCourseTreeList").then(res => {
         let data = res.data;
         if (data.code == 200) {
           this.options = data.data;
         }
       });
     }
+  },
+  props: {
+    value: ""
   }
 };
 </script>

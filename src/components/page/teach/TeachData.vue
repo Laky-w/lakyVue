@@ -84,7 +84,7 @@ export default {
     getData() {
       let self = this;
       self.loading = true;
-      self.$axios.get("/organization/findBranchParameterByType/2").then(res => {
+      self.$axios.get("organization/findBranchParameterByType/2").then(res => {
         let data = res.data;
         if (data.code == 200) {
           data.data.forEach(element => {
@@ -106,7 +106,7 @@ export default {
       self.form.parameterId=id;
       self.loading = true;
       self.$axios
-        .get("/organization/findBranchParameterValueAll/" + id)
+        .get("organization/findBranchParameterValueAll/" + id)
         .then(res => {
           let data = res.data;
           if (data.code == 200) {

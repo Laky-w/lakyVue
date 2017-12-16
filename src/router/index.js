@@ -81,8 +81,8 @@ export default new Router({
                     component: resolve => require(['../components/common/Wait.vue'], resolve)
                 },
                 {
-                    path: '/courseTree',
-                    component: resolve => require(['../components/common/teach/Course.vue'], resolve)
+                    path: '/courseDialog',
+                    component: resolve => require(['../components/common/teach/CourseDialog.vue'], resolve)
                 },
             ]
         },
@@ -109,7 +109,7 @@ export default new Router({
                             name: "邀约试听",
                             component: resolve => require(['../components/page/supply/Audition.vue'], resolve)
                         },
-                        
+
                     ]
                 },
                 {
@@ -117,6 +117,11 @@ export default new Router({
                     path: "/supply/supplyData",
                     component: resolve => require(['../components/page/supply/index.vue'], resolve),
                     children: [{
+                            path: '/marketActivity',
+                            name: "市场活动",
+                            component: resolve => require(['../components/page/supply/MarketActivity.vue'], resolve)
+                        },
+                        {
                             path: '/supplyData',
                             name: "参数设置",
                             component: resolve => require(['../components/page/supply/SupplyData.vue'], resolve)

@@ -1,8 +1,8 @@
 <template>
-  <div style="height:50px;position:relative;">
+  <div style="position:relative;">
     <span @click="isShow=!isShow">
       <el-input
-        :placeholder="this.placeText"  readonly=""
+        :placeholder="placeText"  readonly="" :clearable="isShowCheckbox"
         v-model="filterText">
         <i slot="suffix"  style="cursor: pointer;" class="el-input__icon el-icon-arrow-down"></i>
       </el-input>
@@ -21,6 +21,12 @@
     </div>
   </div>
 </template>
+<style>
+.el-input--suffix .el-input__inner {
+    padding-right: 15px;
+}
+</style>
+
 <style scoped>
 .treeDivH {
   display: none;
@@ -41,6 +47,20 @@ export default {
   //     this.$refs.tree2.filter(val);
   //   }
   // },
+   data() {
+    return {
+      filterText: name,
+      checkedNodes:{},
+      isShow: true,
+      pid:0,
+      data2: [
+      ],
+      defaultProps: {
+        children: "childrenList",
+        label: "name"
+      }
+    };
+  },
   created() {
     // 点击其他不在的区域触发事件
     document.addEventListener('click', (e) => {
@@ -49,6 +69,16 @@ export default {
       }
     })
     this.getSchool();
+  },
+  watch:{
+      filterText(val){
+          if(!val){
+              this.$refs.tree2.setCheckedKeys([]);
+          }
+      },
+      parentId(){
+        this.getSchool();
+      }
   },
   methods: {
 
@@ -62,7 +92,7 @@ export default {
     getSchool() {
       let self = this;
       self.loading = true;
-      self.$axios.get("organization/findSchoolZoneAll/"+this.theType).then(res => {
+      self.$axios.get("organization/findChildSchoolZoneAll/"+this.theType+"/"+this.parentId).then(res => {
         let data = res.data;
         self.loading = false;
         if (data.code == 200) {
@@ -117,26 +147,16 @@ export default {
     },
   },
 
-  data() {
-    return {
-      filterText: name,
-      checkedNodes:{},
-      isShow: true,
-      pid:0,
-      data2: [
-      ],
-      defaultProps: {
-        children: "childrenList",
-        label: "name"
-      }
-    };
-  },
+
   props: {
     name:"",
     isShowCheckbox:{
       default:false
     },
     defaultValue:"",
+    parentId:{
+        default:0
+    },
     theType:{
         default:0
     },

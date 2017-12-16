@@ -2,10 +2,10 @@ import axios from 'axios';
 import qs from 'qs';
 import router from './router';
 import { Message } from 'element-ui';
-axios.defaults.baseURL = 'http://192.168.0.103/laky/';
-// axios.defaults.baseURL = 'http://192.168.0.100/laky/';
+// axios.defaults.baseURL = 'http://192.168.0.103/laky/';
+axios.defaults.baseURL = 'http://192.168.0.100/laky/';
 // axios.defaults.baseURL = 'http://192.168.0.100:8081/laky/';
-// axios.defaults.baseURL = 'http://8gyfye.natappfree.cc/';
+// axios.defaults.baseURL = 'http://qfjjsk.natappfree.cc/';
 
 axios.interceptors.request.use(function(config) {
     // 在发送请求之前做些什么
@@ -40,6 +40,22 @@ axios.interceptors.response.use(function(response) {
     // 对响应错误做点什么
     return Promise.reject(error);
 });
+Date.prototype.Format = function(fmt) {
+    console.log(fmt);
+    var date = this;
+    let o = {
+        'M+': date.getMonth() + 1,
+        'd+': date.getDate(),
+        'h+': date.getHours(),
+        'm+': date.getMinutes(),
+        's+': date.getSeconds()
+    };
+    if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+    for (var k in o)
+        if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+    return fmt;
+};
+
 // 表单序列化，IE9+
 HTMLFormElement.prototype.serialize = function() {
     var form = this;

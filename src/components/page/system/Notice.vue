@@ -146,7 +146,7 @@ export default {
       self.loading = true;
       self.$axios
         .post(
-          "/organization/findNoticeAll/" + this.cur_page + "/" + this.page_size,
+          "organization/findNoticeAll/" + this.cur_page + "/" + this.page_size,
           self.queryForm
         )
         .then(res => {

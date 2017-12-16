@@ -26,7 +26,7 @@
             :data="tableData" stripe v-loading="loading" border
             style="width: 100%">
             <el-table-column
-            label="校区" prop="schoolZone.name" >
+            label="校区/部门" prop="schoolZone.name" >
             </el-table-column>
             <el-table-column
             label="用户名"

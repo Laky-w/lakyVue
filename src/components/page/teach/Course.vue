@@ -132,7 +132,6 @@ export default {
         clazzId: []
       },
       parameterValue: [],
-      authorityOptions: [],
       form: {
         //表单 v-modle绑定的值
         name: "",
@@ -161,22 +160,7 @@ export default {
       let user = JSON.parse(sessionStorage.getItem("userInfo"));
       self.form.schoolZoneId = user.schoolZoneId;
       self.form.schoolName = user.schoolZone.name;
-      self.getAuthorityOptions();
       self.schoolId = user.schoolZoneId;
-    },
-    getAuthorityOptions() {
-      let self = this;
-      console.log(self.authorityOptions);
-      self.$axios
-        .get("organization/getRoleListBySchoolZoneId/" + this.form.schoolZoneId)
-        .then(res => {
-          let data = res.data;
-          if (data.code == 200) {
-            self.authorityOptions = data.data;
-          } else {
-            self.$message.error(data.data);
-          }
-        });
     },
     //初始化属性end
     //分页方法start
@@ -198,7 +182,7 @@ export default {
     getParameterValue(id) {
       let self = this;
       self.$axios
-        .get("/organization/findBranchParameterValueAll/" + id)
+        .get("organization/findBranchParameterValueAll/" + id)
         .then(res => {
           let data = res.data;
           if (data.code == 200) {
@@ -265,9 +249,6 @@ export default {
     handleSchool(data) {
       this.form.schoolName = data.name;
       this.form.schoolZoneId = data.id;
-      console.log(this.form.schoolZoneId);
-      this.form.roles = [];
-      this.getAuthorityOptions();
     },
     handleCheckChange(allNode) {
       let self = this;
