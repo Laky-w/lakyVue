@@ -12,8 +12,7 @@
             <router-link style="margin-left: 5px;cursor: pointer;" tag="span" v-for="(item,index) in visitedViews" :to="item.path">
                <el-tag size="mini" disable-transitions :style="visitedViewsCurrent.path==item.path?'color:#f5f7fa':'color:#2d2f33'"
                 :key="item.name" :color="visitedViewsCurrent.path==item.path?'#67c23a':''" @close.stop="closeTag(item.path,$event)"
-                closable>
-                {{item.name}}
+                closable>{{item.name}}
               </el-tag>
             </router-link>
             <!-- <span v-for="(item,index) in visitedViews" >

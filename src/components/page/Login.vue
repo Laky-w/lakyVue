@@ -12,17 +12,17 @@
                     </el-input>   -->
                     <!-- <el-time-picker type="fixed-time" placeholder="选择时间" v-model="form.date2" style="width: 100%;"></el-time-picker> -->
                     <el-input v-model="ruleForm.serial" name="serial" placeholder="机构代码">
-                        <template slot="prepend"><i class="el-icon-edu-branch"></i></template>
+                        <template slot="prepend"><i class="el-icon-laky-branch"></i></template>
                     </el-input>
                 </el-form-item>
                 <el-form-item prop="userName">
                     <el-input v-model="ruleForm.userName" name="userName" placeholder="用户名/邮箱/电话">
-                        <template slot="prepend"><i class="el-icon-edu-user"></i></template>
+                        <template slot="prepend"><i class="el-icon-laky-user"></i></template>
                     </el-input>
                 </el-form-item>
                 <el-form-item prop="pwd">
                     <el-input type="password"  placeholder="密码" name="pwd" v-model="ruleForm.pwd" autofocus @keyup.enter.native="submitForm('ruleForm')">
-                        <template slot="prepend"><i class="el-icon-edu-lock"></i></template>
+                        <template slot="prepend"><i class="el-icon-laky-lock"></i></template>
                     </el-input>
                 </el-form-item>
                 <div class="login-btn">
