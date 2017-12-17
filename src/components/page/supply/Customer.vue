@@ -45,7 +45,7 @@
             </el-table-column>
             <el-table-column
             label="意向课程"
-            prop="intentionId">
+            prop="intentionCourseName">
             </el-table-column>
             <el-table-column
             label="创建时间" sortable
