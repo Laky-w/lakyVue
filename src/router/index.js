@@ -100,9 +100,9 @@ export default new Router({
                             component: resolve => require(['../components/page/supply/Customer.vue'], resolve)
                         },
                         {
-                            path: '/case',
+                            path: '/contact',
                             name: "跟进情况",
-                            component: resolve => require(['../components/page/supply/Case.vue'], resolve)
+                            component: resolve => require(['../components/page/supply/Contact.vue'], resolve)
                         },
                         {
                             path: '/audition',
