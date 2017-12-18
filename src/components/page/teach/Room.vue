@@ -58,7 +58,7 @@
                 :total="total">
             </el-pagination>
         </div>
-        <el-dialog title="新增教室" :visible.sync="dialogFormVisible">
+        <el-dialog title="新增教室" :visible.sync="dialogFormVisible" :close-on-click-modal=false>
           <el-form :model="form" ref="ruleForm" v-loading="loadingForm">
               <el-form-item label="教室" :label-width="formLabelWidth" prop="name"
               :rules="[{ required: true, message: '名称必填'},{ min: 5, max: 20, message: '长度在 5 到 20 个字符', trigger: 'blur' }]">

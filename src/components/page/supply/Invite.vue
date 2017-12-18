@@ -68,7 +68,7 @@
                 :total="total">
             </el-pagination>
         </div>
-        <el-dialog title="添加邀约记录" :visible.sync="dialogFormVisible">
+        <el-dialog title="添加邀约记录" :visible.sync="dialogFormVisible" :close-on-click-modal=false>
             <el-form :model="form" ref="ruleForm" v-loading="loadingForm">
                 <!--<el-form-item label="名称" :label-width="formLabelWidth" prop="studentId"  :rules="[{ required: true, message: '邀约人必填'}]">-->
                 <!--<el-input v-model="form.studentId"   placeholder="邀约人"  ></el-input>-->

@@ -80,7 +80,7 @@
                 :total="total">
             </el-pagination>
         </div>
-        <el-dialog title="添加生源" :visible.sync="dialogFormVisible" width="750px" custom-class="dialog-form">
+        <el-dialog title="添加生源" :visible.sync="dialogFormVisible" width="750px" custom-class="dialog-form" :close-on-click-modal=false>
           <el-form :model="form" ref="ruleForm" v-loading="loadingForm" inline size="small">
               <el-form-item label="姓名" :label-width="formLabelWidth" prop="name"
               :rules="[{ required: true, message: '名称必填'},{ min: 2, max: 20, message: '长度在 2 到 20 个字符', trigger: 'blur' }]">

@@ -98,7 +98,7 @@
                 :total="total">
             </el-pagination>
         </div>
-        <el-dialog title="添加活动" :visible.sync="dialogFormVisible">
+        <el-dialog title="添加活动" :visible.sync="dialogFormVisible" :close-on-click-modal=false>
           <el-form :model="form" ref="ruleForm" v-loading="loadingForm" >
                <el-form-item label="名称" :label-width="formLabelWidth" prop="name"  :rules="[{ required: true, message: '班级名称必填'}]">
                 <el-input v-model="form.name"   placeholder="活动名称"  ></el-input>
