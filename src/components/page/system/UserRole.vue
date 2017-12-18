@@ -55,7 +55,7 @@
                 :total="total">
             </el-pagination>
         </div>
-        <el-dialog title="添加公告" :visible.sync="dialogFormVisible">
+        <el-dialog title="添加公告" :visible.sync="dialogFormVisible" :close-on-click-modal=false>
         <el-form :model="form" ref="ruleForm" v-loading="loadingForm">
             <el-form-item label="名称" :label-width="formLabelWidth" prop="userName"  :rules="[{ required: true, message: '名称必填'}]">
             <el-input v-model="form.name"  autofocus placeholder="名称"  auto-complete="off"></el-input>

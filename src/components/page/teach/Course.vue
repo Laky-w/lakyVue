@@ -68,7 +68,7 @@
                 :total="total">
             </el-pagination>
         </div>
-        <el-dialog title="新增课程" :visible.sync="dialogFormVisible">
+        <el-dialog title="新增课程" :visible.sync="dialogFormVisible" :close-on-click-modal=false>
           <el-form :model="form" ref="ruleForm" v-loading="loadingForm">
               <el-steps  :active="1" :simple=true finish-status="success">
                 <el-step title="课程基本信息" ></el-step>

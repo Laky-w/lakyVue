@@ -73,8 +73,8 @@
                 :total="total">
             </el-pagination>
         </div>
-        <el-dialog title="添加跟进记录" :visible.sync="dialogFormVisible" width="750px" custom-class="dialog-form">
-            <el-form :model="form" ref="ruleForm" v-loading="loadingForm" size="small">
+        <el-dialog title="添加跟进记录" :visible.sync="dialogFormVisible" width="750px" :close-on-click-modal=false custom-class="dialog-form">
+            <el-form :model="form" ref="ruleForm" v-loading="loadingForm" size="small" >
                 <el-form-item label="联系人" :label-width="formLabelWidth" prop="studentId"
                               :rules="[{ required: true, message: '名称必填'}]">
                     <customer-dialog v-model="form.studentId" title="联系人" placeholder-text="联系人名称">
