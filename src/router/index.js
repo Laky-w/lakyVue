@@ -81,8 +81,8 @@ export default new Router({
                     component: resolve => require(['../components/common/Wait.vue'], resolve)
                 },
                 {
-                    path: '/courseDialog',
-                    component: resolve => require(['../components/common/teach/CourseDialog.vue'], resolve)
+                    path: '/customerDialog',
+                    component: resolve => require(['../components/common/supply/CustomerDialog.vue'], resolve)
                 },
             ]
         },
@@ -101,13 +101,13 @@ export default new Router({
                         },
                         {
                             path: '/contact',
-                            name: "跟进情况",
+                            name: "跟进记录",
                             component: resolve => require(['../components/page/supply/Contact.vue'], resolve)
                         },
                         {
-                            path: '/audition',
+                            path: '/invite',
                             name: "邀约试听",
-                            component: resolve => require(['../components/page/supply/Audition.vue'], resolve)
+                            component: resolve => require(['../components/page/supply/Invite.vue'], resolve)
                         },
 
                     ]

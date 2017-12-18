@@ -3,7 +3,7 @@ import qs from 'qs';
 import router from './router';
 import { Message } from 'element-ui';
 axios.defaults.baseURL = 'http://192.168.0.103/laky/';
-//axios.defaults.baseURL = 'http://192.168.0.100/laky/';
+// axios.defaults.baseURL = 'http://192.168.0.100/laky/';
 // axios.defaults.baseURL = 'http://192.168.0.100:8081/laky/';
 // axios.defaults.baseURL = 'http://qfjjsk.natappfree.cc/';
 
