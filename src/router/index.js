@@ -8,7 +8,7 @@ export default new Router({
             path: '/',
             redirect: '/login'
         },
-        { path: '*', component: resolve => require(['../components/common/Wait.vue'], resolve) },
+        { path: '*', redirect: '/wait' },
         {
             path: '/demo',
             component: resolve => require(['../components/page/demo/common/Home.vue'], resolve),
