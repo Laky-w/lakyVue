@@ -70,6 +70,11 @@
         </div>
         <el-dialog title="新增课程" :visible.sync="dialogFormVisible">
           <el-form :model="form" ref="ruleForm" v-loading="loadingForm">
+              <el-steps  :active="1" :simple=true finish-status="success">
+                <el-step title="课程基本信息" ></el-step>
+                <el-step title="收费标准" ></el-step>
+                <el-step title="授权校区"></el-step>
+            </el-steps>
               <el-form-item label="名称" :label-width="formLabelWidth" prop="name"  :rules="[{ required: true, message: '名称必填'}]">
               <el-input v-model="form.name"  autofocus placeholder="课程名称"  auto-complete="off"></el-input>
               </el-form-item>
@@ -95,6 +100,15 @@
         </el-dialog>
     </div>
 </template>
+<style>
+.el-steps--simple {
+    padding: 8px 8%;
+    border-radius: 4px;
+    background: #f5f7fa;
+    line-height: 6px;
+    margin-bottom: 15px;
+}
+</style>
 
 <style scoped>
 .ms-tree-space {

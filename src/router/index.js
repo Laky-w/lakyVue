@@ -185,6 +185,27 @@ export default new Router({
             ]
         },
         {
+            name: "财务",
+            path: "/finance",
+            component: resolve => require(['../components/common/Home.vue'], resolve),
+            children: [{
+                name: "基础设置",
+                path: "/teach/financeData",
+                component: resolve => require(['../components/page/teach/index.vue'], resolve),
+                children: [{
+                        path: '/financeData',
+                        name: "基础参数",
+                        component: resolve => require(['../components/page/teach/TeachData.vue'], resolve)
+                    },
+                    {
+                        path: '/financeAccount',
+                        name: "财务账户",
+                        component: resolve => require(['../components/page/finance/financeAccount.vue'], resolve)
+                    }
+                ]
+            }]
+        },
+        {
             name: "系统",
             path: "/system",
             component: resolve => require(['../components/common/Home.vue'], resolve),
