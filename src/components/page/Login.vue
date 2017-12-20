@@ -26,7 +26,7 @@
                     </el-input>
                 </el-form-item>
                 <div class="login-btn">
-                    <el-button type="primary" @click="submitForm('ruleForm')">登录</el-button>
+                    <el-button loading="loadForm" type="primary" @click="submitForm('ruleForm')">登录</el-button>
                 </div>
                 <p style="font-size:12px;line-height:30px;color:#fff000;"></p>
             </el-form>
@@ -38,6 +38,7 @@
     export default {
         data: function(){
             return {
+                loadForm:false,
                 ruleForm: {
                     serial: '001',
                     userName: 'admin',
@@ -62,9 +63,12 @@
                 const self = this;
                 self.$refs[formName].validate((valid) => {
                     if (valid) {
+                        self.loadForm=true;
                         self.$axios.post("organization/login",this.ruleForm).then( (res) => {
                             var data = res.data;
+                            self.loadForm=false;
                             if (data.code==200) {//登录成功
+
                                 sessionStorage.setItem("token",data.data["token"]);
                                 sessionStorage.setItem("branch",JSON.stringify(data.data["branch"]));
                                 sessionStorage.setItem("userInfo",JSON.stringify(data.data["userInfo"]));

@@ -72,7 +72,7 @@
                 :total="total">
             </el-pagination>
         </div>
-        <el-dialog title="添加账户" :visible.sync="dialogFormVisible">
+        <el-dialog title="添加账户" :visible.sync="dialogFormVisible" :close-on-click-modal="false">
           <el-form :model="form" ref="ruleForm" v-loading="loadingForm" >
                <el-form-item label="名称" :label-width="formLabelWidth" prop="name"  :rules="[{ required: true, message: '班级名称必填'}]">
                 <el-input v-model="form.name"   placeholder="账户名称"  ></el-input>
@@ -97,7 +97,8 @@
               <el-form-item label="校区" :label-width="formLabelWidth" prop="schoolName"  :rules="[{ required: true, message: '校区必填'}]">
                 <school-tree @nodeClick="handleSchool" :name="form.schoolName" :the-type="2" :disabled="form.isPublic" place-text="校区" :default-value="schoolId"></school-tree>
               </el-form-item>
-               <el-form-item label="初始金额" :label-width="formLabelWidth" prop="money" :rules="[{validator: validateMoney, trigger: 'blur'}]">
+               <el-form-item label="初始金额" :label-width="formLabelWidth" prop="money"
+               :rules="[{validator:$validate.validateMoney, trigger: 'blur'}]">
                <el-input v-model="form.money"   placeholder="0"  clearable>
                    <template slot="append">元(￥)</template>
                </el-input>
@@ -166,6 +167,8 @@ export default {
   methods: {
     //初始化属性start
     validateMoney(rule, value, callback) {
+        console.log(this.$validate.validateMoney);
+        return;
       let reg = /(^\d+\.\d{2}$)|(^[0-9]*$)|(^\d+\.\d{1}$)/;
       console.log(this.form.money);
       console.log(reg.test(value));

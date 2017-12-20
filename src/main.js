@@ -4,17 +4,17 @@ import router from './router';
 import axios from 'axios';
 import ElementUI from 'element-ui';
 // import "../static/js/common.js";
+import validateLaky from "../static/js/validate.js";
 import "common.js";
 import 'element-ui/lib/theme-chalk/index.css'; // 默认主题
 import "../static/css/icon/iconfont.css";
 import "../static/css/main.css";
 // import '../static/css/theme-green/index.css';       // 浅绿色主题
 import "babel-polyfill";
-
 Vue.use(ElementUI);
 Vue.prototype.$axios = axios;
-
-Vue.directive('drag', //自定义指令                                      JS
+Vue.prototype.$validate = validateLaky;
+Vue.directive('drag', //自定义指令
     {
         bind: function(el, binding) {
             let oDiv = el; //当前元素

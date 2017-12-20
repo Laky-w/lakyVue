@@ -8,11 +8,13 @@ axios.defaults.baseURL = 'http://192.168.0.100/laky/';
 // axios.defaults.baseURL = 'http://qfjjsk.natappfree.cc/';
 
 axios.interceptors.request.use(function(config) {
+
     // 在发送请求之前做些什么
     config.headers.common['token'] = sessionStorage.getItem("token");
+    // config.headers.common['content-type'] = "json";
     let data = qs.stringify(config.data);
     config.data = data.replace(/\%5B[0-9]\%5D/g, "");
-    console.log(config.data);
+    console.log(config);
     return config;
 });
 // 添加响应拦截器
