@@ -26,7 +26,7 @@
                     </el-input>
                 </el-form-item>
                 <div class="login-btn">
-                    <el-button loading="loadForm" type="primary" @click="submitForm('ruleForm')">登录</el-button>
+                    <el-button :loading="loadForm" type="primary" @click="submitForm('ruleForm')">登录</el-button>
                 </div>
                 <p style="font-size:12px;line-height:30px;color:#fff000;"></p>
             </el-form>

@@ -34,7 +34,7 @@
         </el-container>
         <!-- 添加悬浮表单 -->
         <el-dialog :title="formTitle" :visible.sync="dialogFormVisible" width="400px" :close-on-click-modal=false>
-            <el-form :model="form" ref="ruleForm" v-loading="loadingForm">
+            <el-form :model="form" ref="ruleForm">
                 <el-form-item label="名称" :label-width="formLabelWidth" prop="name"
                               :rules="[{ required: true, message: '名称必填'}]">
                     <el-input v-model="form.name" autofocus placeholder="自定义名称" auto-complete="off"></el-input>
@@ -43,7 +43,7 @@
 
             <div slot="footer" class="dialog-footer">
                 <el-button @click="dialogFormVisible = false">取 消</el-button>
-                <el-button type="primary" @click="submitForm('ruleForm')">确 定</el-button>
+                <el-button :loading="loadForm" type="primary" @click="submitForm('ruleForm')">确 定</el-button>
             </div>
         </el-dialog>
     </div>

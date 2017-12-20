@@ -5,6 +5,12 @@
                 <el-form-item>
                     <el-input v-model="queryForm.name" placeholder="物品名称" class="handle-input mr10"></el-input>
                 </el-form-item>
+                <el-form-item>
+                    <el-select v-model="queryForm.clazzId" clearable style="width:100%" placeholder="类别">
+                        <el-option v-for="(item,index) in parameterValue" :key="item.id" :label="item.name"
+                                   :value="item.id"></el-option>
+                    </el-select>
+                </el-form-item>
                 <el-button type="mini" icon="el-icon-search" @click="search('queryForm')">搜索</el-button>
             </el-form>
         </div>
@@ -20,11 +26,11 @@
                 prop="name">
             </el-table-column>
             <el-table-column
-                label="成本价"
+                label="成本价" sortable
                 prop="price">
             </el-table-column>
             <el-table-column
-                label="售价"
+                label="售价" sortable
                 prop="sellPrice">
             </el-table-column>
             <el-table-column
@@ -32,16 +38,12 @@
                 prop="clazzId">
             </el-table-column>
             <el-table-column
-                label="创建时间"
+                label="创建时间" sortable
                 prop="createTime">
             </el-table-column>
             <el-table-column
-                label="类型" :formatter="filterType"
+                label="状态" :formatter="filterType"
                 prop="theType">
-            </el-table-column>
-            <el-table-column
-                label="机构"
-                prop="branchId">
             </el-table-column>
             <!-- <el-table-column label="操作">
             <template slot-scope="scope">
@@ -65,37 +67,43 @@
                 :total="total">
             </el-pagination>
         </div>
-        <el-dialog title="添加物品" :visible.sync="dialogFormVisible" :close-on-click-modal=false>
-            <el-form :model="form" ref="ruleForm" v-loading="loadingForm">
+        <el-dialog title="添加物品" :visible.sync="dialogFormVisible" width="550px" :close-on-click-modal=false>
+            <el-form :model="form" ref="ruleForm" >
                 <el-form-item label="物品" :label-width="formLabelWidth" prop="name"  :rules="[{ required: true, message: '物品必填'}]">
                 <el-input v-model="form.name"   placeholder="物品"  ></el-input>
                 </el-form-item>
-                <el-form-item label="物品" :label-width="formLabelWidth" prop="clazzId"
+                <el-form-item label="类别" :label-width="formLabelWidth" prop="clazzId"
                               :rules="[{ required: true, message: '类别必填'}]">
-                    <el-select v-model="form.clazzId" style="width:100%" placeholder="物品">
+                    <el-select v-model="form.clazzId" style="width:100%" placeholder="类别">
                         <el-option v-for="(item,index) in parameterValue" :key="item.id" :label="item.name"
                                    :value="item.id"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="成本价" :label-width="formLabelWidth" prop="price"
-                              :rules="[{ required: true, message: '成本价必填'}]">
-                    <el-input v-model="form.price"></el-input>
+                              :rules="[{ required: true, message: '成本价必填'},
+                              {validator:$validate.validateMoney,trigger:'blur',}]">
+                    <el-input v-model="form.price">
+                        <template slot="append">元(￥)</template>
+                    </el-input>
                 </el-form-item>
                 <el-form-item label="售价" :label-width="formLabelWidth" prop="sellPrice"
-                              :rules="[{ required: true, message: '售价必填'}]">
-                    <el-input v-model="form.sellPrice"></el-input>
+                              :rules="[{ required: true, message: '售价必填'},
+                              {validator:$validate.validateMoney,trigger:'blur',}]">
+                    <el-input v-model="form.sellPrice">
+                        <template slot="append">元(￥)</template>
+                    </el-input>
                 </el-form-item>
 
-                <el-form-item label="物品类型" :label-width="formLabelWidth" prop="theType">
-                    <el-radio-group v-model="form.theType">
-                        <el-radio :label="1">启用</el-radio>
-                        <el-radio :label="2">封存</el-radio>
-                    </el-radio-group>
-                </el-form-item>
+                <!--<el-form-item label="物品类型" :label-width="formLabelWidth" prop="theType">-->
+                    <!--<el-radio-group v-model="form.theType">-->
+                        <!--<el-radio :label="1">启用</el-radio>-->
+                        <!--<el-radio :label="2">封存</el-radio>-->
+                    <!--</el-radio-group>-->
+                <!--</el-form-item>-->
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="dialogFormVisible = false">取 消</el-button>
-                <el-button type="primary" @click="submitForm('ruleForm')">确 定</el-button>
+                <el-button :loading="loadingForm" type="primary" @click="submitForm('ruleForm')">保 存</el-button>
             </div>
         </el-dialog>
     </div>
@@ -136,9 +144,10 @@
                 dialogFormVisible: false,
                 total: 0,
                 cur_page: 1,
-                page_size: 20,
+                page_size: 50,
                 queryForm: {
                     name: "",
+                    clazzId:"",
                 },
                 pickerOptions1: {
                     disabledDate(time) {
@@ -250,7 +259,7 @@
             },
             // 数据过滤
             filterType(value, row) {
-                if (value.theType == 1) row.tag = "启用";
+                if (value.theType == 1) row.tag = "正常";
                 else row.tag = "封存";
                 return row.tag;
             },
