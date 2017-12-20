@@ -206,6 +206,51 @@ export default new Router({
             }]
         },
         {
+            name: "后勤",
+            path: "/logistics",
+            component: resolve => require(['../components/common/Home.vue'], resolve),
+            children: [{
+                name: "后勤管理",
+                path: "/logistics/goods",
+                component: resolve => require(['../components/page/logistics/index.vue'], resolve),
+                children: [{
+                    path: '/goods',
+                    name: "物品管理",
+                    component: resolve => require(['../components/page/logistics/Goods.vue'], resolve)
+                },
+                    // {
+                    //     path: '/contact',
+                    //     name: "物品库存",
+                    //     component: resolve => require(['../components/page/logistics/wait.vue'], resolve)
+                    // },
+                    // {
+                    //     path: '/invite',
+                    //     name: "出入库管理",
+                    //     component: resolve => require(['../components/page/logistics/wait.vue'], resolve)
+                    // },
+
+                ]
+            },
+                {
+                    name: "基础参数",
+                    path: "/logistics/logisticsData",
+                    component: resolve => require(['../components/page/logistics/index.vue'], resolve),
+                    children: [
+                    //     {
+                    //     path: '/marketActivity',
+                    //     name: "市场活动",
+                    //     component: resolve => require(['../components/page/supply/MarketActivity.vue'], resolve)
+                    // },
+                        {
+                            path: '/logisticsData',
+                            name: "参数设置",
+                            component: resolve => require(['../components/page/logistics/LogisticsData.vue'], resolve)
+                        },
+                    ]
+                },
+            ]
+        },
+        {
             name: "系统",
             path: "/system",
             component: resolve => require(['../components/common/Home.vue'], resolve),

@@ -36,7 +36,7 @@
                 <el-checkbox v-if="scope.row.authoritiyCount>0" v-model="scope.row.checkAll"  :indeterminate="scope.row.isIndeterminate"
                 :true-label="scope.row.id+':true'" :false-label="scope.row.id+':false'" @change="handleCheckAllChange">全选</el-checkbox>
                 <el-checkbox-group style="display: inline-block;" v-model="scope.row.checkedAuthorities" @change="handleCheckedCitiesChange">
-                  <el-checkbox  v-for="(item, levelIndex) in scope.row.authorities" :label="item.id">{{item.name}}
+                  <el-checkbox  v-for="(item, levelIndex) in scope.row.authorities" :label="item.id" :key="item.id">{{item.name}}
                   </el-checkbox>
                 </el-checkbox-group>
             </template>
