@@ -166,18 +166,6 @@ export default {
   },
   methods: {
     //初始化属性start
-    validateMoney(rule, value, callback) {
-        console.log(this.$validate.validateMoney);
-        return;
-      let reg = /(^\d+\.\d{2}$)|(^[0-9]*$)|(^\d+\.\d{1}$)/;
-      console.log(this.form.money);
-      console.log(reg.test(value));
-      if (value !== "" && !reg.test(value)) {
-        callback(new Error("格式错误,正确格式[0.00]"));
-      } else {
-        callback();
-      }
-    },
     getSchoolId() {
       let self = this;
       let user = JSON.parse(sessionStorage.getItem("userInfo"));

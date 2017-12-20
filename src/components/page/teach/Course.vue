@@ -97,15 +97,11 @@
               <!-- <el-form-item label="名称" :label-width="formLabelWidth" prop="name"  :rules="[{ required: true, message: '名称必填'}]">
               <el-input v-model="form.name"  autofocus placeholder="课程名称"  auto-complete="off"></el-input>
               </el-form-item> -->
-              <el-form-item label="收费类型" :label-width="formLabelWidth" prop="freeType"  :rules="[{ required: true, message: '类型必填'}]">
-                <el-radio-group v-model="form.freeType">
+              <el-form-item label="收费类型" :label-width="formLabelWidth" prop="standardType"  :rules="[{ required: true, message: '类型必填'}]">
+                <el-radio-group v-model="form.standardType">
                   <el-radio :label="1">标准收费</el-radio>
                   <el-radio :label="2">区间收费</el-radio>
                 </el-radio-group>
-              <!-- <el-select v-model="form.freeType" style="width:100%"   placeholder="课程类型" >
-                    <el-option  label="标准收费" value="1"></el-option>
-                    <el-option  label="课程收费" value="2" ></el-option>
-              </el-select> -->
               </el-form-item>
               <el-form-item label="收费信息" required :label-width="formLabelWidth" size="mini" style="margin-bottom:0px;">
                   <el-form-item class="freeTitle" size="mini">
@@ -119,23 +115,30 @@
                    </el-form-item>
               </el-form-item>
               <el-form-item  :label-width="formLabelWidth"  v-for="(chargeStandard, index) in form.chargeStandard"  style="margin-bottom:0px;">
-                   <el-form-item style="display:inline-block;width:100px;margin-bottom:5px;" :key="index"
+                   <el-form-item v-if="form.standardType==2" style="display:inline-block;width:100px;margin-bottom:5px;" :key="index"
                    :prop="'chargeStandard.' + index + '.minHourse'" :rules="[
                         { required: true, message: '必填项'},
                         { type: 'number', message: '必须为数字值'}]" size="mini" >
                        <el-input v-model.number="chargeStandard.minHourse" placeholder="最小课时" ></el-input>
                    </el-form-item>
-                   --
-                   <el-form-item style="display:inline-block;width:100px;margin-bottom:5px;"
+                   <span v-if="form.standardType==2">--</span>
+                   <el-form-item v-if="form.standardType==2" style="display:inline-block;width:100px;margin-bottom:5px;"
                     :prop="'chargeStandard.' + index + '.maxHourse'" :rules="[
                         { required: true, message: '必填项'},
                         { type: 'number', message: '必须为数字值'}]" size="mini" >
-                       <el-input v-model.number="chargeStandard.maxHourse" placeholder="最大课时" ></el-input>
+                        <el-input v-model.number="chargeStandard.maxHourse" placeholder="最大课时" ></el-input>
+                   </el-form-item>
+
+                   <el-form-item v-if="form.standardType==1" style="display:inline-block;width:220px;margin-bottom:5px;"
+                    :prop="'chargeStandard.' + index + '.minHourse'" :rules="[
+                        { required: true, message: '必填项'},
+                        { type: 'number', message: '必须为数字值'}]" size="mini" >
+                        <el-input v-model.number="chargeStandard.minHourse" placeholder="课时" ></el-input>
                    </el-form-item>
                    <el-form-item style="display:inline-block;width:220px;margin-bottom:5px;"
                     :prop="'chargeStandard.' + index + '.price'"   :rules="[
                         { required: true, message: '必填项'},
-                        { type: 'number', message: '必须为数字值'}]" size="mini"  >
+                        { validator:$validate.validateMoney, trigger: 'blur'}]" size="mini"  >
                        <el-input v-model.number="chargeStandard.price" placeholder="费用"  ></el-input>
                    </el-form-item>
                    <el-form-item style="display:inline-block;width:220px;margin-bottom:5px;"   >
@@ -144,24 +147,16 @@
               </el-form-item>
           </el-form>
           <el-form :model="form" ref="ruleForm3" :style="formActive!=3?'display:none':''">
-              <el-form-item label="名称" :label-width="formLabelWidth" prop="name"  :rules="[{ required: true, message: '名称必填'}]">
-              <el-input v-model="form.name"   placeholder="课程名称" ></el-input>
-              </el-form-item>
-              <el-form-item label="类型" :label-width="formLabelWidth" prop="theType"  :rules="[{ required: true, message: '类型必填'}]">
-              <el-select v-model="form.theType" style="width:100%"   placeholder="课程类型" >
-                    <el-option  label="一对一" value="1"></el-option>
-                    <el-option  label="一对多" value="2" ></el-option>
-              </el-select>
-              </el-form-item>
-              <el-form-item label="科目" :label-width="formLabelWidth" prop="clazzId"  :rules="[{ required: true, message: '科目必填'}]">
-                <el-select v-model="form.clazzId" style="width:100%"  placeholder="科目" >
-                    <el-option v-for="(item,index) in parameterValue" :key="item.id" :label="item.name" :value="item.id"></el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item label="描述" :label-width="formLabelWidth" prop="remarks" >
-                <el-input v-model="form.remarks"  :rows=5 type="textarea" placeholder="请输入描述信息" ></el-input>
-              </el-form-item>
-
+                <el-transfer style="padding-left: 180px;"
+                    v-model="form.schoolIds"
+                    filterable
+                    :titles="['全部校区', '授权校区']"
+                    :button-texts="['取消', '授权']"
+                    :props="{key: 'id',label: 'name'}"
+                    :data="schoolData">
+                    <!-- <el-button class="transfer-footer" slot="left-footer" size="small">操作</el-button>
+                    <el-button class="transfer-footer" slot="right-footer" size="small">操作</el-button> -->
+                </el-transfer>
           </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="dialogFormVisible = false">取 消</el-button>
@@ -226,13 +221,16 @@ export default {
       },
       parameterValue: [],
       formActive: 1,
+      schoolData: [], //全部授权校区
       form: {
         //表单 v-modle绑定的值
         name: "",
         theType: "2",
         clazzId: "",
         remarks: "",
-        freeType: 1,
+        standardType: 1,
+        schoolIds: [],
+        chargeStandardStr:"",//收费信息json
         chargeStandard: [
           {
             minHourse: "",
@@ -250,6 +248,7 @@ export default {
   created() {
     this.getData();
     this.getSchoolId();
+    this.getSchool();
     this.getParameterValue(7);
   },
   computed: {
@@ -280,6 +279,41 @@ export default {
       //搜索方法
       this.cur_page = 1;
       this.getData();
+    },
+    getSchool() {
+      let self = this;
+      self.$axios
+        .get("organization/findChildSchoolZoneAll/2/" + self.schoolId)
+        .then(res => {
+          let data = res.data;
+          if (data.code == 200) {
+            let parent = data.data;
+            self.form.schoolIds.push(parent.id);
+            let dataArray = [];
+            parent["disabled"] = true;
+            dataArray.push(parent);
+            if (parent.childrenList) {
+              dataArray = dataArray.concat(
+                self.parseSchoolArray(parent.childrenList)
+              );
+            }
+            self.schoolData = dataArray;
+          } else {
+            self.$message.error(data.data);
+          }
+        });
+    },
+    parseSchoolArray(data) {
+      let dataArray = [];
+      for (let i = 0; i < data.length; i++) {
+        dataArray.push(data[i]);
+        if (data[i].childrenList) {
+          dataArray = dataArray.concat(
+            this.parseSchoolArray(data[i].childrenList)
+          );
+        }
+      }
+      return dataArray;
     },
     getParameterValue(id) {
       let self = this;
@@ -312,13 +346,21 @@ export default {
           }
         });
     },
+    resetFormFields(){
+        let self = this;
+        self.$refs["ruleForm1"].resetFields();
+        self.$refs["ruleForm2"].resetFields();
+        self.form.schoolIds=[self.schoolId];
+        self.formActive=1;
+    },
     //保存表单
     submitForm(formName) {
       let self = this;
-      self.$refs[formName+self.formActive].validate(valid => {
+      self.$refs[formName + self.formActive].validate(valid => {
         if (valid) {
           if (self.formActive == 3) {
             self.loadingForm = true;
+            self.form.chargeStandardStr=JSON.stringify(self.form.chargeStandard);
             self.$axios.post("teach/createCourse", this.form).then(res => {
               var data = res.data;
               self.loadingForm = false;
@@ -326,7 +368,7 @@ export default {
                 self.$message.success(data.message);
                 self.dialogFormVisible = false;
                 self.getData();
-                self.$refs[formName].resetFields();
+                self.resetFormFields();
               } else {
                 this.$message.error(data.data);
               }

@@ -85,7 +85,7 @@
             getData() {
                 let self = this;
                 self.loading = true;
-                self.$axios.get("organization/findBranchParameterByType/1").then(res => {
+                self.$axios.get("organization/findBranchParameterByType/5").then(res => {
                     let data = res.data;
                     if (data.code == 200) {
                         data.data.forEach(element => {
