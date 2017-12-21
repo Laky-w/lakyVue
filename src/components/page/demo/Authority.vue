@@ -77,7 +77,7 @@
       },
         renderContent(h, { node, data, store }) {
             return (
-            <span style="flex:1,display: flex; align-items: center; justify-content: space-between; font-size: 14px; padding-right: 8px;">
+            <span style="flex:1, display: flex; align-items: center; justify-content: space-between; font-size: 14px; padding-right: 8px;">
                 <span>
                 <span>{node.label}</span>
                 </span>

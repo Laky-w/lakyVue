@@ -10,23 +10,11 @@
         </div>
         <div class="sidebar">
             <router-link style="margin-left: 5px;cursor: pointer;" tag="span" v-for="item in visitedViews" :to="item.path" :key="item.id">
-               <el-tag size="mini" disable-transitions :style="visitedViewsCurrent.path==item.path?'color:#f5f7fa':'color:#2d2f33'"
-                :key="item.name" :color="visitedViewsCurrent.path==item.path?'#67c23a':''" @close.stop="closeTag(item.path,$event)"
+               <el-tag size="mini" disable-transitions :style="visitedViewsCurrent.path==item.path?'color:#f5f7fa':'color:#2d2f33'" :key="item.id"
+                :color="visitedViewsCurrent.path==item.path?'#67c23a':''" @close.stop="closeTag(item.path,$event)"
                 closable>{{item.name}}
               </el-tag>
             </router-link>
-            <!-- <span v-for="(item,index) in visitedViews" >
-                <el-tag size="mini" disable-transitions :style="visitedViewsCurrent.path==item.path?'color:#f5f7fa':'color:#2d2f33'"
-                :key="item.name" :color="visitedViewsCurrent.path==item.path?'#67c23a':''" @close.stop="closeTag(item.path,$event)"
-                closable>
-                {{item.name}}
-              </el-tag>
-            </span> -->
-            <!-- <el-button v-for="(item,index) in visitedViews" size="mini">
-                <router-link :to="item.path">
-                <span :style="visitedViewsCurrent.path==item.path?'color:red':''">{{item.name}}</span>
-                </router-link>
-            </el-button> -->
         </div>
     </div>
 </template>
@@ -58,7 +46,6 @@ export default {
     },
     closeTag(path, event) {
       if (path) {
-        console.log(path);
         for (let i = 0; i < this.visitedViews.length; i++) {
           var obj = this.visitedViews[i];
           if (obj.name == this.visitedViewMap.get(path).name) {
@@ -83,13 +70,11 @@ export default {
       // this.$router.push(this.visitedViews[this.visitedViews.length-1]);
     },
     getBreadcrumb() {
-      console.log(this.$router);
       let matched = this.$route.matched.filter(item => item.name);
       //   const first = matched[0]
       //   if (first && first.name !== 'dashboard') {
       //     matched = [{ path: '/dashboard', meta: { title: 'dashboard' }}].concat(matched)
       //   }
-
       if (matched[matched.length - 1]) {
         var obj = matched[matched.length - 1];
         this.visitedViewsCurrent = obj; //当前路由

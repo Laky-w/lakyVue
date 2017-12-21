@@ -114,7 +114,7 @@
                        <el-button size="mini" @click="addChargeStandard">添加</el-button>
                    </el-form-item>
               </el-form-item>
-              <el-form-item  :label-width="formLabelWidth"  v-for="(chargeStandard, index) in form.chargeStandard"  style="margin-bottom:0px;">
+              <el-form-item  :label-width="formLabelWidth"  v-for="(chargeStandard, index) in form.chargeStandard" :key="index" style="margin-bottom:0px;">
                    <el-form-item v-if="form.standardType==2" style="display:inline-block;width:100px;margin-bottom:5px;" :key="index"
                    :prop="'chargeStandard.' + index + '.minHourse'" :rules="[
                         { required: true, message: '必填项'},

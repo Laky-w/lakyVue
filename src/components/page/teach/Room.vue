@@ -125,7 +125,6 @@ export default {
       let user = JSON.parse(sessionStorage.getItem("userInfo"));
       self.form.schoolZoneId = user.schoolZoneId;
       self.form.schoolName = user.schoolZone.name;
-      self.getAuthorityOptions();
       self.schoolId = user.schoolZoneId;
     },
     //初始化属性end
