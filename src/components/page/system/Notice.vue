@@ -77,7 +77,7 @@
             </el-pagination>
         </div>
         <el-dialog title="添加公告" :visible.sync="dialogFormVisible" width="750px" :close-on-click-modal=false>
-            <el-form :model="form" ref="ruleForm" v-loading="loadingForm" >
+            <el-form :model="form" ref="ruleForm">
                 <el-form-item label="公告范围" :label-width="formLabelWidth" required>
                     <el-radio-group v-model="form.theType">
                         <el-radio :label="1">机构公告</el-radio>
@@ -86,7 +86,7 @@
                 </el-form-item>
                 <el-form-item label="有效时间" prop="lastDatetime" :label-width="formLabelWidth">
                     <el-date-picker style="width:100%" v-model="form.lastDatetime" value-format="yyyy-MM-dd HH:mm:ss"
-                                    type="datetime" placeholder="有效时间" ></el-date-picker>
+                                    type="datetime" placeholder="有效时间"></el-date-picker>
                 </el-form-item>
                 <el-form-item label="公告内容" prop="content" :label-width="formLabelWidth"
                               :rules="[{ required: true, message: '必选项'} ,{ min: 10, max: 50, message: '长度在 10 到 50 个字符', trigger: 'blur' }]">
@@ -97,7 +97,7 @@
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="dialogFormVisible = false">取 消</el-button>
-                <el-button type="primary" @click="submitForm('ruleForm')">保 存</el-button>
+                <el-button :loading="loadForm" type="primary" @click="submitForm('ruleForm')">保 存</el-button>
             </div>
         </el-dialog>
     </div>

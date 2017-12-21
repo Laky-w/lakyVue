@@ -3,7 +3,8 @@
         <div class="handle-box">
             <el-form ref="queryForm" :inline="true" :model="queryForm" label-width="80px" size="mini">
                 <el-form-item>
-                    <el-input v-model="queryForm.studentId" placeholder="邀约人名称/拼音/手机号" class="handle-input mr10"></el-input>
+                    <el-input v-model="queryForm.studentId" placeholder="邀约人名称/拼音/手机号"
+                              class="handle-input mr10"></el-input>
                 </el-form-item>
                 <el-form-item>
                     <el-input v-model="queryForm.userId" placeholder="记录人" class="handle-input mr10"></el-input>
@@ -69,7 +70,7 @@
             </el-pagination>
         </div>
         <el-dialog title="添加邀约记录" :visible.sync="dialogFormVisible" :close-on-click-modal=false>
-            <el-form :model="form" ref="ruleForm" v-loading="loadingForm">
+            <el-form :model="form" ref="ruleForm">
                 <!--<el-form-item label="名称" :label-width="formLabelWidth" prop="studentId"  :rules="[{ required: true, message: '邀约人必填'}]">-->
                 <!--<el-input v-model="form.studentId"   placeholder="邀约人"  ></el-input>-->
                 <!--</el-form-item>-->
@@ -108,7 +109,7 @@
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="dialogFormVisible = false">取 消</el-button>
-                <el-button type="primary" @click="submitForm('ruleForm')">确 定</el-button>
+                <el-button :loading="loadForm" type="primary" @click="submitForm('ruleForm')">确 定</el-button>
             </div>
         </el-dialog>
     </div>

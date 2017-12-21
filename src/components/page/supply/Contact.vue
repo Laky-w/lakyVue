@@ -20,10 +20,10 @@
                 </el-form-item>
                 <el-button type="mini" icon="el-icon-search" @click="search('queryForm')">搜索</el-button>
                 <!--<el-form-item>-->
-                    <!--<el-select v-model="queryForm.contactStyleId" value=1 clearable placeholder="联系方式"-->
-                               <!--class="handle-select mr10">-->
-                        <!--<el-option v-for="(item,index) in parameterValue" :key="item.id" :label="item.name" :value="item.id"></el-option>-->
-                    <!--</el-select>-->
+                <!--<el-select v-model="queryForm.contactStyleId" value=1 clearable placeholder="联系方式"-->
+                <!--class="handle-select mr10">-->
+                <!--<el-option v-for="(item,index) in parameterValue" :key="item.id" :label="item.name" :value="item.id"></el-option>-->
+                <!--</el-select>-->
                 <!--</el-form-item>-->
             </el-form>
         </div>
@@ -73,8 +73,9 @@
                 :total="total">
             </el-pagination>
         </div>
-        <el-dialog title="添加跟进记录" :visible.sync="dialogFormVisible" width="750px" :close-on-click-modal=false custom-class="dialog-form">
-            <el-form :model="form" ref="ruleForm" v-loading="loadingForm" size="small" >
+        <el-dialog title="添加跟进记录" :visible.sync="dialogFormVisible" width="750px" :close-on-click-modal=false
+                   custom-class="dialog-form">
+            <el-form :model="form" ref="ruleForm" size="small">
                 <el-form-item label="联系人" :label-width="formLabelWidth" prop="studentId"
                               :rules="[{ required: true, message: '名称必填'}]">
                     <customer-dialog v-model="form.studentId" title="联系人" placeholder-text="联系人名称">
@@ -94,17 +95,19 @@
                 <el-form-item label="联系方式" :label-width="formLabelWidth" prop="contactStyleId">
                     <el-select v-model="form.contactStyleId" value=1 clearable placeholder="联系方式" style="width: 100%"
                                class="handle-select mr10">
-                        <el-option v-for="(item,index) in parameterValue" :key="item.id" :label="item.name" :value="item.id"></el-option>
+                        <el-option v-for="(item,index) in parameterValue" :key="item.id" :label="item.name"
+                                   :value="item.id"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="联系内容" :label-width="formLabelWidth" prop="content" :rules="[{ required: true, message: '该项必填'}]">
+                <el-form-item label="联系内容" :label-width="formLabelWidth" prop="content"
+                              :rules="[{ required: true, message: '该项必填'}]">
                     <el-input v-model="form.content" style="height:100px" :rows=3 type="textarea"
                               placeholder="联系内容"></el-input>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="dialogFormVisible = false">取 消</el-button>
-                <el-button type="primary" @click="submitForm('ruleForm')">保 存</el-button>
+                <el-button :loading="loadForm" type="primary" @click="submitForm('ruleForm')">保 存</el-button>
             </div>
         </el-dialog>
 
@@ -116,6 +119,7 @@
     import DateRange from "../../common/Daterange.vue";
     import UserDialog from "../../common/system/UserDialog.vue";
     import CustomerDialog from "../../common/supply/CustomerDialog";
+
     export default {
         data() {
             return {
@@ -124,7 +128,7 @@
                 total: 0,
                 cur_page: 1,
                 page_size: 20,
-                parameterValue:[],
+                parameterValue: [],
                 queryForm: {
                     userName: "",
                     contactTime: "",
