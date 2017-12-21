@@ -21,16 +21,17 @@
 .treeDivH {
   display: none;
 }
-.treeDiv{
-    position: absolute ;
-    z-index: 88;
-    width: 99.80%;
-    top:42px;
-    border: solid 1px #66b1ff;
+.treeDiv {
+  position: absolute;
+  z-index: 88;
+  width: 99.8%;
+  top: 42px;
+  border: solid 1px #66b1ff;
 }
 </style>
 
 <script scoped>
+import { findSchoolZoneAll } from "../../../api/api";
 export default {
   // watch: {
   //   filterText(val) {
@@ -39,15 +40,14 @@ export default {
   // },
   created() {
     // 点击其他不在的区域触发事件
-    document.addEventListener('click', (e) => {
-      if (!this.$el.contains(e.target)){
-          this.isShow = true; 
+    document.addEventListener("click", e => {
+      if (!this.$el.contains(e.target)) {
+        this.isShow = true;
       }
-    })
+    });
     this.getSchool();
   },
   methods: {
-    
     filterNode(value, data) {
       if (!value) return true;
       return data.name.indexOf(value) !== -1;
@@ -58,12 +58,11 @@ export default {
     getSchool() {
       let self = this;
       self.loading = true;
-      self.$axios.get("organization/findSchoolZoneAll").then(res => {
-        let data = res.data;
+      findSchoolZoneAll().then(data => {
         self.loading = false;
         if (data.code == 200) {
           let treeArray = [];
-          treeArray.push(data.data)
+          treeArray.push(data.data);
           console.debug(treeArray);
           self.data2 = treeArray;
         } else {
@@ -72,9 +71,9 @@ export default {
       });
     },
     handleNodeClick(data) {
-      this.filterText=data.name;
-      this.isShow=true;
-      this.$emit("nodeClick",data);
+      this.filterText = data.name;
+      this.isShow = true;
+      this.$emit("nodeClick", data);
     }
   },
 
@@ -82,8 +81,7 @@ export default {
     return {
       filterText: "",
       isShow: true,
-      data2: [
-      ],
+      data2: [],
       defaultProps: {
         children: "childrenList",
         label: "name"

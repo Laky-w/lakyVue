@@ -14,7 +14,7 @@
                 </el-form-item>
                 <el-form-item >
                     <el-select v-model="queryForm.clazzId" multiple  value=1 clearable placeholder="科目" class="handle-select mr10" >
-                        <el-option v-for="(item,index) in parameterValue" :key="item.id" :label="item.name" :value="item.id"></el-option>
+                        <el-option v-for="item in parameterValue" :key="item.id" :label="item.name" :value="item.id"></el-option>
                     </el-select>
                 </el-form-item>
                 <!-- <el-form-item >
@@ -114,15 +114,15 @@
                        <el-button size="mini" @click="addChargeStandard">添加</el-button>
                    </el-form-item>
               </el-form-item>
-              <el-form-item  :label-width="formLabelWidth"  v-for="(chargeStandard, index) in form.chargeStandard"  style="margin-bottom:0px;">
-                   <el-form-item v-if="form.standardType==2" style="display:inline-block;width:100px;margin-bottom:5px;" :key="index"
+              <el-form-item  :label-width="formLabelWidth"  v-for="(chargeStandard, index) in form.chargeStandard" :key="index"  style="margin-bottom:0px;">
+                   <el-form-item v-if="form.standardType==2" style="display:inline-block;width:100px;margin-bottom:5px;" 
                    :prop="'chargeStandard.' + index + '.minHourse'" :rules="[
                         { required: true, message: '必填项'},
                         { type: 'number', message: '必须为数字值'}]" size="mini" >
                        <el-input v-model.number="chargeStandard.minHourse" placeholder="最小课时" ></el-input>
                    </el-form-item>
                    <span v-if="form.standardType==2">--</span>
-                   <el-form-item v-if="form.standardType==2" style="display:inline-block;width:100px;margin-bottom:5px;"
+                   <el-form-item v-if="form.standardType==2"  style="display:inline-block;width:100px;margin-bottom:5px;"
                     :prop="'chargeStandard.' + index + '.maxHourse'" :rules="[
                         { required: true, message: '必填项'},
                         { type: 'number', message: '必须为数字值'}]" size="mini" >
@@ -161,7 +161,7 @@
             <div slot="footer" class="dialog-footer">
                 <el-button @click="dialogFormVisible = false">取 消</el-button>
                 <el-button type="primary" v-if="formActive!=1" @click="formActive--">上一步</el-button>
-                <el-button type="primary" @click="submitForm('ruleForm')">{{formActive!=3?'下一步':'保存'}}</el-button>
+                <el-button :loading="loadingForm" type="primary" @click="submitForm('ruleForm')">{{formActive!=3?'下一步':'保存'}}</el-button>
             </div>
         </el-dialog>
     </div>
@@ -206,6 +206,7 @@ table td {
 
 <script>
 import SchoolTree from "../../common/system/SchoolTree.vue";
+import { findChildSchoolZoneAll,createCourse,getCourseList,findBranchParameterValueAll} from "../../api/api";
 export default {
   data() {
     return {
@@ -230,7 +231,7 @@ export default {
         remarks: "",
         standardType: 1,
         schoolIds: [],
-        chargeStandardStr:"",//收费信息json
+        chargeStandardStr: "", //收费信息json
         chargeStandard: [
           {
             minHourse: "",
@@ -282,26 +283,23 @@ export default {
     },
     getSchool() {
       let self = this;
-      self.$axios
-        .get("organization/findChildSchoolZoneAll/2/" + self.schoolId)
-        .then(res => {
-          let data = res.data;
-          if (data.code == 200) {
-            let parent = data.data;
-            self.form.schoolIds.push(parent.id);
-            let dataArray = [];
-            parent["disabled"] = true;
-            dataArray.push(parent);
-            if (parent.childrenList) {
-              dataArray = dataArray.concat(
-                self.parseSchoolArray(parent.childrenList)
-              );
-            }
-            self.schoolData = dataArray;
-          } else {
-            self.$message.error(data.data);
+      findChildSchoolZoneAll(2,self.schoolId).then(data => {
+        if (data.code == 200) {
+          let parent = data.data;
+          self.form.schoolIds.push(parent.id);
+          let dataArray = [];
+          parent["disabled"] = true;
+          dataArray.push(parent);
+          if (parent.childrenList) {
+            dataArray = dataArray.concat(
+              self.parseSchoolArray(parent.childrenList)
+            );
           }
-        });
+          self.schoolData = dataArray;
+        } else {
+          self.$message.error(data.data);
+        }
+      });
     },
     parseSchoolArray(data) {
       let dataArray = [];
@@ -317,41 +315,36 @@ export default {
     },
     getParameterValue(id) {
       let self = this;
-      self.$axios
-        .get("organization/findBranchParameterValueAll/" + id)
-        .then(res => {
-          let data = res.data;
-          if (data.code == 200) {
-            self.parameterValue = data.data;
-          }
-        });
+      findBranchParameterValueAll(id).then(data => {
+        if (data.code == 200) {
+          self.parameterValue = data.data;
+        }
+      });
     },
     //加载数据
     getData() {
       let self = this;
       self.loading = true;
-      self.$axios
-        .post(
-          "teach/getCourseList/" + this.cur_page + "/" + this.page_size,
-          self.queryForm
-        )
-        .then(res => {
-          let data = res.data;
-          self.loading = false;
-          if (data.code == 200) {
-            self.tableData = data.data.list;
-            self.total = data.data.total;
-          } else {
-            self.$message.error(data.data);
-          }
-        });
+      getCourseList(
+        self.cur_page,
+        self.page_size,
+        self.queryForm
+      ).then(data => {
+        self.loading = false;
+        if (data.code == 200) {
+          self.tableData = data.data.list;
+          self.total = data.data.total;
+        } else {
+          self.$message.error(data.data);
+        }
+      });
     },
-    resetFormFields(){
-        let self = this;
-        self.$refs["ruleForm1"].resetFields();
-        self.$refs["ruleForm2"].resetFields();
-        self.form.schoolIds=[self.schoolId];
-        self.formActive=1;
+    resetFormFields() {
+      let self = this;
+      self.$refs["ruleForm1"].resetFields();
+      self.$refs["ruleForm2"].resetFields();
+      self.form.schoolIds = [self.schoolId];
+      self.formActive = 1;
     },
     //保存表单
     submitForm(formName) {
@@ -360,9 +353,10 @@ export default {
         if (valid) {
           if (self.formActive == 3) {
             self.loadingForm = true;
-            self.form.chargeStandardStr=JSON.stringify(self.form.chargeStandard);
-            self.$axios.post("teach/createCourse", this.form).then(res => {
-              var data = res.data;
+            self.form.chargeStandardStr = JSON.stringify(
+              self.form.chargeStandard
+            );
+            createCourse(self.form).then(data => {
               self.loadingForm = false;
               if (data.code == 200) {
                 self.$message.success(data.message);

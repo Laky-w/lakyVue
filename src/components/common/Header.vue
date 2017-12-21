@@ -16,6 +16,7 @@
     </div>
 </template>
 <script>
+import { findNewNoticeAll, loginOut } from "../api/api";
 export default {
   data() {
     return {
@@ -60,8 +61,7 @@ export default {
           self.noticeIndex = 0;
         }
       }
-      this.$axios.get("organization/findNewNoticeAll").then(res => {
-        var data = res.data;
+      findNewNoticeAll().then(data => {
         if (data.code == 200) {
           self.notices = data.data;
           if (self.notices) {
@@ -75,13 +75,11 @@ export default {
       if (command == "loginout") {
         sessionStorage.removeItem("userInfo");
         sessionStorage.removeItem("branch");
-        this.$axios.get("organization/loginOut").then(res => {
-          var data = res.data;
+        loginOut().then(data => {
           if (data.code == 200) {
             //退出成功
             sessionStorage.removeItem("token");
           }
-          this.$router.push("/login");
         });
       }
     }

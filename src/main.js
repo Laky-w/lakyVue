@@ -1,7 +1,6 @@
 import Vue from 'vue';
 import App from './App';
 import router from './router';
-import axios from 'axios';
 import ElementUI from 'element-ui';
 // import "../static/js/common.js";
 import validateLaky from "../static/js/validate.js";
@@ -12,7 +11,6 @@ import "../static/css/main.css";
 // import '../static/css/theme-green/index.css';       // 浅绿色主题
 import "babel-polyfill";
 Vue.use(ElementUI);
-Vue.prototype.$axios = axios;
 Vue.prototype.$validate = validateLaky;
 Vue.directive('drag', //自定义指令
     {

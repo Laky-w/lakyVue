@@ -97,7 +97,7 @@
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="dialogFormVisible = false">取 消</el-button>
-                <el-button :loading="loadForm" type="primary" @click="submitForm('ruleForm')">保 存</el-button>
+                <el-button :loading="loadingForm" type="primary" @click="submitForm('ruleForm')">保 存</el-button>
             </div>
         </el-dialog>
     </div>
@@ -105,120 +105,116 @@
 
 
 <script>
-    import SchoolTree from "../../common/system/SchoolTree.vue";
-    import DateRange from "../../common/Daterange.vue";
-
-    export default {
-        data() {
-            return {
-                tableData: [],
-                dialogFormVisible: false,
-                cur_page: 1,
-                page_size: 20,
-                total: 0,
-                queryForm: {
-                    lastDatetime: "",
-                    theType: "",
-                    content: "",
-                    schoolZoneId2: []
-                },
-                form: {
-                    theType: 2,
-                    content: "",
-                    lastDatetime: ""
-                },
-                formLabelWidth: "120px",
-                loading: false,
-                loadingForm: false
-            };
-        },
-        created() {
-            this.getData();
-        },
-        methods: {
-            handleSizeChange(val) {
-                console.log(this.page_size);
-                this.page_size = val;
-                this.getData();
-            },
-            handleCurrentChange(val) {
-                this.cur_page = val;
-                this.getData();
-            },
-            getData() {
-                let self = this;
-                self.loading = true;
-                self.$axios
-                    .post(
-                        "organization/findNoticeAll/" + this.cur_page + "/" + this.page_size,
-                        self.queryForm
-                    )
-                    .then(res => {
-                        let data = res.data;
-                        if (data.code == 200) {
-                            self.total = data.data["total"];
-                            self.tableData = data.data.list;
-                            self.loading = false;
-                        } else {
-                            self.$message.error(data.data);
-                        }
-                    });
-            },
-            handleEdit(index, row) {
-                this.form.fatherId = row.id;
-                this.form.fatherName = row.name;
-                this.dialogFormVisible = true;
-            },
-            filterType(value, row) {
-                if (value.theType == 1) row.tag = "机构公告";
-                else row.tag = "校区公告";
-                return row.tag;
-            },
-            //保存表单
-            submitForm(formName) {
-                let self = this;
-                self.$refs[formName].validate(valid => {
-                    if (valid) {
-                        self.loadingForm = true;
-                        self.$axios.post("organization/createNotice", this.form).then(res => {
-                            var data = res.data;
-                            self.loadingForm = false;
-                            if (data.code == 200) {
-                                self.$message.success(data.message);
-                                self.dialogFormVisible = false;
-                                self.getData();
-                                self.$refs[formName].resetFields();
-                            } else {
-                                this.$message.error(data.data);
-                            }
-                        });
-                    } else {
-                        return false;
-                    }
-                });
-            },
-            handleCheckChange(allNode) {
-                this.queryForm.schoolZoneId2 = [];
-                for (let i = 0; i < allNode.length; i++) {
-                    this.queryForm.schoolZoneId2.push(allNode[i].id);
-                }
-            },
-            search(form) {
-                this.cur_page = 1;
-                this.getData();
-            },
-            handleCheckChange(allNode) {
-                this.queryForm.schoolZoneId2 = [];
-                for (let i = 0; i < allNode.length; i++) {
-                    this.queryForm.schoolZoneId2.push(allNode[i].id);
-                }
-            },
-            handleDelete(index, row) {
-            }
-        },
-        components: {
-            SchoolTree,
-            DateRange
-        } //注入组件
+import SchoolTree from "../../common/system/SchoolTree.vue";
+import DateRange from "../../common/Daterange.vue";
+import { findNoticeAll, createNotice } from "../../api/api";
+export default {
+  data() {
+    return {
+      tableData: [],
+      dialogFormVisible: false,
+      cur_page: 1,
+      page_size: 20,
+      total: 0,
+      queryForm: {
+        lastDatetime: "",
+        theType: "",
+        content: "",
+        schoolZoneId2: []
+      },
+      form: {
+        theType: 2,
+        content: "",
+        lastDatetime: ""
+      },
+      formLabelWidth: "120px",
+      loading: false,
+      loadingForm: false
     };
+  },
+  created() {
+    this.getData();
+  },
+  methods: {
+    handleSizeChange(val) {
+      console.log(this.page_size);
+      this.page_size = val;
+      this.getData();
+    },
+    handleCurrentChange(val) {
+      this.cur_page = val;
+      this.getData();
+    },
+    getData() {
+      let self = this;
+      self.loading = true;
+      findNoticeAll(
+        self.cur_page,
+        self.page_size,
+        self.queryForm
+      ).then(data => {
+        if (data.code == 200) {
+          self.total = data.data["total"];
+          self.tableData = data.data.list;
+          self.loading = false;
+        } else {
+          self.$message.error(data.data);
+        }
+      });
+    },
+    handleEdit(index, row) {
+      this.form.fatherId = row.id;
+      this.form.fatherName = row.name;
+      this.dialogFormVisible = true;
+    },
+    filterType(value, row) {
+      if (value.theType == 1) row.tag = "机构公告";
+      else row.tag = "校区公告";
+      return row.tag;
+    },
+    //保存表单
+    submitForm(formName) {
+      let self = this;
+      self.$refs[formName].validate(valid => {
+        if (valid) {
+          self.loadingForm = true;
+          createNotice(self.form).then(data => {
+            self.loadingForm = false;
+            if (data.code == 200) {
+              self.$message.success(data.message);
+              self.dialogFormVisible = false;
+              self.getData();
+              self.$refs[formName].resetFields();
+            } else {
+              this.$message.error(data.data);
+            }
+          });
+        } else {
+          return false;
+        }
+      });
+    },
+    handleCheckChange(allNode) {
+      this.queryForm.schoolZoneId2 = [];
+      for (let i = 0; i < allNode.length; i++) {
+        this.queryForm.schoolZoneId2.push(allNode[i].id);
+      }
+    },
+    search(form) {
+      this.cur_page = 1;
+      this.getData();
+    },
+    handleCheckChange(allNode) {
+      this.queryForm.schoolZoneId2 = [];
+      for (let i = 0; i < allNode.length; i++) {
+        this.queryForm.schoolZoneId2.push(allNode[i].id);
+      }
+    },
+    handleDelete(index, row) {}
+  },
+  components: {
+    SchoolTree,
+    DateRange
+  } //注入组件
+};
 </script>

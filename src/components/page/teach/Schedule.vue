@@ -146,195 +146,186 @@
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="dialogFormVisible = false">取 消</el-button>
-                <el-button :loading="loadForm" type="primary" @click="submitForm('ruleForm')">确 定</el-button>
+                <el-button :loading="loadingForm" type="primary" @click="submitForm('ruleForm')">确 定</el-button>
             </div>
         </el-dialog>
     </div>
 </template>
 
 <style scoped>
-    .ms-tree-space {
-        position: relative;
-        top: 1px;
-        display: inline-block;
-        font-family: "Glyphicons Halflings";
-        font-style: normal;
-        font-weight: 400;
-        line-height: 1;
-        width: 18px;
-        height: 14px;
-    }
+.ms-tree-space {
+  position: relative;
+  top: 1px;
+  display: inline-block;
+  font-family: "Glyphicons Halflings";
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1;
+  width: 18px;
+  height: 14px;
+}
 
-    .ms-tree-space::before {
-        content: "";
-    }
+.ms-tree-space::before {
+  content: "";
+}
 
-    table td {
-        line-height: 26px;
-    }
+table td {
+  line-height: 26px;
+}
 </style>
 
 <script>
-    import SchoolTree from "../../common/system/SchoolTree.vue";
-
-    export default {
-        data() {
-            return {
-                tableData: [],
-                dialogFormVisible: false,
-                total: 0,
-                cur_page: 1,
-                page_size: 20,
-                queryForm: {
-                    userName: "",
-                    theDate: "",
-                    theType: "",
-                    schoolZoneId2: []
-                },
-                authorityOptions: [],
-                form: {
-                    //表单 v-modle绑定的值
-                    name: "",
-                    userName: "",
-                    sex: 1,
-                    phone: "",
-                    email: "",
-                    isSuper: 2,
-                    birthday: "",
-                    schoolZoneId: "",
-                    schoolName: "",
-                    idCard: "",
-                    roles: []
-                },
-                formLabelWidth: "120px",
-                loading: false,
-                loadingForm: false,
-                schoolId: "" //添加用户默认学校id
-            };
-        },
-        created() {
-            this.getUser();
-            this.getSchoolId();
-        },
-        computed: {
-            //实时计算
-        },
-        methods: {
-            //初始化属性start
-            getSchoolId() {
-                let self = this;
-                let user = JSON.parse(sessionStorage.getItem("userInfo"));
-                self.form.schoolZoneId = user.schoolZoneId;
-                self.form.schoolName = user.schoolZone.name;
-                self.getAuthorityOptions();
-                self.schoolId = user.schoolZoneId;
-            },
-            getAuthorityOptions() {
-                let self = this;
-                console.log(self.authorityOptions);
-                self.$axios
-                    .get("organization/getRoleListBySchoolZoneId/" + this.form.schoolZoneId)
-                    .then(res => {
-                        let data = res.data;
-                        if (data.code == 200) {
-                            self.authorityOptions = data.data;
-                        } else {
-                            self.$message.error(data.data);
-                        }
-                    });
-            },
-            //初始化属性end
-            //分页方法start
-            handleSizeChange(val) {
-                console.log(this.page_size);
-                this.page_size = val;
-                this.getUser();
-            },
-            //分页方法结束
-            handleCurrentChange(val) {
-                this.cur_page = val;
-                this.getUser();
-            },
-            search(form) { //搜索方法
-                this.cur_page = 1;
-                this.getUser();
-            },
-            //加载数据
-            getUser() {
-                let self = this;
-                self.loading = true;
-                self.$axios
-                    .post(
-                        "organization/getUserList/" + this.cur_page + "/" + this.page_size, self.queryForm
-                    )
-                    .then(res => {
-                        let data = res.data;
-                        self.loading = false;
-                        if (data.code == 200) {
-                            self.tableData = data.data.list;
-                            self.total = data.data.total;
-                        } else {
-                            self.$message.error(data.data);
-                        }
-                    });
-            },
-            //保存表单
-            submitForm(formName) {
-                let self = this;
-                self.$refs[formName].validate(valid => {
-                    if (valid) {
-                        self.loadingForm = true;
-                        self.$axios.post("organization/createUser", this.form).then(res => {
-                            var data = res.data;
-                            self.loadingForm = false;
-                            if (data.code == 200) {
-                                self.$message.success(data.message);
-                                self.dialogFormVisible = false;
-                                self.getUser();
-                                self.$refs[formName].resetFields();
-                            } else {
-                                this.$message.error(data.data);
-                            }
-                        });
-                    } else {
-                        return false;
-                    }
-                });
-            },
-            //数据过滤
-            filterSex(value, row) {
-                if (value.sex == 1) row.tag = "男";
-                else row.tag = "女";
-                return row.tag;
-            },
-            filterIsSuper(value, row) {
-                if (value.isSuper == 1) row.tag = "超级管理员";
-                else row.tag = "普通用户";
-                return row.tag;
-            },
-            //控件方法
-            handleEdit(index, row) {
-                this.form.fatherId = row.id;
-                this.form.fatherName = row.name;
-                this.dialogFormVisible = true;
-            },
-            handleDelete(index, row) {
-            },
-            handleSchool(data) {
-                this.form.schoolName = data.name;
-                this.form.schoolZoneId = data.id;
-                console.log(this.form.schoolZoneId);
-                this.form.roles = [];
-                this.getAuthorityOptions();
-            },
-            handleCheckChange(allNode) {
-                let self = this;
-                self.queryForm.schoolZoneId2 = [];
-                for (let i = 0; i < allNode.length; i++) {
-                    self.queryForm.schoolZoneId2.push(allNode[i].id);
-                }
-            }
-        },
-        components: {SchoolTree} //注入组件
+import SchoolTree from "../../common/system/SchoolTree.vue";
+import {getRoleListBySchoolZoneId,getUserList,createUser} from "../../api/api";
+export default {
+  data() {
+    return {
+      tableData: [],
+      dialogFormVisible: false,
+      total: 0,
+      cur_page: 1,
+      page_size: 20,
+      queryForm: {
+        userName: "",
+        theDate: "",
+        theType: "",
+        schoolZoneId2: []
+      },
+      authorityOptions: [],
+      form: {
+        //表单 v-modle绑定的值
+        name: "",
+        userName: "",
+        sex: 1,
+        phone: "",
+        email: "",
+        isSuper: 2,
+        birthday: "",
+        schoolZoneId: "",
+        schoolName: "",
+        idCard: "",
+        roles: []
+      },
+      formLabelWidth: "120px",
+      loading: false,
+      loadingForm: false,
+      schoolId: "" //添加用户默认学校id
     };
+  },
+  created() {
+    this.getUser();
+    this.getSchoolId();
+  },
+  computed: {
+    //实时计算
+  },
+  methods: {
+    //初始化属性start
+    getSchoolId() {
+      let self = this;
+      let user = JSON.parse(sessionStorage.getItem("userInfo"));
+      self.form.schoolZoneId = user.schoolZoneId;
+      self.form.schoolName = user.schoolZone.name;
+      self.getAuthorityOptions();
+      self.schoolId = user.schoolZoneId;
+    },
+    getAuthorityOptions() {
+      let self = this;
+      console.log(self.authorityOptions);
+      getRoleListBySchoolZoneId(self.form.schoolZoneId).then(data => {
+        if (data.code == 200) {
+          self.authorityOptions = data.data;
+        } else {
+          self.$message.error(data.data);
+        }
+      });
+    },
+    //初始化属性end
+    //分页方法start
+    handleSizeChange(val) {
+      console.log(this.page_size);
+      this.page_size = val;
+      this.getUser();
+    },
+    //分页方法结束
+    handleCurrentChange(val) {
+      this.cur_page = val;
+      this.getUser();
+    },
+    search(form) {
+      //搜索方法
+      this.cur_page = 1;
+      this.getUser();
+    },
+    //加载数据
+    getUser() {
+      let self = this;
+      self.loading = true;
+      getUserList(self.cur_page, self.page_size, self.queryForm).then(data => {
+        self.loading = false;
+        if (data.code == 200) {
+          self.tableData = data.data.list;
+          self.total = data.data.total;
+        } else {
+          self.$message.error(data.data);
+        }
+      });
+    },
+    //保存表单
+    submitForm(formName) {
+      let self = this;
+      self.$refs[formName].validate(valid => {
+        if (valid) {
+          self.loadingForm = true;
+          createUser(self.form).then(data => {
+            self.loadingForm = false;
+            if (data.code == 200) {
+              self.$message.success(data.message);
+              self.dialogFormVisible = false;
+              self.getUser();
+              self.$refs[formName].resetFields();
+            } else {
+              this.$message.error(data.data);
+            }
+          });
+        } else {
+          return false;
+        }
+      });
+    },
+    //数据过滤
+    filterSex(value, row) {
+      if (value.sex == 1) row.tag = "男";
+      else row.tag = "女";
+      return row.tag;
+    },
+    filterIsSuper(value, row) {
+      if (value.isSuper == 1) row.tag = "超级管理员";
+      else row.tag = "普通用户";
+      return row.tag;
+    },
+    //控件方法
+    handleEdit(index, row) {
+      this.form.fatherId = row.id;
+      this.form.fatherName = row.name;
+      this.dialogFormVisible = true;
+    },
+    handleDelete(index, row) {},
+    handleSchool(data) {
+      this.form.schoolName = data.name;
+      this.form.schoolZoneId = data.id;
+      console.log(this.form.schoolZoneId);
+      this.form.roles = [];
+      this.getAuthorityOptions();
+    },
+    handleCheckChange(allNode) {
+      let self = this;
+      self.queryForm.schoolZoneId2 = [];
+      for (let i = 0; i < allNode.length; i++) {
+        self.queryForm.schoolZoneId2.push(allNode[i].id);
+      }
+    }
+  },
+  components: { SchoolTree } //注入组件
+};
 </script>

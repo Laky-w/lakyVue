@@ -49,102 +49,96 @@
 </template>
 
 <script>
-    import SchoolTree from "../../common/system/SchoolTree.vue";
-    import DateRange from "../../common/Daterange.vue";
-
-    export default {
-        data() {
-            return {
-                url: "./static/vuetable.json",
-                tableData: [],
-                totol: 0,
-                cur_page: 1,
-                page_size: 20,
-                multipleSelection: [],
-                select_cate: "",
-                select_word: "",
-                del_list: [],
-                queryForm: {
-                    userName: "",
-                    theDate: "",
-                    theType: "",
-                    schoolZoneId2: []
-                }
-            }
-        },
-        created() {
-            this.getData();
-        },
-        methods: {
-            handleSizeChange(val) {
-                console.log(this.page_size);
-                this.page_size = val;
-                this.getData();
-            },
-            handleCurrentChange(val) {
-                this.cur_page = val;
-                this.getData();
-            },
-            getData() {
-                let self = this;
-                self.loading = true;
-                self.$axios
-                    .post(
-                        "log/findLoginLog/" + this.cur_page + "/" + this.page_size,
-                        this.queryForm
-                    )
-                    .then(res => {
-                        var data = res.data;
-                        if (data.code == 200) {
-                            self.totol = data.data["total"];
-                            self.tableData = data.data.list;
-                            self.loading = false;
-                        } else {
-                            self.$message.error(data.data);
-                        }
-                    });
-            },
-            tableRowClassName({row, rowIndex}) {
-                if (row.theType == 2) {
-                    return "warning-row";
-                }
-                return "";
-            },
-            search(form) {
-                this.cur_page = 1;
-                this.getData();
-            },
-            formatter(row, column) {
-                return row.address;
-            },
-            filterType(value, row) {
-                if (value.theType == 1) row.tag = "登录";
-                else row.tag = "退出";
-                return row.tag;
-            },
-            handleSelectionChange(val) {
-                this.multipleSelection = val;
-            },
-            handleCheckChange(allNode) {
-                this.queryForm.schoolZoneId2 = [];
-                for (let i = 0; i < allNode.length; i++) {
-                    this.queryForm.schoolZoneId2.push(allNode[i].id);
-                }
-            }
-        },
-        components: {
-            SchoolTree,
-            DateRange
-        }//注入组件
+import SchoolTree from "../../common/system/SchoolTree.vue";
+import DateRange from "../../common/Daterange.vue";
+import { findLoginLog } from "../../api/api";
+export default {
+  data() {
+    return {
+      url: "./static/vuetable.json",
+      tableData: [],
+      totol: 0,
+      cur_page: 1,
+      page_size: 20,
+      multipleSelection: [],
+      select_cate: "",
+      select_word: "",
+      del_list: [],
+      queryForm: {
+        userName: "",
+        theDate: "",
+        theType: "",
+        schoolZoneId2: []
+      }
     };
+  },
+  created() {
+    this.getData();
+  },
+  methods: {
+    handleSizeChange(val) {
+      console.log(this.page_size);
+      this.page_size = val;
+      this.getData();
+    },
+    handleCurrentChange(val) {
+      this.cur_page = val;
+      this.getData();
+    },
+    getData() {
+      let self = this;
+      self.loading = true;
+      findLoginLog(self.cur_page, self.page_size, self.queryForm).then(data => {
+        if (data.code == 200) {
+          self.totol = data.data["total"];
+          self.tableData = data.data.list;
+          self.loading = false;
+        } else {
+          self.$message.error(data.data);
+        }
+      });
+    },
+    tableRowClassName({ row, rowIndex }) {
+      if (row.theType == 2) {
+        return "warning-row";
+      }
+      return "";
+    },
+    search(form) {
+      this.cur_page = 1;
+      this.getData();
+    },
+    formatter(row, column) {
+      return row.address;
+    },
+    filterType(value, row) {
+      if (value.theType == 1) row.tag = "登录";
+      else row.tag = "退出";
+      return row.tag;
+    },
+    handleSelectionChange(val) {
+      this.multipleSelection = val;
+    },
+    handleCheckChange(allNode) {
+      this.queryForm.schoolZoneId2 = [];
+      for (let i = 0; i < allNode.length; i++) {
+        this.queryForm.schoolZoneId2.push(allNode[i].id);
+      }
+    }
+  },
+  components: {
+    SchoolTree,
+    DateRange
+  } //注入组件
+};
 </script>
 <style type="text/css">
-    .el-table .warning-row td {
-        background: oldlace !important;
-    }
+.el-table .warning-row td {
+  background: oldlace !important;
+}
 
-    .el-table .success-row {
-        background: #f0f9eb;
-    }
+.el-table .success-row {
+  background: #f0f9eb;
+}
 </style>
 

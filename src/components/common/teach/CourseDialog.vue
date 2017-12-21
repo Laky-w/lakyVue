@@ -90,6 +90,7 @@
 
 
 <script>
+import { getCourseList,findBranchParameterValueAll } from "../../api/api";
 export default {
   data() {
     return {
@@ -112,7 +113,7 @@ export default {
   created() {},
   watch: {
     value(val) {
-      if (!val || val.length==0) this.userInput = "";
+      if (!val || val.length == 0) this.userInput = "";
     },
     userId(val) {
       if (this.selectedType != 1) {
@@ -131,14 +132,11 @@ export default {
     //初始化属性start
     getParameterValue(id) {
       let self = this;
-      self.$axios
-        .get("organization/findBranchParameterValueAll/" + id)
-        .then(res => {
-          let data = res.data;
-          if (data.code == 200) {
-            self.parameterValue = data.data;
-          }
-        });
+      findBranchParameterValueAll(id).then(data => {
+        if (data.code == 200) {
+          self.parameterValue = data.data;
+        }
+      });
     },
     //初始化属性end
     //分页方法start
@@ -161,21 +159,15 @@ export default {
     getData() {
       let self = this;
       self.loading = true;
-      self.$axios
-        .post(
-          "teach/getCourseList/" + this.cur_page + "/" + this.page_size,
-          self.queryForm
-        )
-        .then(res => {
-          let data = res.data;
-          self.loading = false;
-          if (data.code == 200) {
-            self.tableData = data.data.list;
-            self.total = data.data.total;
-          } else {
-            self.$message.error(data.data);
-          }
-        });
+      getCourseList(self.cur_page,self.page_size,self.queryForm).then(data => {
+        self.loading = false;
+        if (data.code == 200) {
+          self.tableData = data.data.list;
+          self.total = data.data.total;
+        } else {
+          self.$message.error(data.data);
+        }
+      });
     },
     //控件方法
     handleEdit(index, row) {
@@ -245,7 +237,8 @@ export default {
       default: 0
     },
     parentSchoolId: "",
-    selectedType: {//1单选 2 多选
+    selectedType: {
+      //1单选 2 多选
       default: 1
     }
   },

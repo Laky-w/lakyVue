@@ -41,6 +41,7 @@
 </style>
 
 <script scoped>
+import { findChildSchoolZoneAll } from "../../api/api";
 export default {
   // watch: {
   //   filterText(val) {
@@ -91,33 +92,25 @@ export default {
     getSchool() {
       let self = this;
       self.loading = true;
-      self.$axios
-        .get(
-          "organization/findChildSchoolZoneAll/" +
-            this.theType +
-            "/" +
-            this.parentId
-        )
-        .then(res => {
-          let data = res.data;
-          self.loading = false;
-          if (data.code == 200) {
-            let treeArray = [];
-            treeArray.push(data.data);
-            if (self.defaultValue) {
-              //默认值处理
-              for (let i = 0; i < treeArray.length; i++) {
-                if (self.defaultValue == treeArray[i].id) {
-                  self.filterText = treeArray[i].name;
-                  break;
-                }
+      findChildSchoolZoneAll(self.theType, self.parentId).then(data => {
+        self.loading = false;
+        if (data.code == 200) {
+          let treeArray = [];
+          treeArray.push(data.data);
+          if (self.defaultValue) {
+            //默认值处理
+            for (let i = 0; i < treeArray.length; i++) {
+              if (self.defaultValue == treeArray[i].id) {
+                self.filterText = treeArray[i].name;
+                break;
               }
             }
-            self.data2 = treeArray;
-          } else {
-            self.$message.error(data.data);
           }
-        });
+          self.data2 = treeArray;
+        } else {
+          self.$message.error(data.data);
+        }
+      });
     },
     handleNodeClick(data) {
       //

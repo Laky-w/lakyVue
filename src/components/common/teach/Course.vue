@@ -8,6 +8,7 @@
     </div>
 </template>
 <script>
+import { getCourseTreeList } from "../../api/api";
 export default {
   data() {
     return {
@@ -21,7 +22,7 @@ export default {
     },
     selectedOptions(val) {
       console.log(val);
-      if (val.length>0 ) this.$emit("input", val[2]);
+      if (val.length > 0) this.$emit("input", val[2]);
     }
   },
   created() {
@@ -29,8 +30,7 @@ export default {
   },
   methods: {
     getData() {
-      this.$axios.get("teach/getCourseTreeList").then(res => {
-        let data = res.data;
+      getCourseTreeList().then(data => {
         if (data.code == 200) {
           this.options = data.data;
         }

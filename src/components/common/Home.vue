@@ -4,10 +4,10 @@
         <div>
             <v-sidebar v-on:changeCollapseEvent="changeCollapse"></v-sidebar>
             <div :class="{'big-content':isCollapse,'content':!isCollapse}">
-                <div style="background-color:#ffffff;padding:5px;min-height: 98%;">
-                    <nav-bar></nav-bar>
-                    <transition name="move" mode="out-in"><router-view></router-view></transition>
-                </div>
+              <div style="background-color:#ffffff;padding:5px;min-height: 98%;">
+                <nav-bar></nav-bar>
+                <transition name="move" mode="out-in"><router-view></router-view></transition>
+              </div>
             </div>
         </div>
     </div>
@@ -30,7 +30,6 @@ export default {
   },
   methods: {
     changeCollapse(data) {
-      console.debug("==");
       this.isCollapse = data;
     }
   }

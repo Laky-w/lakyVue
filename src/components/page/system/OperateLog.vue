@@ -51,6 +51,7 @@
 <script>
 import SchoolTree from "../../common/system/SchoolTree.vue";
 import DateRange from "../../common/Daterange.vue";
+import { findOperateLogAll } from "../../api/api";
 export default {
   data() {
     return {
@@ -67,9 +68,9 @@ export default {
         userName: "",
         theDate: "",
         theType: "",
-        schoolZoneId2:[]
+        schoolZoneId2: []
       },
-      loading: true,
+      loading: true
     };
   },
   created() {
@@ -88,21 +89,19 @@ export default {
     getData() {
       let self = this;
       self.loading = true;
-      self.$axios
-        .post(
-          "log/findOperateLogAll/" + this.cur_page + "/" + this.page_size,
-          this.queryForm
-        )
-        .then(res => {
-          var data = res.data;
-          if (data.code == 200) {
-            self.total = data.data["total"];
-            self.tableData = data.data.list;
-            self.loading = false;
-          } else {
-            self.$message.error(data.data);
-          }
-        });
+      findOperateLogAll(
+        self.cur_page,
+        self.page_size,
+        self.queryForm
+      ).then(data => {
+        if (data.code == 200) {
+          self.total = data.data["total"];
+          self.tableData = data.data.list;
+          self.loading = false;
+        } else {
+          self.$message.error(data.data);
+        }
+      });
     },
     tableRowClassName({ row, rowIndex }) {
       if (row.theType == 2) {
@@ -134,8 +133,8 @@ export default {
     }
   },
   components: {
-      SchoolTree,
-      DateRange
+    SchoolTree,
+    DateRange
   } //注入组件
 };
 </script>

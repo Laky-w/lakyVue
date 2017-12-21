@@ -97,197 +97,193 @@
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="dialogFormVisible = false">取 消</el-button>
-                <el-button :loading="loadForm" type="primary" @click="submitForm('ruleForm')">保 存</el-button>
+                <el-button :loading="loadingForm" type="primary" @click="submitForm('ruleForm')">保 存</el-button>
             </div>
         </el-dialog>
     </div>
 </template>
 
 <style scoped>
-    .ms-tree-space {
-        position: relative;
-        top: 1px;
-        display: inline-block;
-        font-family: "Glyphicons Halflings";
-        font-style: normal;
-        font-weight: 400;
-        line-height: 1;
-        width: 18px;
-        height: 14px;
-    }
+.ms-tree-space {
+  position: relative;
+  top: 1px;
+  display: inline-block;
+  font-family: "Glyphicons Halflings";
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1;
+  width: 18px;
+  height: 14px;
+}
 
-    .ms-tree-space::before {
-        content: "";
-    }
+.ms-tree-space::before {
+  content: "";
+}
 
-    table td {
-        line-height: 26px;
-    }
+table td {
+  line-height: 26px;
+}
 </style>
 
 <script>
-    import SchoolTree from "../../common/system/SchoolTree.vue";
-
-    export default {
-        data() {
-            return {
-                tableData: [],
-                dialogFormVisible: false,
-                total: 0,
-                cur_page: 1,
-                page_size: 20,
-                queryForm: {
-                    name: "",
-                    theType: "",
-                    clazzId: []
-                },
-                parameterValue: [],
-                authorityOptions: [],
-                form: {
-                    //表单 v-modle绑定的值
-                    name: "",
-                    theType: "2",
-                    clazzId: "",
-                    remarks: ""
-                },
-                formLabelWidth: "120px",
-                loading: false,
-                loadingForm: false,
-                schoolId: "" //添加用户默认学校id
-            };
-        },
-        created() {
-            this.getData();
-            this.getSchoolId();
-            this.getParameterValue(7);
-        },
-        computed: {
-            //实时计算
-        },
-        methods: {
-            //初始化属性start
-            getSchoolId() {
-                let self = this;
-                let user = JSON.parse(sessionStorage.getItem("userInfo"));
-                self.form.schoolZoneId = user.schoolZoneId;
-                self.form.schoolName = user.schoolZone.name;
-                self.getAuthorityOptions();
-                self.schoolId = user.schoolZoneId;
-            },
-            getAuthorityOptions() {
-                let self = this;
-                console.log(self.authorityOptions);
-                self.$axios
-                    .get("organization/getRoleListBySchoolZoneId/" + this.form.schoolZoneId)
-                    .then(res => {
-                        let data = res.data;
-                        if (data.code == 200) {
-                            self.authorityOptions = data.data;
-                        } else {
-                            self.$message.error(data.data);
-                        }
-                    });
-            },
-            //初始化属性end
-            //分页方法start
-            handleSizeChange(val) {
-                console.log(this.page_size);
-                this.page_size = val;
-                this.getData();
-            },
-            //分页方法结束
-            handleCurrentChange(val) {
-                this.cur_page = val;
-                this.getData();
-            },
-            search(form) {
-                //搜索方法
-                this.cur_page = 1;
-                this.getData();
-            },
-            getParameterValue(id) {
-                let self = this;
-                self.$axios
-                    .get("/organization/findBranchParameterValueAll/" + id)
-                    .then(res => {
-                        let data = res.data;
-                        if (data.code == 200) {
-                            self.parameterValue = data.data;
-                        }
-                    });
-            },
-            //加载数据
-            getData() {
-                let self = this;
-                self.loading = true;
-                self.$axios
-                    .post(
-                        "teach/getCourseList/" + this.cur_page + "/" + this.page_size,
-                        self.queryForm
-                    )
-                    .then(res => {
-                        let data = res.data;
-                        self.loading = false;
-                        if (data.code == 200) {
-                            self.tableData = data.data.list;
-                            self.total = data.data.total;
-                        } else {
-                            self.$message.error(data.data);
-                        }
-                    });
-            },
-            //保存表单
-            submitForm(formName) {
-                let self = this;
-                self.$refs[formName].validate(valid => {
-                    if (valid) {
-                        self.loadingForm = true;
-                        self.$axios.post("teach/createCourse", this.form).then(res => {
-                            var data = res.data;
-                            self.loadingForm = false;
-                            if (data.code == 200) {
-                                self.$message.success(data.message);
-                                self.dialogFormVisible = false;
-                                self.getData();
-                                self.$refs[formName].resetFields();
-                            } else {
-                                this.$message.error(data.data);
-                            }
-                        });
-                    } else {
-                        return false;
-                    }
-                });
-            },
-            //数据过滤
-            filterTheType(value, row) {
-                if (value.theType == 1) row.tag = "一对一";
-                else row.tag = "一对多";
-                return row.tag;
-            },
-            //控件方法
-            handleEdit(index, row) {
-                this.form.fatherId = row.id;
-                this.form.fatherName = row.name;
-                this.dialogFormVisible = true;
-            },
-            handleDelete(index, row) {
-            },
-            handleSchool(data) {
-                this.form.schoolName = data.name;
-                this.form.schoolZoneId = data.id;
-                console.log(this.form.schoolZoneId);
-                this.form.roles = [];
-                this.getAuthorityOptions();
-            },
-            handleCheckChange(allNode) {
-                let self = this;
-                self.queryForm.schoolZoneId2 = [];
-                for (let i = 0; i < allNode.length; i++) {
-                    self.queryForm.schoolZoneId2.push(allNode[i].id);
-                }
-            }
-        },
-        components: {SchoolTree} //注入组件
+import SchoolTree from "../../common/system/SchoolTree.vue";
+import {
+  createCourse,
+  getCourseList,
+  getRoleListBySchoolZoneId,
+  findBranchParameterValueAll
+} from "../../api/api";
+export default {
+  data() {
+    return {
+      tableData: [],
+      dialogFormVisible: false,
+      total: 0,
+      cur_page: 1,
+      page_size: 20,
+      queryForm: {
+        name: "",
+        theType: "",
+        clazzId: []
+      },
+      parameterValue: [],
+      authorityOptions: [],
+      form: {
+        //表单 v-modle绑定的值
+        name: "",
+        theType: "2",
+        clazzId: "",
+        remarks: ""
+      },
+      formLabelWidth: "120px",
+      loading: false,
+      loadingForm: false,
+      schoolId: "" //添加用户默认学校id
     };
+  },
+  created() {
+    this.getData();
+    this.getSchoolId();
+    this.getParameterValue(7);
+  },
+  computed: {
+    //实时计算
+  },
+  methods: {
+    //初始化属性start
+    getSchoolId() {
+      let self = this;
+      let user = JSON.parse(sessionStorage.getItem("userInfo"));
+      self.form.schoolZoneId = user.schoolZoneId;
+      self.form.schoolName = user.schoolZone.name;
+      self.getAuthorityOptions();
+      self.schoolId = user.schoolZoneId;
+    },
+    getAuthorityOptions() {
+      let self = this;
+      console.log(self.authorityOptions);
+      getRoleListBySchoolZoneId(self.form.schoolZoneId).then(data => {
+        if (data.code == 200) {
+          self.authorityOptions = data.data;
+        } else {
+          self.$message.error(data.data);
+        }
+      });
+    },
+    //初始化属性end
+    //分页方法start
+    handleSizeChange(val) {
+      console.log(this.page_size);
+      this.page_size = val;
+      this.getData();
+    },
+    //分页方法结束
+    handleCurrentChange(val) {
+      this.cur_page = val;
+      this.getData();
+    },
+    search(form) {
+      //搜索方法
+      this.cur_page = 1;
+      this.getData();
+    },
+    getParameterValue(id) {
+      let self = this;
+      findBranchParameterValueAll(id).then(data => {
+        if (data.code == 200) {
+          self.parameterValue = data.data;
+        }
+      });
+    },
+    //加载数据
+    getData() {
+      let self = this;
+      self.loading = true;
+      getCourseList(
+        self.cur_page,
+        self.page_size,
+        self.queryForm
+      ).then(data => {
+        self.loading = false;
+        if (data.code == 200) {
+          self.tableData = data.data.list;
+          self.total = data.data.total;
+        } else {
+          self.$message.error(data.data);
+        }
+      });
+    },
+    //保存表单
+    submitForm(formName) {
+      let self = this;
+
+      self.$refs[formName].validate(valid => {
+        if (valid) {
+          self.loadingForm = true;
+          createCourse(self.form).then(data => {
+            self.loadingForm = false;
+            if (data.code == 200) {
+              self.$message.success(data.message);
+              self.dialogFormVisible = false;
+              self.getData();
+              self.$refs[formName].resetFields();
+            } else {
+              this.$message.error(data.data);
+            }
+          });
+        } else {
+          return false;
+        }
+      });
+    },
+    //数据过滤
+    filterTheType(value, row) {
+      if (value.theType == 1) row.tag = "一对一";
+      else row.tag = "一对多";
+      return row.tag;
+    },
+    //控件方法
+    handleEdit(index, row) {
+      this.form.fatherId = row.id;
+      this.form.fatherName = row.name;
+      this.dialogFormVisible = true;
+    },
+    handleDelete(index, row) {},
+    handleSchool(data) {
+      this.form.schoolName = data.name;
+      this.form.schoolZoneId = data.id;
+      console.log(this.form.schoolZoneId);
+      this.form.roles = [];
+      this.getAuthorityOptions();
+    },
+    handleCheckChange(allNode) {
+      let self = this;
+      self.queryForm.schoolZoneId2 = [];
+      for (let i = 0; i < allNode.length; i++) {
+        self.queryForm.schoolZoneId2.push(allNode[i].id);
+      }
+    }
+  },
+  components: { SchoolTree } //注入组件
+};
 </script>

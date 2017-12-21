@@ -43,7 +43,7 @@
 
             <div slot="footer" class="dialog-footer">
                 <el-button @click="dialogFormVisible = false">取 消</el-button>
-                <el-button :loading="loadForm" type="primary" @click="submitForm('ruleForm')">确 定</el-button>
+                <el-button :loading="loadingForm" type="primary" @click="submitForm('ruleForm')">确 定</el-button>
             </div>
         </el-dialog>
     </div>
@@ -51,137 +51,133 @@
 
 
 <script>
-    export default {
-        data() {
-            return {
-                formTitle: "",
-                parameterData: [],
-                dialogFormVisible: false,
-                tableData: [],
-                activeIndex: 0,
-                form: {
-                    name: "",
-                    parameterId: "",
-                    sort: "2"
-                },
-                formLabelWidth: "120px",
-                loading: false,
-                loadingForm: false
-            };
-        },
-        created() {
-            this.getData();
-        },
-        methods: {
-            handleSizeChange(val) {
-                console.log(this.page_size);
-                this.page_size = val;
-                this.getData();
-            },
-            handleCurrentChange(val) {
-                this.cur_page = val;
-                this.getData();
-            },
-            getData() {
-                let self = this;
-                self.loading = true;
-                self.$axios.get("organization/findBranchParameterByType/5").then(res => {
-                    let data = res.data;
-                    if (data.code == 200) {
-                        data.data.forEach(element => {
-                            element.active = false;
-                        });
-                        self.parameterData = data.data;
-                        //   self.parameterData[8].active=true;
-                        self.formTitle = "添加参数--" + data.data[0].name;
-
-                        self.getParameterValue(data.data[0].id);
-                        self.loading = false;
-                    } else {
-                        self.$message.error(data.data);
-                    }
-                });
-            },
-            getParameterValue(id) {
-                let self = this;
-                self.form.parameterId = id;
-                self.loading = true;
-                self.$axios
-                    .get("organization/findBranchParameterValueAll/" + id)
-                    .then(res => {
-                        let data = res.data;
-                        if (data.code == 200) {
-                            self.tableData = data.data;
-                            self.loading = false;
-                        } else {
-                            self.$message.error(data.data);
-                        }
-                    });
-            },
-            parameterChange(level, obj) {
-                this.activeIndex = level;
-                this.formTitle = "添加参数--" + obj.name;
-                this.getParameterValue(obj.id);
-            },
-            handleEdit(index, row) {
-                this.form.fatherId = row.id;
-                this.form.fatherName = row.name;
-                this.dialogFormVisible = true;
-            },
-            handleDelete(index, row) {
-
-            },
-            submitForm(formName) {
-                const self = this;
-                self.$refs[formName].validate(valid => {
-                    if (valid) {
-                        self.form.sort = self.tableData.length + 1;
-                        self.loadingForm = true;
-                        self.$axios
-                            .post("organization/createBranchParameterValue", this.form)
-                            .then(res => {
-                                var data = res.data;
-                                if (data.code == 200) {
-                                    self.loadingForm = false;
-                                    self.$message.success(data.message);
-                                    self.dialogFormVisible = false;
-                                    self.getParameterValue(self.form.parameterId);
-                                    self.$refs[formName].resetFields();
-                                } else {
-                                    this.$message.error(data.data);
-                                }
-                            });
-                    } else {
-                        return false;
-                    }
-                });
-            },
-        }
+import {
+  findBranchParameterByType,
+  findBranchParameterValueAll,
+  createBranchParameterValue
+} from "../../api/api";
+export default {
+  data() {
+    return {
+      formTitle: "",
+      parameterData: [],
+      dialogFormVisible: false,
+      tableData: [],
+      activeIndex: 0,
+      form: {
+        name: "",
+        parameterId: "",
+        sort: "2"
+      },
+      formLabelWidth: "120px",
+      loading: false,
+      loadingForm: false
     };
+  },
+  created() {
+    this.getData();
+  },
+  methods: {
+    handleSizeChange(val) {
+      console.log(this.page_size);
+      this.page_size = val;
+      this.getData();
+    },
+    handleCurrentChange(val) {
+      this.cur_page = val;
+      this.getData();
+    },
+    getData() {
+      let self = this;
+      self.loading = true;
+      findBranchParameterByType(5).then(data => {
+        if (data.code == 200) {
+          data.data.forEach(element => {
+            element.active = false;
+          });
+          self.parameterData = data.data;
+          //   self.parameterData[8].active=true;
+          self.formTitle = "添加参数--" + data.data[0].name;
+
+          self.getParameterValue(data.data[0].id);
+          self.loading = false;
+        } else {
+          self.$message.error(data.data);
+        }
+      });
+    },
+    getParameterValue(id) {
+      let self = this;
+      self.form.parameterId = id;
+      self.loading = true;
+      findBranchParameterValueAll(id).then(data => {
+        if (data.code == 200) {
+          self.tableData = data.data;
+          self.loading = false;
+        } else {
+          self.$message.error(data.data);
+        }
+      });
+    },
+    parameterChange(level, obj) {
+      this.activeIndex = level;
+      this.formTitle = "添加参数--" + obj.name;
+      this.getParameterValue(obj.id);
+    },
+    handleEdit(index, row) {
+      this.form.fatherId = row.id;
+      this.form.fatherName = row.name;
+      this.dialogFormVisible = true;
+    },
+    handleDelete(index, row) {},
+    submitForm(formName) {
+      const self = this;
+      self.$refs[formName].validate(valid => {
+        if (valid) {
+          self.form.sort = self.tableData.length + 1;
+          self.loadingForm = true;
+          createBranchParameterValue(self.form).then(data => {
+            if (data.code == 200) {
+              self.loadingForm = false;
+              self.$message.success(data.message);
+              self.dialogFormVisible = false;
+              self.getParameterValue(self.form.parameterId);
+              self.$refs[formName].resetFields();
+            } else {
+              this.$message.error(data.data);
+            }
+          });
+        } else {
+          return false;
+        }
+      });
+    }
+  }
+};
 </script>
 
 <style scoped>
-    p {
-        height: 50px;
-        line-height: 50px;
-        width: 185px;
-        margin: 5px 0px;
-        padding-left: 15px;
-        cursor: pointer;
-        font-size: 14px;
-    }
+p {
+  height: 50px;
+  line-height: 50px;
+  width: 185px;
+  margin: 5px 0px;
+  padding-left: 15px;
+  cursor: pointer;
+  font-size: 14px;
+}
 
-    p:first-child {
-        margin-top: 0px;
-    }
+p:first-child {
+  margin-top: 0px;
+}
 
-    p:hover {
-        background-color: #71afef;
-        color: white;
-    }
+p:hover {
+  background-color: #71afef;
+  color: white;
+}
 
-    p.active {
-        background-color: #66b1ff;
-        color: white;
-    }
+p.active {
+  background-color: #66b1ff;
+  color: white;
+}
 </style>

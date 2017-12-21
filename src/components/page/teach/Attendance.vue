@@ -139,7 +139,7 @@
           </el-form>
           <div slot="footer" class="dialog-footer">
               <el-button @click="dialogFormVisible = false">取 消</el-button>
-              <el-button :loading="loadForm" type="primary" @click="submitForm('ruleForm')">确 定</el-button>
+              <el-button :loading="loadingForm" type="primary" @click="submitForm('ruleForm')">确 定</el-button>
           </div>
         </el-dialog>
     </div>
@@ -167,6 +167,11 @@ table td {
 
 <script>
 import SchoolTree from "../../common/system/SchoolTree.vue";
+import {
+  getRoleListBySchoolZoneId,
+  getUserList,
+  createUser
+} from "../../api/api";
 export default {
   data() {
     return {
@@ -221,17 +226,13 @@ export default {
     },
     getAuthorityOptions() {
       let self = this;
-      console.log(self.authorityOptions);
-      self.$axios
-        .get("organization/getRoleListBySchoolZoneId/" + this.form.schoolZoneId)
-        .then(res => {
-          let data = res.data;
-          if (data.code == 200) {
-            self.authorityOptions = data.data;
-          } else {
-            self.$message.error(data.data);
-          }
-        });
+      getRoleListBySchoolZoneId().then(data => {
+        if (data.code == 200) {
+          self.authorityOptions = data.data;
+        } else {
+          self.$message.error(data.data);
+        }
+      });
     },
     //初始化属性end
     //分页方法start
@@ -245,7 +246,8 @@ export default {
       this.cur_page = val;
       this.getUser();
     },
-    search(form) { //搜索方法
+    search(form) {
+      //搜索方法
       this.cur_page = 1;
       this.getUser();
     },
@@ -253,20 +255,15 @@ export default {
     getUser() {
       let self = this;
       self.loading = true;
-      self.$axios
-        .post(
-          "organization/getUserList/" + this.cur_page + "/" + this.page_size,self.queryForm
-        )
-        .then(res => {
-          let data = res.data;
-          self.loading = false;
-          if (data.code == 200) {
-            self.tableData = data.data.list;
-            self.total = data.data.total;
-          } else {
-            self.$message.error(data.data);
-          }
-        });
+      getUserList(self.cur_page, self.page_size, self.queryForm).then(data => {
+        self.loading = false;
+        if (data.code == 200) {
+          self.tableData = data.data.list;
+          self.total = data.data.total;
+        } else {
+          self.$message.error(data.data);
+        }
+      });
     },
     //保存表单
     submitForm(formName) {
@@ -274,8 +271,7 @@ export default {
       self.$refs[formName].validate(valid => {
         if (valid) {
           self.loadingForm = true;
-          self.$axios.post("organization/createUser", this.form).then(res => {
-            var data = res.data;
+          createUser(self.form).then(data => {
             self.loadingForm = false;
             if (data.code == 200) {
               self.$message.success(data.message);
@@ -318,7 +314,7 @@ export default {
     },
     handleCheckChange(allNode) {
       let self = this;
-      self.queryForm.schoolZoneId2=[];
+      self.queryForm.schoolZoneId2 = [];
       for (let i = 0; i < allNode.length; i++) {
         self.queryForm.schoolZoneId2.push(allNode[i].id);
       }

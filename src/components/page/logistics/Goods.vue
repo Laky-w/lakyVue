@@ -110,172 +110,157 @@
 </template>
 
 <style scoped>
-    .ms-tree-space {
-        position: relative;
-        top: 1px;
-        display: inline-block;
-        font-family: "Glyphicons Halflings";
-        font-style: normal;
-        font-weight: 400;
-        line-height: 1;
-        width: 18px;
-        height: 14px;
-    }
+.ms-tree-space {
+  position: relative;
+  top: 1px;
+  display: inline-block;
+  font-family: "Glyphicons Halflings";
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1;
+  width: 18px;
+  height: 14px;
+}
 
-    .ms-tree-space::before {
-        content: "";
-    }
+.ms-tree-space::before {
+  content: "";
+}
 
-    table td {
-        line-height: 26px;
-    }
+table td {
+  line-height: 26px;
+}
 </style>
 
 <script>
-    import SchoolTree from "../../common/system/SchoolTree.vue";
-    import UserDialog from "../../common/system/UserDialog.vue";
-    import Course from "../../common/teach/Course.vue";
-    import RoomDialog from "../../common/teach/RoomDialog.vue";
-
-    export default {
-        data() {
-            return {
-                tableData: [],
-                dialogFormVisible: false,
-                total: 0,
-                cur_page: 1,
-                page_size: 50,
-                queryForm: {
-                    name: "",
-                    clazzId:"",
-                },
-                pickerOptions1: {
-                    disabledDate(time) {
-                        return time.getTime() < Date.now();
-                    }
-                },
-                parameterValue: [],
-                form: {
-                    //表单 v-modle绑定的值
-                    name: "",
-                    theType: 1,
-                    clazzId: "",
-                    price: "",
-
-                },
-                pickerOptions2: {
-                    disabledDate: (time) => {
-                        if (this.form.createTime) {
-                            return time.getTime() < new Date(this.form.createTime);
-                        } else {
-                            return time.getTime() < Date.now();
-                        }
-
-                    }
-                },
-                formLabelWidth: "120px",
-                loading: false,
-                loadingForm: false,
-                schoolId: "" //添加用户默认学校id
-            };
-        },
-        created() {
-            this.getData();
-            this.getParameterValue(9);
-        },
-        computed: {},
-        watch: {},
-        methods: {
-
-            //初始化属性end
-            //分页方法start
-            handleSizeChange(val) {
-                this.page_size = val;
-                this.getData();
-            },
-            //分页方法结束
-            handleCurrentChange(val) {
-                this.cur_page = val;
-                this.getData();
-            },
-            search(form) {
-                //搜索方法
-                this.cur_page = 1;
-                this.getData();
-            },
-            getParameterValue(id) {
-                let self = this;
-                self.$axios
-                    .get("organization/findBranchParameterValueAll/" + id)
-                    .then(res => {
-                        let data = res.data;
-                        if (data.code == 200) {
-                            self.parameterValue = data.data;
-                        }
-                    });
-            },
-            //加载数据
-            getData() {
-                let self = this;
-                self.loading = true;
-                self.$axios
-                    .post(
-                        "logistics/getGoodsList/" + this.cur_page + "/" + this.page_size,
-                        self.queryForm
-                    )
-                    .then(res => {
-                        let data = res.data;
-                        self.loading = false;
-                        if (data.code == 200) {
-                            self.tableData = data.data.list;
-                            self.total = data.data.total;
-                        } else {
-                            self.$message.error(data.data);
-                        }
-                    });
-            },
-            //保存表单
-            submitForm(formName) {
-                let self = this;
-                self.$refs[formName].validate(valid => {
-                    if (valid) {
-                        self.loadingForm = true;
-                        self.$axios.post("logistics/createGoods", this.form).then(res => {
-                            var data = res.data;
-                            self.loadingForm = false;
-                            if (data.code == 200) {
-                                self.$message.success(data.message);
-                                self.dialogFormVisible = false;
-                                self.getData();
-                                self.$refs[formName].resetFields();
-                            } else {
-                                this.$message.error(data.data);
-                            }
-                        });
-                    } else {
-                        return false;
-                    }
-                });
-            },
-            // 数据过滤
-            filterType(value, row) {
-                if (value.theType == 1) row.tag = "正常";
-                else row.tag = "封存";
-                return row.tag;
-            },
-
-            //控件方法
-            handleEdit(index, row) {
-                this.form.fatherId = row.id;
-                this.form.fatherName = row.name;
-                this.dialogFormVisible = true;
-            },
-            handleDelete(index, row) {
-            },
-
-
-        },
-        components: {SchoolTree, Course, UserDialog, RoomDialog} //注入组件
+import SchoolTree from "../../common/system/SchoolTree.vue";
+import UserDialog from "../../common/system/UserDialog.vue";
+import Course from "../../common/teach/Course.vue";
+import RoomDialog from "../../common/teach/RoomDialog.vue";
+import { getGoodsList, createGoods } from "../../api/api";
+export default {
+  data() {
+    return {
+      tableData: [],
+      dialogFormVisible: false,
+      total: 0,
+      cur_page: 1,
+      page_size: 50,
+      queryForm: {
+        name: "",
+        clazzId: ""
+      },
+      pickerOptions1: {
+        disabledDate(time) {
+          return time.getTime() < Date.now();
+        }
+      },
+      parameterValue: [],
+      form: {
+        //表单 v-modle绑定的值
+        name: "",
+        theType: 1,
+        clazzId: "",
+        price: ""
+      },
+      pickerOptions2: {
+        disabledDate: time => {
+          if (this.form.createTime) {
+            return time.getTime() < new Date(this.form.createTime);
+          } else {
+            return time.getTime() < Date.now();
+          }
+        }
+      },
+      formLabelWidth: "120px",
+      loading: false,
+      loadingForm: false,
+      schoolId: "" //添加用户默认学校id
     };
+  },
+  created() {
+    this.getData();
+    this.getParameterValue(9);
+  },
+  computed: {},
+  watch: {},
+  methods: {
+    //初始化属性end
+    //分页方法start
+    handleSizeChange(val) {
+      this.page_size = val;
+      this.getData();
+    },
+    //分页方法结束
+    handleCurrentChange(val) {
+      this.cur_page = val;
+      this.getData();
+    },
+    search(form) {
+      //搜索方法
+      this.cur_page = 1;
+      this.getData();
+    },
+    getParameterValue(id) {
+      let self = this;
+      findBranchParameterValueAll(id).then(data => {
+        if (data.code == 200) {
+          self.parameterValue = data.data;
+        }
+      });
+    },
+    //加载数据
+    getData() {
+      let self = this;
+      self.loading = true;
+      getGoodsList(self.cur_page, self.page_size, self.queryForm).then(data => {
+        self.loading = false;
+        if (data.code == 200) {
+          self.tableData = data.data.list;
+          self.total = data.data.total;
+        } else {
+          self.$message.error(data.data);
+        }
+      });
+    },
+    //保存表单
+    submitForm(formName) {
+      let self = this;
+
+      self.$refs[formName].validate(valid => {
+        if (valid) {
+          self.loadingForm = true;
+          createGoods().then(data => {
+            self.loadingForm = false;
+            if (data.code == 200) {
+              self.$message.success(data.message);
+              self.dialogFormVisible = false;
+              self.getData();
+              self.$refs[formName].resetFields();
+            } else {
+              this.$message.error(data.data);
+            }
+          });
+        } else {
+          return false;
+        }
+      });
+    },
+    // 数据过滤
+    filterType(value, row) {
+      if (value.theType == 1) row.tag = "正常";
+      else row.tag = "封存";
+      return row.tag;
+    },
+
+    //控件方法
+    handleEdit(index, row) {
+      this.form.fatherId = row.id;
+      this.form.fatherName = row.name;
+      this.dialogFormVisible = true;
+    },
+    handleDelete(index, row) {}
+  },
+  components: { SchoolTree, Course, UserDialog, RoomDialog } //注入组件
+};
 </script>
 

@@ -66,16 +66,17 @@
 </template>
 <style>
 .el-input.is-disabled .el-input__inner {
-    color: #2d2f33;
+  color: #2d2f33;
 }
 </style>
 <script scoped>
 import SchoolTree from "../system/SchoolTree.vue";
+import { getRoomList } from "../../api/api";
 export default {
   data() {
     return {
       userId: "",
-      userInput:"",
+      userInput: "",
       dialogTableVisible: false,
       tableData: [],
       total: 0,
@@ -97,19 +98,20 @@ export default {
     this.getData();
   },
   watch: {
-    value(val){ //当外部 v-modle值清空时，清空显示信息
-        if(!val)this.userInput="";
+    value(val) {
+      //当外部 v-modle值清空时，清空显示信息
+      if (!val) this.userInput = "";
     },
     userId(val) {
-      this.$emit("input", val);//向父组件v-modle传值。
+      this.$emit("input", val); //向父组件v-modle传值。
     },
     parentSchoolId(val) {
-        console.log(val);
+      console.log(val);
       if (this.isAll) {
-         this.queryForm.parentSchoolId = val;
+        this.queryForm.parentSchoolId = val;
       } else {
-          this.queryForm.schoolZoneId2 =[];
-          this.queryForm.schoolZoneId2.push(val);
+        this.queryForm.schoolZoneId2 = [];
+        this.queryForm.schoolZoneId2.push(val);
       }
       this.userId = "";
       this.userInput = "";
@@ -137,21 +139,15 @@ export default {
     getData() {
       let self = this;
       self.loading = true;
-      self.$axios
-        .post(
-          "teach/getRoomList/" + this.cur_page + "/" + this.page_size,
-          self.queryForm
-        )
-        .then(res => {
-          let data = res.data;
-          self.loading = false;
-          if (data.code == 200) {
-            self.tableData = data.data.list;
-            self.total = data.data.total;
-          } else {
-            self.$message.error(data.data);
-          }
-        });
+      getRoomList(self.cur_page, self.page_size, self.queryForm).then(data => {
+        self.loading = false;
+        if (data.code == 200) {
+          self.tableData = data.data.list;
+          self.total = data.data.total;
+        } else {
+          self.$message.error(data.data);
+        }
+      });
     },
     handleCheckChange(allNode) {
       let self = this;
@@ -166,7 +162,7 @@ export default {
     }
   },
   props: {
-    value:"",
+    value: "",
     title: {
       default: "选择教室"
     },

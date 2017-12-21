@@ -118,6 +118,7 @@
 
 <script>
 import SchoolTree from "../../common/system/SchoolTree.vue";
+import { getFinanceAccount,createFinanceAccount } from "../../api/api";
 export default {
   data() {
     return {
@@ -167,8 +168,8 @@ export default {
   methods: {
     //初始化属性start
     validateMoney(rule, value, callback) {
-        console.log(this.$validate.validateMoney);
-        return;
+      console.log(this.$validate.validateMoney);
+      return;
       let reg = /(^\d+\.\d{2}$)|(^[0-9]*$)|(^\d+\.\d{1}$)/;
       console.log(this.form.money);
       console.log(reg.test(value));
@@ -206,24 +207,19 @@ export default {
     getData() {
       let self = this;
       self.loading = true;
-      self.$axios
-        .post(
-          "finance/getFinanceAccountList/" +
-            this.cur_page +
-            "/" +
-            this.page_size,
-          self.queryForm
-        )
-        .then(res => {
-          let data = res.data;
-          self.loading = false;
-          if (data.code == 200) {
-            self.tableData = data.data.list;
-            self.total = data.data.total;
-          } else {
-            self.$message.error(data.data);
-          }
-        });
+      getFinanceAccount(
+        self.cur_page,
+        self.page_size,
+        self.queryForm
+      ).then(data => {
+        self.loading = false;
+        if (data.code == 200) {
+          self.tableData = data.data.list;
+          self.total = data.data.total;
+        } else {
+          self.$message.error(data.data);
+        }
+      });
     },
     //保存表单
     submitForm(formName) {
@@ -231,20 +227,17 @@ export default {
       self.$refs[formName].validate(valid => {
         if (valid) {
           self.loadingForm = true;
-          self.$axios
-            .post("finance/createFinanceAccount", this.form)
-            .then(res => {
-              var data = res.data;
-              self.loadingForm = false;
-              if (data.code == 200) {
-                self.$message.success(data.message);
-                self.dialogFormVisible = false;
-                self.getData();
-                self.$refs[formName].resetFields();
-              } else {
-                this.$message.error(data.data);
-              }
-            });
+          createFinanceAccount(self.form).then(data => {
+            self.loadingForm = false;
+            if (data.code == 200) {
+              self.$message.success(data.message);
+              self.dialogFormVisible = false;
+              self.getData();
+              self.$refs[formName].resetFields();
+            } else {
+              this.$message.error(data.data);
+            }
+          });
         } else {
           return false;
         }
@@ -271,7 +264,7 @@ export default {
     },
     filterSchoolZoneName(value, row) {
       if (row.thePublic == 1) row.tag = "公共";
-      else row.tag=value.schoolZoneName;
+      else row.tag = value.schoolZoneName;
       return row.tag;
     },
     filterType(value, row) {

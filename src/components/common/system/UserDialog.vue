@@ -89,6 +89,7 @@
 </style>
 <script scoped>
 import SchoolTree from "../system/SchoolTree.vue";
+import { getUserList } from "../../api/api";
 export default {
   data() {
     return {
@@ -149,21 +150,15 @@ export default {
     getUser() {
       let self = this;
       self.loading = true;
-      self.$axios
-        .post(
-          "organization/getUserList/" + this.cur_page + "/" + this.page_size,
-          self.queryForm
-        )
-        .then(res => {
-          let data = res.data;
-          self.loading = false;
+      getUserList(self.cur_page,self.page_size,self.queryForm).then(data=>{
+self.loading = false;
           if (data.code == 200) {
             self.tableData = data.data.list;
             self.total = data.data.total;
           } else {
             self.$message.error(data.data);
           }
-        });
+      })
     },
     //数据过滤
     filterSex(value, row) {
