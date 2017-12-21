@@ -8,3 +8,5 @@ npm-debug.log
 .idea/modules.xml
 .idea/vcs.xml
 .gitignore
+package.json
+package-lock.json
