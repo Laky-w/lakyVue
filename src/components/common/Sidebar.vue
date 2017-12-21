@@ -14,6 +14,7 @@
 <script>
 import subMenu from "./Sub";
 import { getMenu } from "../api/api";
+import { getRoutesList } from "../../router";
 export default {
   data() {
     return {
@@ -31,6 +32,7 @@ export default {
     var self = this;
     getMenu().then(data => {
       self.items = data.data;
+      getRoutesList(data.data);
     });
   },
   computed: {

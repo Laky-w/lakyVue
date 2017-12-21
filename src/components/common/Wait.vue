@@ -14,3 +14,12 @@
         text-align:center;
     }
 </style>
+<script>
+export default {
+   created() {
+    // this.$router.history.go(-1);
+    // this.$router.push(this.$router.currentRoute.redirectedFrom);
+    // console.log(this.$router.currentRoute.redirectedFrom);
+  },
+}
+</script>

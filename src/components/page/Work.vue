@@ -32,10 +32,10 @@
 </template>
 
 <script>
-    // import IEcharts from 'vue-echarts-v3';
+    import IEcharts from 'vue-echarts-v3';
     import vSchart from 'vue-schart';
-    import IEcharts from 'vue-echarts-v3/src/lite.vue';
-  
+    // import IEcharts1 from 'vue-echarts-v3/src/lite.js';
+
     import 'echarts/lib/chart/bar';
     import 'echarts/lib/chart/line';
     import 'echarts/lib/chart/pie';
