@@ -227,7 +227,7 @@ export default {
     //初始化属性start
     getSchoolId() {
       let self = this;
-      let user = JSON.parse(sessionStorage.getItem("userInfo"));
+      let user = self.$user();
       self.form.schoolZoneId = user.schoolZoneId;
       self.form.schoolName = user.schoolZone.name;
       self.schoolId = user.schoolZoneId;

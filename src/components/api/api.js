@@ -1,6 +1,9 @@
 import axios from 'axios';
 
 let base = '';
+//获取当前校区id
+export const _getCurrentUserInfo = params => { let user = JSON.parse(sessionStorage.getItem("userInfo"));return user};
+
 // 请求登录
 export const requestLogin = params => { return axios.post(`organization/login`, params).then(res => res.data); };
 //退出登录
@@ -76,6 +79,8 @@ export const createRoom = params => { return axios.post(`teach/createRoom`, para
 export const getCourseList = (pageNumber, pageSize, params) => { return axios.post(`teach/getCourseList/${pageNumber}/${pageSize}`, params).then(res => res.data); };
 //查询课程树
 export const getCourseTreeList = ( params) => { return axios.get(`teach/getCourseTreeList`, params).then(res => res.data); };
+//创建课程
+export const createCourse = params => { return axios.post(`teach/createCourse`, params).then(res => res.data); };
 // 查询班级
 export const getSchoolClassList = (pageNumber, pageSize, params) => { return axios.post(`teach/getSchoolClassList/${pageNumber}/${pageSize}`, params).then(res => res.data); };
 // 创建班级

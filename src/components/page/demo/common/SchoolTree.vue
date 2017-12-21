@@ -63,7 +63,6 @@ export default {
         if (data.code == 200) {
           let treeArray = [];
           treeArray.push(data.data);
-          console.debug(treeArray);
           self.data2 = treeArray;
         } else {
           self.$message.error(data.data);

@@ -3,7 +3,9 @@ import App from './App';
 import router from './router';
 import ElementUI from 'element-ui';
 // import "../static/js/common.js";
-import validateLaky from "../static/js/validate.js";
+import axios from 'axios';
+import validateLaky from "./validate";
+import { _getCurrentUserInfo  } from "./components/api/api";
 import "common.js";
 import 'element-ui/lib/theme-chalk/index.css'; // 默认主题
 import "../static/css/icon/iconfont.css";
@@ -12,6 +14,8 @@ import "../static/css/main.css";
 import "babel-polyfill";
 Vue.use(ElementUI);
 Vue.prototype.$validate = validateLaky;
+Vue.prototype.$user=_getCurrentUserInfo;
+Vue.prototype.$axios = axios;
 Vue.directive('drag', //自定义指令
     {
         bind: function(el, binding) {

@@ -30,14 +30,13 @@ export default {
   },
   computed: {
     userHeadLogo() {
-      let user = sessionStorage.getItem("userInfo");
-      let userHeadLogo = JSON.parse(user).headLogo;
-      console.debug(userHeadLogo);
+      let user = this.$user();
+      let userHeadLogo = user.headLogo;
       return userHeadLogo ? userHeadLogo : this.defaultHeadLogo;
     },
     username() {
-      let user = sessionStorage.getItem("userInfo");
-      let username = JSON.parse(user).nickName;
+      let user = this.$user();
+      let username = user.nickName;
       return username ? username : this.name;
     },
     branchName() {

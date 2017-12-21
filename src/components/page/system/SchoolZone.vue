@@ -218,7 +218,6 @@ export default {
       if (self.queryForm.schoolName) {
         self.tableData.forEach(record => {
           if (record.name.indexOf(self.queryForm.schoolName) >= 0) {
-            console.debug("==");
             // record._expanded = !record._expanded;
             record.selected = true;
           } else {
@@ -329,10 +328,6 @@ if (data.code == 200) {
     },
     filterTag(value, row) {
       if (row.theType === 1) return true;
-
-      console.debug(
-        row.theType + "==》" + value + "==>" + (row.theType == value)
-      );
       return row.theType == value;
     },
     handleEdit(index, row) {

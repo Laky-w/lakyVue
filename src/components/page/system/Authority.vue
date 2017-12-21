@@ -105,7 +105,6 @@ export default {
   },
   methods: {
     showTr(tr) {
-      console.debug("showTr");
       let row = tr.row;
       let subsCheckedCount = this.getSubsCheckedCount(row.id);
       row["isIndeterminate"] =
@@ -169,7 +168,6 @@ export default {
       if (self.queryForm.schoolName) {
         self.tableData.forEach(record => {
           if (record.name.indexOf(self.queryForm.schoolName) >= 0) {
-            console.debug("==");
             // record._expanded = !record._expanded;
             record.selected = true;
           } else {

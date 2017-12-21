@@ -121,7 +121,7 @@ export default {
       schoolId: "" //添加用户默认学校id
     };
   },
-  created() {},
+  created() { },
   watch: {
     value(val) {
       if (!val) this.userInput = "";
@@ -134,10 +134,13 @@ export default {
     //初始化属性start
     getSchoolId() {
       let self = this;
-      let user = JSON.parse(sessionStorage.getItem("userInfo"));
-      self.form.schoolZoneId = user.schoolZoneId;
-      self.form.schoolName = user.schoolZone.name;
-      self.schoolId = user.schoolZoneId;
+      let user = self.$user;
+      if (user) {
+        self.form.schoolZoneId = user.schoolZoneId;
+        self.form.schoolName = user.schoolZone.name;
+        self.schoolId = user.schoolZoneId;
+      }
+
     },
     //初始化属性start
     getParameterValue(id) {
@@ -195,7 +198,7 @@ export default {
       this.form.fatherName = row.name;
       this.dialogFormVisible = true;
     },
-    handleDelete(index, row) {},
+    handleDelete(index, row) { },
     handleSchool(data) {
       this.form.schoolName = data.name;
       this.form.schoolZoneId = data.id;
