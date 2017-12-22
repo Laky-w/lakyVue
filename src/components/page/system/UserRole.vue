@@ -101,78 +101,79 @@
 import SchoolTree from "../../common/system/SchoolTree.vue";
 import { getRoleList } from "../../api/api";
 export default {
-  data() {
-    return {
-      tableData: [],
-      dialogFormVisible: false,
-      total: 0,
-      cur_page: 1,
-      page_size: 50,
-      form: {
-        schoolId: "",
-        theType: 2,
-        userId: "",
-        createDatetime: "",
-        content: "",
-        lastDatetime: ""
-      },
-      queryForm: {
-        name: "",
-        schoolZoneId2: []
-      },
-      formLabelWidth: "120px",
-      loading: false,
-      loadingForm: false
-    };
-  },
-  created() {
-    this.getData();
-  },
-  methods: {
-    //分页方法start
-    handleSizeChange(val) {
-      console.log(this.page_size);
-      this.page_size = val;
-      this.getData();
+    data() {
+        return {
+            tableData: [],
+            dialogFormVisible: false,
+            total: 0,
+            cur_page: 1,
+            page_size: 50,
+            form: {
+                schoolId: "",
+                theType: 2,
+                userId: "",
+                createDatetime: "",
+                content: "",
+                lastDatetime: ""
+            },
+            queryForm: {
+                name: "",
+                schoolZoneId2: []
+            },
+            formLabelWidth: "120px",
+            loading: false,
+            loadingForm: false
+        };
     },
-    handleCurrentChange(val) {
-      this.cur_page = val;
-      this.getData();
+    created() {
+        this.getData();
     },
-    //分页方法结束
-    search(form) {
-      //搜索方法
-      this.cur_page = 1;
-      this.getData();
-    },
-    //加载数据
-    getData() {
-      let self = this;
-      self.loading = true;
-      getRoleList(self.cur_page, self.page_size, self.queryForm).then(data => {
-        if (data.code == 200) {
-          self.total = data.data["total"];
-          self.tableData = data.data.list;
-          self.loading = false;
-        } else {
-          self.$message.error(data.data);
+    methods: {
+        //分页方法start
+        handleSizeChange(val) {
+            console.log(this.page_size);
+            this.page_size = val;
+            this.getData();
+        },
+        handleCurrentChange(val) {
+            this.cur_page = val;
+            this.getData();
+        },
+        //分页方法结束
+        search(form) {
+            //搜索方法
+            this.cur_page = 1;
+            this.getData();
+        },
+        //加载数据
+        getData() {
+            let self = this;
+            self.loading = true;
+            getRoleList(self.cur_page, self.page_size, self.queryForm).then(data => {
+                self.loading = false;
+                if (data.code == 200) {
+                    self.total = data.data["total"];
+                    self.tableData = data.data.list;
+                    self.loading = false;
+                } else {
+                    self.$message.error(data.data);
+                }
+            });
+        },
+        //控件方法
+        handleEdit(index, row) {
+            this.form.fatherId = row.id;
+            this.form.fatherName = row.name;
+            this.dialogFormVisible = true;
+        },
+        handleDelete(index, row) { },
+        handleCheckChange(allNode) {
+            this.queryForm.schoolZoneId2 = [];
+            for (let i = 0; i < allNode.length; i++) {
+                this.queryForm.schoolZoneId2.push(allNode[i].id);
+            }
         }
-      });
     },
-    //控件方法
-    handleEdit(index, row) {
-      this.form.fatherId = row.id;
-      this.form.fatherName = row.name;
-      this.dialogFormVisible = true;
-    },
-    handleDelete(index, row) {},
-    handleCheckChange(allNode) {
-      this.queryForm.schoolZoneId2 = [];
-      for (let i = 0; i < allNode.length; i++) {
-        this.queryForm.schoolZoneId2.push(allNode[i].id);
-      }
-    }
-  },
-  components: { SchoolTree } //注入组件
+    components: { SchoolTree } //注入组件
 };
 </script>
