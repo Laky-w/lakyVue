@@ -136,7 +136,7 @@ import SchoolTree from "../../common/system/SchoolTree.vue";
 import UserDialog from "../../common/system/UserDialog.vue";
 import Course from "../../common/teach/Course.vue";
 import RoomDialog from "../../common/teach/RoomDialog.vue";
-import { getGoodsList, createGoods } from "../../api/api";
+import { getGoodsList, createGoods,findBranchParameterValueAll } from "../../api/api";
 export default {
   data() {
     return {

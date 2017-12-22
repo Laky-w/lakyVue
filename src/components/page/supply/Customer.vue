@@ -199,7 +199,7 @@ export default {
     //初始化属性start
     getSchoolId() {
       let self = this;
-      let user = _getCurrentUserInfo();
+      let user = self.$user();
       self.form.schoolZoneId = user.schoolZoneId;
       self.form.schoolName = user.schoolZone.name;
       self.schoolId = user.schoolZoneId;
