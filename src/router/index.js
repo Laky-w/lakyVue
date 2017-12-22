@@ -136,7 +136,4 @@ export const getRoutesList = params => {
 }
 
 
-
-
-
 export default $router;

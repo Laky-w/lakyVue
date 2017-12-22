@@ -89,7 +89,7 @@ export const createSchoolClass = params => { return axios.post(`teach/createScho
 
 //财务=============>>>
 //查询财务账户
-export const getFinanceAccount = (pageNumber, pageSize, params) => { return axios.post(`finance/getFinanceAccount/${pageNumber}/${pageSize}`, params).then(res => res.data); };
+export const getFinanceAccount = (pageNumber, pageSize, params) => { return axios.post(`finance/getFinanceAccountList/${pageNumber}/${pageSize}`, params).then(res => res.data); };
 //创建财务账户
 export const createFinanceAccount = params => { return axios.post(`finance/createFinanceAccount`, params).then(res => res.data); };
 //财务============
