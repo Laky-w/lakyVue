@@ -1,11 +1,20 @@
 <template>
-    <div>
-        <el-input ref="text1"
+    <div style="display:inline-block;">
+        <!-- <el-input ref="text1"
                   :placeholder="placeholderText"
                   v-model="userInput" readonly="">
             <i slot="suffix" style="cursor: pointer;" class="el-input__icon el-icon-more"
                @click="handleOpenDialog"></i>
-        </el-input>
+        </el-input> -->
+        <el-autocomplete style="width:100%"
+          v-model="userInput" valueKey="name" value="id" @blur="handleBlur"
+          :fetch-suggestions="querySearchAsync" :trigger-on-focus="false"
+          @select="handleSelect"
+          :placeholder="placeholderText"
+        >
+         <i slot="suffix" style="cursor: pointer;" class="el-input__icon el-icon-more"
+               @click="handleOpenDialog"></i>
+        </el-autocomplete>
         <el-dialog :title="title" :visible.sync="dialogTableVisible"
                    :modal-append-to-body=false append-to-body :close-on-click-modal=false>
             <div class="table">
@@ -103,6 +112,7 @@ import { findBranchParameterValueAll } from "../../api/api";
 export default {
   data() {
     return {
+      user:"",
       userInput: "",
       userId: "",
       dialogTableVisible: false,
@@ -125,6 +135,11 @@ export default {
   watch: {
     value(val) {
       if (!val) this.userInput = "";
+    },
+    defaulUser(val){
+      this.user=val;
+      this.userId=val.id;
+      this.userInput=val.name;
     },
     userId(val) {
       this.$emit("input", val); //向父组件v-modle传值。
@@ -206,7 +221,8 @@ export default {
     },
     handleRowClick(row, event, column) {
       this.userInput = row.name;
-      this.userId = row.id;
+      this.userId=row.id;
+      this.user=row;
     },
     handleOpenDialog() {
       this.dialogTableVisible = true;
@@ -221,10 +237,32 @@ export default {
       for (let i = 0; i < allNode.length; i++) {
         self.queryForm.schoolZoneId2.push(allNode[i].id);
       }
+    },
+    querySearchAsync(queryString, cb) {
+      if (queryString) {
+        getCustomerList(1, 20, { name: queryString }).then(data => {
+          if (data.code == 200) {
+            cb(data.data.list);
+          }
+        })
+      }
+    },
+    handleSelect(item) {
+      this.user = item;
+      this.userId =item.id;
+    },
+    handleBlur() {
+      if (this.user) {
+        this.userInput = this.user.name;
+        this.userId = this.user.id;
+      } else {
+        this.userInput = "";
+      }
     }
   },
   props: {
     value: "",
+    defaulUser:"",
     title: {
       default: "选择学员"
     },

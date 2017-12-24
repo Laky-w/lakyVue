@@ -48,7 +48,7 @@
     </div>
 </template>
 
-<script>
+<script scoped>
 import SchoolTree from "../../common/system/SchoolTree.vue";
 import DateRange from "../../common/Daterange.vue";
 import { findLoginLog } from "../../api/api";
@@ -132,13 +132,9 @@ export default {
   } //注入组件
 };
 </script>
-<style type="text/css">
-.el-table .warning-row td {
-  background: oldlace !important;
-}
 
-.el-table .success-row {
-  background: #f0f9eb;
-}
-</style>
+
+
+
+
 
