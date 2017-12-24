@@ -99,13 +99,13 @@ export const createFinanceAccount = params => { return axios.post(`finance/creat
 export const getGoodsList = (pageNumber, pageSize, params) => { return axios.post(`logistics/getGoodsList/${pageNumber}/${pageSize}`, params).then(res => res.data); };
 //创建物品
 export const createGoods = params => { return axios.post(`logistics/createGoods`, params).then(res => res.data); };
-//查询库存记录
-export const getRecordList = (pageNumber, pageSize, params) => { return axios.post(`logistics/getRecordList/${pageNumber}/${pageSize}`, params).then(res => res.data); };
-// 创建库存记录
-export const createRecord = params => { return axios.post(`logistics/createRecord`, params).then(res => res.data); };
 //查询库存
-export const getRepositoryList = (pageNumber, pageSize, params) => { return axios.post(`logistics/getRepositoryList/${pageNumber}/${pageSize}`, params).then(res => res.data); };
+export const getRecordList = (pageNumber, pageSize, params) => { return axios.post(`logistics/getRecordList/${pageNumber}/${pageSize}`, params).then(res => res.data); };
 // 创建库存
+export const createRecord = (pageNumber, pageSize, params) => { return axios.post(`logistics/createRecord/${pageNumber}/${pageSize}`, params).then(res => res.data); };
+//查询出入库存
+export const getRepositoryList = (pageNumber, pageSize, params) => { return axios.post(`logistics/getRepositoryList/${pageNumber}/${pageSize}`, params).then(res => res.data); };
+// 创建出入库存
 export const createRepository = params => { return axios.post(`logistics/createRepository`, params).then(res => res.data); };
 
 //后勤=============
