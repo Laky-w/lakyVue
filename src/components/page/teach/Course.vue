@@ -6,6 +6,10 @@
                     <el-input v-model="queryForm.name" clearable  placeholder="课程名称"
                     class="handle-input mr10"></el-input>
                 </el-form-item>
+                <el-form-item>
+                    <school-tree :is-show-checkbox=true :the-type="2" place-text="校区"
+                                 @handleCheckChange="handleCheckChange"></school-tree>
+                </el-form-item>
                 <el-form-item >
                     <el-select v-model="queryForm.theType"    clearable placeholder="课程类型" class="handle-select mr10" >
                         <el-option key="1" label="一对一" value="1"></el-option>
@@ -31,6 +35,9 @@
         <el-table
             :data="tableData" stripe v-loading="loading" border
             style="width: 100%">
+            <el-table-column
+            label="校区" prop="schoolName" >
+            </el-table-column>
             <el-table-column
             label="课程" prop="name" >
             </el-table-column>
@@ -218,7 +225,8 @@ export default {
       queryForm: {
         name: "",
         theType: "",
-        clazzId: []
+        clazzId: [],
+        schoolZoneId2:""
       },
       parameterValue: [],
       formActive: 1,

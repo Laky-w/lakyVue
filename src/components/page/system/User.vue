@@ -83,8 +83,8 @@
                 :total="total">
             </el-pagination>
         </div>
-        <el-dialog title="新增员工" :visible.sync="dialogFormVisible" :close-on-click-modal=false>
-            <el-form :model="form" ref="ruleForm">
+        <el-dialog title="添加员工" width="750px" :visible.sync="dialogFormVisible" :close-on-click-modal=false >
+            <el-form :model="form" ref="ruleForm" :inline="true" size="small">
                 <el-form-item label="姓名" :label-width="formLabelWidth" prop="name"
                               :rules="[{ required: true, message: '名称必填'}]">
                     <el-input v-model="form.name" :autofocus="formFocus" placeholder="真实姓名"
@@ -101,14 +101,14 @@
                 </el-form-item>
                 <el-form-item label="性别" :label-width="formLabelWidth" prop="sex"
                               :rules="[{ required: true, message: '必选项'}]">
-                    <el-radio-group v-model="form.sex">
+                    <el-radio-group  v-model="form.sex">
                         <el-radio :label="1">男</el-radio>
                         <el-radio :label="2">女</el-radio>
                     </el-radio-group>
                 </el-form-item>
                 <el-form-item label="超级管理员" :label-width="formLabelWidth" prop="isSuper"
-                              :rules="[{ required: true, message: '必选项'}]">
-                    <el-radio-group v-model="form.isSuper">
+                              :rules="[{ required: true, message: '必选项'}]" >
+                    <el-radio-group v-model="form.isSuper" style="width:200px">
                         <el-radio :label="2">否</el-radio>
                         <el-radio :label="1">是</el-radio>
                     </el-radio-group>
@@ -140,8 +140,8 @@
                 </el-form-item>
                 <el-form-item label="出生日期" :label-width="formLabelWidth" prop="birthday">
                     <el-date-picker
-                        v-model="form.birthday" style="width: 100%;"
-                        type="date" value-format="yyyy-MM-dd"
+                        v-model="form.birthday"
+                        type="date" value-format="yyyy-MM-dd" style="width: 200px;"
                         placeholder="出生日期">
                     </el-date-picker>
                 </el-form-item>

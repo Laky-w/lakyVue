@@ -1,11 +1,13 @@
 <template>
     <div class="header">
-        <div class="logo">{{branchName}}</div>
+        <div class="logo">
+          <img src="../../../static/img/logo2.png" :title="branchName" width="80px">
+        </div>
         <div class="notice"><i class="el-icon-location"></i>公告:{{notice}}</div>
         <div class="user-info">
             <el-dropdown trigger="click" @command="handleCommand">
                 <span class="el-dropdown-link">
-                    <img class="user-logo" :src="userHeadLogo" >
+                    <img class="user-logo" :src="userHeadLogo" onerror="this.src='../../../static/img/headPhoto.jpg'">
                     {{username}}
                 </span>
                 <el-dropdown-menu slot="dropdown">
@@ -69,7 +71,7 @@ export default {
         }
       });
     },
-    getData() {},
+    getData() { },
     handleCommand(command) {
       if (command == "loginout") {
         sessionStorage.removeItem("userInfo");
@@ -78,6 +80,7 @@ export default {
           if (data.code == 200) {
             //退出成功
             sessionStorage.removeItem("token");
+            this.$router.push('/login');
           }
         });
       }
@@ -94,12 +97,18 @@ export default {
   font-size: 22px;
   line-height: 70px;
   color: #fff;
+  background: url("../../../static/img/logo5.png") no-repeat 80px 10px #409eff;
 }
 .header .logo {
   float: left;
-  width: 250px;
+  /* width: 250px; */
   text-align: center;
 }
+/* .logo image,
+img {
+  -webkit-filter: opacity(50%);
+  filter: opacity(50%);
+} */
 .notice {
   float: left;
   position: absolute;

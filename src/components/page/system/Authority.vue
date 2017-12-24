@@ -154,6 +154,7 @@ export default {
       let self = this;
       self.loading = true;
       getMenu().then(data => {
+        self.loading = false;
         if (data.code == 200) {
           let treeData = self.parseSchoolTree(data.data, null, null, true);
           console.log(treeData);

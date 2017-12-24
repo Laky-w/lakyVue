@@ -70,6 +70,15 @@ export const getActivityList = (pageNumber, pageSize, params) => { return axios.
 export const createActivity = params => { return axios.post(`supply/createActivity`, params).then(res => res.data); };
 //招生=============
 
+//前台==========
+//获取学生
+
+//前台==========
+//查询正式学员
+export const getStudentList = (pageNumber, pageSize, params) => { return axios.post(`reception/getStudentList/${pageNumber}/${pageSize}`, params).then(res => res.data); };
+//创建学员
+export const createStudent = params => { return axios.post(`reception/createStudent`, params).then(res => res.data); };
+
 //教学=============
 // 查询教室
 export const getRoomList = (pageNumber, pageSize, params) => { return axios.post(`teach/getRoomList/${pageNumber}/${pageSize}`, params).then(res => res.data); };

@@ -15,6 +15,10 @@
                             <el-input v-model="queryForm.name" clearable  placeholder="课程名称"
                             class="handle-input mr10"></el-input>
                         </el-form-item>
+                         <el-form-item>
+                          <school-tree :default-value="schoolId" :is-show-checkbox=true :the-type="2" place-text="校区"
+                                    @handleCheckChange="handleCheckChange"></school-tree>
+                        </el-form-item>
                         <el-form-item >
                             <el-select v-model="queryForm.theType"    clearable placeholder="课程类型" class="handle-select mr10" >
                                 <el-option key="1" label="一对一" value="1"></el-option>
@@ -37,6 +41,9 @@
                     :data="tableData" stripe v-loading="loading" border  @row-click="handleRowClick"
                     style="width: 100%">
                     <el-table-column
+                    label="校区" prop="schoolName" >
+                    </el-table-column>
+                    <el-table-column
                     label="课程" prop="name" >
                     </el-table-column>
                     <el-table-column
@@ -54,7 +61,7 @@
                         @current-change ="handleCurrentChange"
                         :page-sizes="[20, 50, 100, 200]"
                         :page-size="page_size"
-                        layout="total, sizes, prev, pager, next, jumper"
+                        layout="total,prev, pager, next, jumper"
                         :total="total">
                     </el-pagination>
                 </div>
@@ -75,7 +82,7 @@
                         </div>
                     <div style="float: right;">
                         <el-button size="small" @click="userInput='';userId='';dialogTableVisible=false">取消</el-button>
-                        <el-button size="small" type="primary"  @click="dialogTableVisible=false">确定</el-button>
+                        <el-button size="small" type="primary"  @click="handleOK">确定</el-button>
                     </div>
                 </div>
             </div>
@@ -90,6 +97,7 @@
 
 
 <script>
+import SchoolTree from "../../common/system/SchoolTree.vue";
 import { getCourseList,findBranchParameterValueAll } from "../../api/api";
 export default {
   data() {
@@ -102,6 +110,7 @@ export default {
       cur_page: 1,
       page_size: 20,
       parameterValue: [],
+      schoolId:"",//添加用户默认学校id
       queryForm: {
         name: "",
         theType: "",
@@ -113,7 +122,10 @@ export default {
   created() {},
   watch: {
     value(val) {
-      if (!val || val.length == 0) this.userInput = "";
+      if (!val || val.length == 0) {
+        this.userInput = "";
+        this.userId ="";
+      }
     },
     userId(val) {
       if (this.selectedType != 1) {
@@ -138,10 +150,15 @@ export default {
         }
       });
     },
+    getSchoolId() {
+      let self = this;
+      let user = self.$user();
+      self.queryForm.schoolZoneId2 = user.schoolZoneId;
+      self.schoolId = user.schoolZoneId;
+    },
     //初始化属性end
     //分页方法start
     handleSizeChange(val) {
-      console.log(this.page_size);
       this.page_size = val;
       this.getData();
     },
@@ -210,9 +227,21 @@ export default {
     handleOpenDialog() {
       this.dialogTableVisible = true;
       if (this.tableData.length == 0) {
+        this.getSchoolId();
         this.getData();
         this.getParameterValue(7);
       }
+    },
+    handleCheckChange(allNode) {
+      let self = this;
+      self.queryForm.schoolZoneId2 = [];
+      for (let i = 0; i < allNode.length; i++) {
+        self.queryForm.schoolZoneId2.push(allNode[i].id);
+      }
+    },
+    handleOK(){
+      this.dialogTableVisible=false;
+      this.$emit("selectData",this.userId);
     },
     handleTagClose(tag) {
       console.log(tag);
@@ -242,6 +271,6 @@ export default {
       default: 1
     }
   },
-  components: {} //注入组件
+  components: {SchoolTree} //注入组件
 };
 </script>
