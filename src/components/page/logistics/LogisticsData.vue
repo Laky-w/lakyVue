@@ -5,7 +5,7 @@
         <!-- 添加公共参数,导出div -->
         <div style="margin:5px;">
             <el-button type="primary" icon="el-icon-edit" size="mini" @click="dialogFormVisible=true">添加公共参数</el-button>
-        </div>
+        </div>  
         <!-- 公共参数页面 -->
         <el-container style="height: 100%; border: 1px solid #eee">
             <!-- 公共参数侧边栏 -->

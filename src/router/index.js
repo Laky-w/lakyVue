@@ -25,8 +25,8 @@ let routesList = [{
     component: resolve => require(['../components/common/Wait.vue'], resolve)
   },
   {
-    path: '/customerDialog',
-    component: resolve => require(['../components/common/supply/CustomerDialog.vue'], resolve)
+    path: '/goodsDialog',
+    component: resolve => require(['../components/common/logistics/GoodsDialog.vue'], resolve)
   },
   {
     path: '/authority1',
