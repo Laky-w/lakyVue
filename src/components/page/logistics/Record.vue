@@ -72,13 +72,9 @@
           </div>
           <el-dialog title="添加进货" :visible.sync="dialogFormVisible" width="750px">
             <el-form :model="form" ref="ruleForm2">
-              <!-- <el-form-item label="名称" :label-width="formLabelWidth" prop="name"  :rules="[{ required: true, message: '名称必填'}]">
-              <el-input v-model="form.name"  autofocus placeholder="课程名称"  auto-complete="off"></el-input>
-              </el-form-item> -->
-              <el-form-item label="登记日期" :label-width="formLabelWidth" style="display:inline-block;">
+              <el-form-item label="进货日期" :label-width="formLabelWidth" style="display:inline-block;">
                 <el-date-picker
-                v-model="createTime"
-                type="date"
+                type="date"  v-model="form.createTime"
                 placeholder="进货日期">
                 </el-date-picker>
               </el-form-item>
@@ -87,7 +83,7 @@
                     <el-option v-for="(item,index) in parameterValue" :key="item.id" :label="item.name" :value="item.id"></el-option>
                   </el-select>
               </el-form-item>
-              <el-form-item label="收费信息" required :label-width="formLabelWidth" size="mini" style="margin-bottom:0px;">
+              <el-form-item label="进货信息" required :label-width="formLabelWidth" size="mini" style="margin-bottom:0px;">
                   <el-form-item class="freeTitle" size="mini">
                        名称
                    </el-form-item>
@@ -97,33 +93,39 @@
                    <el-form-item class="freeTitle" size="mini">
                        数量
                    </el-form-item>
-                   <el-form-item size="mini" style="text-align:left;display: inline-block;margin-bottom:5px;">
-                       <el-button size="mini" @click="addChargeStandard">添加</el-button>
+                   <el-form-item class="freeTitle" size="mini">
+                       金额
+                   </el-form-item>
+                   <el-form-item size="mini"  style="display: inline-block;">
+                    <goods-dialog :button-type="2" @selectData="addGoods" placeholder-text="添加物品" selected-type=2></goods-dialog>
+                    <!-- <el-button @click="addChargeStandard" text-align="添加物品" icon="el-icon-edit" size="mini" type="primary"></el-button> -->
                    </el-form-item>
               </el-form-item>
-              <el-form-item  :label-width="formLabelWidth"  v-for="(chargeStandard, index) in form.chargeStandard" :key="index" style="margin-bottom:0px;">
-                   <el-form-item  style="display:inline-block;width:100px;margin-bottom:5px;" :key="index"
-                    :prop="'chargeStandard.' + index + '.goodsId'"
-                    :rules="[
-                        { required: true, message: '必填项'},
-                         size="mini" >
-                       <el-input v-model.number="chargeStandard.minHourse" placeholder="最小课时" ></el-input>
+              <el-form-item  :label-width="formLabelWidth"  v-for="(goods, index) in form.goodsList"  style="margin-bottom:0px;">
+                   <el-form-item  style="display:inline-block;width:100px;margin-bottom:5px;"size="mini" >
+                       {{goods.goodsName}}
                    </el-form-item>
-                   <el-form-item  style="display:inline-block;width:220px;margin-bottom:5px;"
-                     :prop="'chargeStandard.' + index + '.amount'"
-                     :rules="[
-                        { required: true, message: '必填项'},
-                        { type: 'number', message: '必须为数字值'}]" size="mini" >
-                        <el-input v-model.number="chargeStandard.amount" placeholder="课时" ></el-input>
+                  
+                   <el-form-item  style="display:inline-block;width:100px;margin-bottom:5px;"
+                    :prop="'goodsList.' + index + '.amount'" :rules="[
+                        { required: true, message: '必填项'}
+                        ]" size="mini" >
+                        <el-input v-model.number="goods.amount" placeholder="数量" ></el-input>
                    </el-form-item>
-                   <el-form-item style="display:inline-block;width:220px;margin-bottom:5px;"
-                    :prop="'chargeStandard.' + index + '.price'"   :rules="[
+                   <el-form-item style="display:inline-block;width:100px;margin-bottom:5px;"
+                    :prop="'goodsList.' + index + '.price'"   :rules="[
                         { required: true, message: '必填项'},
                         { validator:$validate.validateMoney, trigger: 'blur'}]" size="mini"  >
-                       <el-input v-model.number="chargeStandard.price" placeholder="费用"  ></el-input>
+                       <el-input v-model.number="goods.price" placeholder="费用"  ></el-input>
                    </el-form-item>
-                   <el-form-item style="display:inline-block;width:220px;margin-bottom:5px;"   >
-                        <el-button  size="mini" @click="removeChargeStandard(chargeStandard)">删除</el-button>
+                    <el-form-item   style="display:inline-block;width:100px;margin-bottom:5px;"
+                    :prop="'goodsList.' + index + '.totalPrice'" :rules="[
+                        { required: true, message: '必填项'},
+                        { type: 'number', message: '必须为数字值'}]" size="mini" >
+                        <el-input v-model.number="goods.totalPrice" placeholder="金额" ></el-input>
+                   </el-form-item>
+                   <el-form-item style="display:inline-block;width:100px;margin-bottom:5px;"   >
+                        <el-button  size="mini" @click="removeGoods(goods)">删除</el-button>
                    </el-form-item>
               </el-form-item>
           </el-form>
@@ -141,23 +143,22 @@
   </el-tabs>
     
 </template>
-<style>
-.el-steps--simple {
-  padding: 8px 8%;
-  border-radius: 4px;
-  background: #f5f7fa;
-  line-height: 6px;
-  margin-bottom: 15px;
-}
-</style>
+
+
 
 <style scoped>
 .freeTitle {
   display: inline-block;
   background-color: #faebd7;
-  width: 120px;
+  width: 100px;
   text-align: center;
   margin-bottom: 5px;
+}
+.freeContent {
+  display: inline-block;
+  width: 120px;
+  margin-bottom: 5px;
+  text-align: center;
 }
 </style>
 
@@ -167,6 +168,7 @@
 import SchoolTree from "../../common/system/SchoolTree.vue";
 import UserDialog from "../../common/system/UserDialog.vue";
 import MarketActivityDialog from "../../common/supply/MarketActivityDialog.vue";
+import GoodsDialog from "../../common/logistics/GoodsDialog.vue";
 import CourseDialog from "../../common/teach/CourseDialog.vue";
 import {
     getRecordList,
@@ -189,23 +191,16 @@ export default {
             parameterValue: [],
             form: {
                 //表单 v-modle绑定的值
-                name: "",
-                sex: 1,
+                goodsName: "",
                 contactId: "",
                 sourceId: "",
                 ownerId: "",
-                phone: "",
-                remarks: "",
+                amount:"",
+                createTime: "",
                 schoolZoneId: "",
                 schoolName: "",
                 intentionId: [],
-                chargeStandard:[
-                    {
-                        goodsId:"",
-                        amount:"",
-                        price:""
-                    }
-                ]
+                goodsList:[]
 
             },
             formLabelWidth: "120px",
@@ -313,21 +308,41 @@ export default {
                 self.queryForm.schoolZoneId2.push(allNode[i].id);
             }
         },
-        removeChargeStandard(item) {
-            if (this.form.chargeStandard.length == 1) return;
+        removeGoods(item) {
             var index = this.form.chargeStandard.indexOf(item);
             if (index !== -1) {
                 this.form.chargeStandard.splice(index, 1);
             }
         },
-        addChargeStandard() {
-            this.form.chargeStandard.push({
-                price: "",
-                amount:""
-            });
-        }
+        addGoods(data) {
+          let self =this;
+          data.forEach(item=>{
+            let falg = false;
+            if(self.form.goodsList){
+              self.form.goodsList.forEach(goods=>{
+                if(goods.goodsId == item.id){
+                  falg = true;
+                  return;
+                }
+              })
+            }
+            if(falg){
+              self.$message.warning(item.name+"已存在物品列表");
+              return;
+            }
+            self.form.goodsList.push(
+              {
+                price: item.price,
+                amount:1,
+                totalPrice:item.price,
+                goodsId:item.id,
+                goodsName:item.name
+            })
+
+          });
+        },
     },
-    components: { SchoolTree, UserDialog, MarketActivityDialog, CourseDialog } //注入组件
+    components: { SchoolTree, UserDialog, MarketActivityDialog, CourseDialog,GoodsDialog } //注入组件
 };
 </script>
 

@@ -16,8 +16,7 @@
                             class="handle-input mr10"></el-input>
                         </el-form-item>
                          <el-form-item>
-                          <school-tree :default-value="schoolId" :is-show-checkbox=true :the-type="2" place-text="校区"
-                                    @handleCheckChange="handleCheckChange"></school-tree>
+                          <school-tree :default-value="schoolId" :is-show-checkbox=true :the-type="2" place-text="校区" @handleCheckChange="handleCheckChange"></school-tree>
                         </el-form-item>
                         <el-form-item >
                             <el-select v-model="queryForm.theType"    clearable placeholder="课程类型" class="handle-select mr10" >
