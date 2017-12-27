@@ -3,14 +3,8 @@
         <div class="handle-box">
             <el-form ref="queryForm" :inline="true" :model="queryForm" label-width="80px" size="mini">
                 <el-form-item>
-                    <el-input v-model="queryForm.userName" placeholder="用户名" class="handle-input mr10"></el-input>
+                    <el-input v-model="queryForm.name" placeholder="班级名称" class="handle-input mr10"></el-input>
                 </el-form-item>
-                <!-- <el-form-item >
-                    <el-select v-model="queryForm.theType"   value=1 clearable placeholder="登录类型" class="handle-select mr10" >
-                        <el-option key="1" label="登录" value="1"></el-option>
-                        <el-option key="2" label="退出" value="2"></el-option>
-                    </el-select>
-                </el-form-item> -->
                 <el-form-item>
                     <school-tree :is-show-checkbox=true :the-type="2" place-text="校区"
                                  @handleCheckChange="handleCheckChange"></school-tree>
@@ -175,7 +169,7 @@ export default {
       cur_page: 1,
       page_size: 20,
       queryForm: {
-        userName: "",
+        name: "",
         theDate: "",
         theType: "",
         schoolZoneId2: []

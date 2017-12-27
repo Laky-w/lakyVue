@@ -1,5 +1,5 @@
 <template>
-  <div class="table" style="min-width:1200px">
+  <div class="table" style="min-width:1200px;padding-top: 10px;">
     <el-form :model="form" ref="ruleForm" >
       <el-form-item label="选择学员" :label-width="formLabelWidth" prop="studentId"  :rules="[{ required: true, message: '学员必填'}]">
         <customer-dialog :defaulUser="student" style="width:80%" v-model="form.studentId" title="选择意向学员" placeholder-text="姓名/拼音/手机号"></customer-dialog>
@@ -11,35 +11,42 @@
         <course-dialog @selectData="handleCourse" style="width:80%" v-model="courseId" :selected-type="2"></course-dialog>
       </el-form-item>
       <el-form-item label="收费信息" required :label-width="formLabelWidth" size="mini" style="margin-bottom:0px;">
-        <el-form-item class="freeTitle" v-for="item in titleLabel" size="mini">
-              {{item}}
+        <el-form-item :class="item.type ==1 ?'freeTitle':'freeTitle itemText'" v-for="(item,index) in titleLabel" size="mini" :key="index">
+              {{item.label}}
         </el-form-item>
       </el-form-item>
 
-      <el-form-item  :label-width="formLabelWidth"  v-for="(chargeDetail,index) in form.chargeDetails" style="margin-bottom:0px;">
-          <el-form-item  class="freeContent" size="mini" >
+      <el-form-item  :label-width="formLabelWidth"   v-for="(chargeDetail,index) in chargeDetails" style="margin-bottom:0px;" :key="index">
+          <el-form-item  class="freeContent itemText" size="mini" >
               {{chargeDetail.courseName}}
           </el-form-item>
-          <el-form-item  class="freeContent" size="mini" :prop="'chargeDetails.' + index + '.classId'">
-              <customer-dialog v-model="chargeDetail.classId"></customer-dialog>
+          <el-form-item  class="freeContent" size="mini" :prop="'chargeDetails.' + index + '.classId'" >
+              <class-dialog  v-model="chargeDetail.classId" :course-id="chargeDetail.courseId"></class-dialog>
           </el-form-item>
-           <el-form-item  class="freeContent" size="mini" :prop="'chargeDetails.' + index + '.theType'">
-              <el-select v-model="chargeDetail.theType"   placeholder="课程类型" class="handle-select mr10" >
-                  <el-option key="1" label="新报" value="1"></el-option>
-                  <el-option key="2" label="扩科" value="2" ></el-option>
-              </el-select>
+           <el-form-item  class="freeContent itemText" size="mini" :prop="'chargeDetails.' + index + '.theType'">
+            <el-select v-model="chargeDetail.theType"   placeholder="课程类型" class="handle-select mr10" >
+              <el-option key="1" label="新报" value="1"></el-option>
+              <el-option key="2" label="扩科" value="2" ></el-option>
+            </el-select>
           </el-form-item>
           <el-form-item  class="freeContent" size="mini" >
-              {{chargeDetail.itemName}}
+              {{chargeDetail.itemName}}({{chargeDetail.itemType == 1?"标准收费":"区间收费"}})
           </el-form-item>
-          <el-form-item  class="freeContent" :prop="'chargeDetails.' + index + '.count'" size="mini" >
-              <el-input-number style="width:80px" v-model="chargeDetail.count"  :min="1" >
+          <el-form-item  class="freeContent" size="mini" >
+            <el-select placeholder="收费标准" @change="changeChargeStandard(chargeDetail)"
+            class="handle-select mr10" v-model.number="chargeDetail.chargeStandardId">
+              <el-option v-for="(item,index) in chargeDetail.chargeStandard" :label="item.label" :value="item.id" :key="item.id"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item  class="freeContent" :prop="'chargeDetails.' + index + '.number'" size="mini"
+           :rules="[{ validator:$validate.validateMoney}]">
+              <el-input-number style="width:80px" v-model="chargeDetail.number"  :min="1" >
               </el-input-number>({{chargeDetail.unit}})
           </el-form-item>
           <el-form-item  class="freeContent" :prop="'chargeDetails.' + index + '.price'" size="mini" >
-            <el-input v-model="chargeDetail.price" style="width:80px">
-
-            </el-input>
+            <!-- <el-input v-model="chargeDetail.price" style="width:80px">
+            </el-input> -->
+            {{chargeDetail.price}}
           </el-form-item>
           <el-form-item  class="freeContent" style="150px" :prop="'chargeDetails.' + index + '.discount'" size="mini" >
             <!-- <el-input v-model="chargeDetail.discount"></el-input> -->
@@ -47,19 +54,56 @@
                <!-- <template slot="append">%</template> -->
             </el-input-number>
           </el-form-item>
-          <el-form-item  class="freeContent" :prop="'chargeDetails.' + index + '.sell'" size="mini" >
-            <el-input v-model="chargeDetail.sell"></el-input>
+          <el-form-item  class="freeContent itemText"  size="mini" >
+            {{chargeDetail.sellPrice}}
           </el-form-item>
 
-          <el-form-item  class="freeContent" size="mini" >
-            {{chargeDetail.totalPrice}}
+          <el-form-item  class="freeContent itemText" size="mini" style="color: red;">
+            {{chargeDetail.total}}
           </el-form-item>
-          <el-form-item  class="freeContent" :prop="'chargeDetails.' + index + '.subtractPrice'" size="mini" >
-            <el-input v-model="chargeDetail.subtractPrice"></el-input>
+          <el-form-item  class="freeContent " :prop="'chargeDetails.' + index + '.subtractPrice'"
+            :rules="[{ validator:$validate.validateMoney}]" size="mini" >
+            <el-input-number style="width:100px" v-model="chargeDetail.subtractPrice"  :min="0" :max="chargeDetail.total">
+            </el-input-number>
           </el-form-item>
           <el-form-item class="freeContent" >
               <el-button  size="mini" @click="removeChargeDetail(chargeDetail)">删除</el-button>
           </el-form-item>
+      </el-form-item>
+      <el-form-item style="padding-left:100px">
+         <div class="accountContent">
+          <div class="head" style="background-color: #eca061;">收款账户</div>
+          <div class="cardContent">
+            <el-form-item :label="item.name" v-for="(item,index) in account" label-width="100px"
+            :prop="'financeAccount.' + index + '.money'" size="mini" :key="item.id">
+              <!-- <el-input style="width:200px" v-model="item.money">
+                <template slot="append" >元(￥)</template>
+              </el-input> -->
+              <el-input-number style="width:150px" v-model="item.money"  :min="0" :max="item.arrears"  >
+              </el-input-number>
+            </el-form-item>
+            <!-- <el-form-item label="实收金额">{{form.bill.total}}</el-form-item> -->
+            <!-- <el-form-item label="抹零" size="mini">
+            </el-form-item>
+            <el-form-item label="欠费">{{form.bill.total}}</el-form-item> -->
+          </div>
+        </div>
+        <div class="accountContent" >
+          <div class="head" style="background-color: #409eff;" >收款信息</div>
+          <div class="cardContent">
+            <el-form-item label-width="100px" label="应收金额" style="color: #67c23a;">{{bill.total}}</el-form-item>
+            <el-form-item label-width="100px" label="实收金额" style="color: #f56c6c;">{{bill.receivable}}</el-form-item>
+            <el-form-item label-width="100px" label="抹零" prop="bill.subtractMoney" size="mini">
+              <el-input-number style="width:120px" v-model.number="form.bill.subtractMoney"  :min="0" :max="bill.total">
+            </el-input-number>
+            </el-form-item>
+            <el-form-item label-width="100px" label="欠费"  >{{bill.arrears}}</el-form-item>
+          </div>
+        </div>
+      </el-form-item>
+      <el-form-item :label-width="formLabelWidth" style="text-align: center;margin-left: 120px;text-align: center;background-color: #ebeef5;
+      padding: 5px 0px;">
+        <el-button type="primary" @click="submitForm('ruleForm')" :loading="loadingForm">报 名</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -80,6 +124,34 @@
   margin-bottom: 5px;
   text-align: center;
 }
+.accountContent {
+  /* display: inline-block;   */
+  float: left;
+  width: 610px;
+  border: 1px solid silver;
+  margin-left: 25px;
+  margin-top: 50px;
+  min-height: 350px;
+}
+.head {
+  height: 50px;
+  line-height: 50px;
+  font-family: "Microsoft YaHei";
+  padding-left: 20px;
+  color: #ffffff;
+  font-size: 16px;
+}
+.cardContent {
+  /* text-align: right; */
+  padding: 10px 0px 0px 20px;
+  min-height: 280px;
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.itemText {
+  width: 65px;
+}
 </style>
 
 
@@ -87,38 +159,120 @@
 import CustomerDialog from "../../common/supply/CustomerDialog.vue";
 import CustomerForm from "../supply/CustomerForm.vue";
 import CourseDialog from "../../common/teach/CourseDialog.vue";
-
+import ClassDialog from "../../common/teach/ClassDialog.vue";
+import { getChargeStandard, getFinanceAccount,createStudentApply } from "../../api/api";
 
 export default {
   data() {
     return {
       formLabelWidth: "120px",
-      titleLabel: ["课程", "班级", "类型", "收费项目", "数量(单位)", "标准价", "折扣(%)", "现价", "总额", "减免", "操作"],
+      loadingForm:false,
+      titleLabel: [
+        { label: "课程", type: 2 },
+        { label: "班级", type: 1 },
+        { label: "类型", type: 2 },
+        { label: "收费项目(费用类型)", type: 1 },
+        { label: "收费标准", type: 1 },
+        { label: "数量(单位)", type: 1 },
+        { label: "原单价", type: 1 },
+        { label: "折扣(%)", type: 1 },
+        { label: "折单价", type: 2 },
+        { label: "总额", type: 2 },
+        { label: "减免", type: 1 },
+        { label: "操作", type: 1 },
+      ],
       courseId: "",
+      financeAccount: [],
       form: {
         studentId: "",
-
         chargeDetails: [
           // {
           //   courseId: "",
           //   courseName: "课程",
           //   classId: "",
           //   className: "",
-          //   theType: "1",
+          //   itemType: "1",
           //   itemName: "学费",
-          //   count: "",
+          //   number: "", //
           //   unit: "学时",
           //   price: "",
-          //   sell: "",
+          //   sellPrice: "",//
           //   discount: 100,
-          //   totalPrice: 0,
+          //   total: 0, //
           //   subtractPrice: 0,
           // }
-        ]
+        ],
+        bill: {
+          total: 0,//应收
+          receivable: 0,//实收
+          arrears: 0,//欠费
+          // subtractPrice: 0, //去零
+          subtractMoney: 0 //去零
+        },
+        financeAccount: []
       },
       studentId: "",
       student: {}//当前报名的学生
     };
+  },
+  computed: {
+    chargeDetails() {
+      this.form.bill.total = 0;
+      this.form.chargeDetails.forEach(item => {
+        item.sellPrice = item.price * item.discount / 100;
+        if (item.itemType == 2) {//区间收费
+          // item.total = item.sell * item.subtractPrice;
+          item.total = Number(item.sellPrice.sub(item.subtractPrice));//售价-减免
+        } else {
+          // item.total =item.sellPrice * item.count - item.subtractPrice;//售价*数量 - 减免
+          item.total =Number(Number(item.sellPrice.mul(item.number)).sub(item.subtractPrice));//售价*数量 - 减免
+        }
+        // this.form.bill.total +=  item.total;
+        this.form.bill.total = Number(this.form.bill.total.add(item.total));
+        this.form.financeAccount[0].money = this.form.bill.total;
+      })
+      return this.form.chargeDetails;
+    },
+    bill() {
+      let money = 0;
+      this.form.financeAccount.forEach(item => {
+        // money = money+item.money;
+        money = money.add(item.money)
+        // item.arrears = this.form.bill.arrears;
+      })
+      let receivable = money;
+      //实收
+      this.form.bill.receivable =receivable<0?0:receivable;
+      // this.form.bill.receivable = this.form.bill.receivable - this.form.bill.subtractMoney;
+      // let arrears = this.form.bill.total - this.form.bill.receivable - this.form.bill.subtractMoney;
+      let arrears = Number(Number(this.form.bill.total.sub(this.form.bill.receivable)).sub(this.form.bill.subtractMoney));
+      //欠费
+      this.form.bill.arrears = arrears<0?0:arrears;
+      return this.form.bill;
+    },
+    account() {
+      this.form.financeAccount.forEach(item => {
+        let maxMoney = 0;
+        this.form.financeAccount.forEach(otherItem => {
+          if(otherItem.id!=item.id){
+            //maxMoney = maxMoney+otherItem.money;
+            maxMoney = maxMoney.add(otherItem.money);
+          }
+        })
+        // let totalMoney =this.form.bill.total-this.form.bill.subtractMoney-maxMoney);
+        let totalMoney =Number(Number(this.form.bill.total.sub(this.form.bill.subtractMoney)).sub(maxMoney));
+        if(totalMoney<0) {
+          item.arrears=0;
+          item.money=0;
+        } else {
+          if(totalMoney<item.money){
+            item.money=totalMoney;
+          }
+          item.arrears = totalMoney;
+        }
+      })
+      return this.form.financeAccount;
+    }
   },
   watch: {
     'form.courseId'(val) {
@@ -126,14 +280,54 @@ export default {
     }
   },
   created() {
-  },
-  computed: {
-    //实时计算
+    this.loadFinanceAccount();
   },
   methods: {
+    loadFinanceAccount() {
+      let self = this;
+      let schoolZoneId = self.$user().schoolZoneId;
+      getFinanceAccount(1, 20, { schoolZoneId2: schoolZoneId, theOpen: 1 }).then(data => {
+        if (data.data) {
+          self.financeAccount = data.data.list;
+          self.financeAccount.forEach(item => {
+            if (item.thePublic == 2) {
+              self.form.financeAccount.push({ accountId: item.id, money: 0, name: item.name });
+            }
+          })
+          console.log(self.form.financeAccount)
+        }
+      });
+    },
+    submitForm(ref){
+      let self = this;
+      if(self.form.chargeDetails.length==0){
+        self.$message.error("请选择报名课程");
+        return false;
+      }
+      self.$refs[ref].validate(valid => {
+        if(valid){
+          self.loadingForm=true;
+          let formJson = JSON.stringify(self.form);
+          createStudentApply(self.form.studentId,{form:formJson}).then(data=>{
+            self.loadingForm=false;
+            if(data.code==200){
+              self.$refs[ref].resetFields();
+              self.form.chargeDetails=[];
+              self.$message.success("报名成功");
+            } else {
+              self.$message.error("报名失败");
+            }
+          })
+        } else {
+          return false;
+        }
+
+      })
+    },
     handleSaveSuccess(data) {
       this.student = data;
     },
+
     removeChargeDetail(item) {
       var index = this.form.chargeDetails.indexOf(item);
       if (index !== -1) {
@@ -147,43 +341,70 @@ export default {
         price: ""
       });
     },
+    changeChargeStandard(chargeDetail) {
+      chargeDetail.chargeStandard.forEach(item => {
+        if (item.id == chargeDetail.chargeStandardId) {
+          chargeDetail.price = item.price;
+          return;
+        }
+      })
+    },
     handleCourse(data) {
-      console.log(data);
       let self = this;
       if (data) {
         data.forEach(course => {
-          if(self.form.chargeDetails){
+          if (self.form.chargeDetails) {
             let falg = false;
-            self.form.chargeDetails.forEach(detail=>{
-              if(detail.courseId == course.id){
-                falg=true;
+            self.form.chargeDetails.forEach(detail => {
+              if (detail.courseId == course.id) {
+                falg = true;
                 return;
               }
             })
-            if(falg){
-              self.$message.warning(course.name+"已存在报名列表");
+            if (falg) {
+              self.$message.warning(course.name + "已存在报名列表。");
               return;
             }
           }
-          let chargeDetail = {};
-          chargeDetail.courseId = course.id;
-          chargeDetail.courseName = course.name;
-          chargeDetail.classId = "";
-          chargeDetail.theType = "1"; // 1新报，2扩科（续报）
-          chargeDetail.itemName = "学费";
-          chargeDetail.count = "";//数量
-          chargeDetail.unit = "学时";
-          chargeDetail.price = 0;//原价
-          chargeDetail.sell = "";//售价
-          chargeDetail.discount = 100;//折扣
-          chargeDetail.totalPrice = 0;//总价
-          chargeDetail.subtractPrice = 0;//减免
-          self.form.chargeDetails.push(chargeDetail);
+          getChargeStandard(course.id).then(data => {
+            if (data.code == 200) {
+              let chargeDetail = {};
+              let chargeStandards = [];
+              data.data.forEach(chargeStandard => {
+                chargeStandard.label = "(" + chargeStandard.minHourse + "-"
+                  + chargeStandard.maxHourse + ")课时" + chargeStandard.price + "￥";
+                chargeStandards.push(chargeStandard);
+              })
+              chargeDetail.chargeStandard = chargeStandards;
+              chargeDetail.chargeStandardId = chargeStandards[0].id;//默认第一个
+              chargeDetail.itemType = course.standardType;
+
+              chargeDetail.courseId = course.id;
+              chargeDetail.schoolId= course.schoolId;
+              chargeDetail.courseName = course.name;
+              chargeDetail.classId = "";
+              chargeDetail.theType = "1"; // 1新报，2扩科（续报）
+              chargeDetail.itemName = "学费";
+              chargeDetail.number = 0;//数量
+              chargeDetail.unit = "学时";
+              chargeDetail.price = chargeStandards[0].price;//原价
+              chargeDetail.sellPrice = chargeStandards[0].price;//售价
+              chargeDetail.discount = 100;//折扣
+              chargeDetail.total = 0;//总价
+              chargeDetail.subtractPrice = 0;//减免
+
+              self.form.chargeDetails.push(chargeDetail);
+            } else {
+              self.$message.warning(course.name + "收费标准获取错误。");
+            }
+
+          })
+
         })
         self.courseId = "";
       }
     }
   },
-  components: { CustomerDialog, CustomerForm, CourseDialog } //注入组S件
+  components: { CustomerDialog, CustomerForm, CourseDialog, ClassDialog } //注入组S件
 };
 </script>

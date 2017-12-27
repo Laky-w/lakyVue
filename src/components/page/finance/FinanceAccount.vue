@@ -167,18 +167,6 @@ export default {
   },
   methods: {
     //初始化属性start
-    validateMoney(rule, value, callback) {
-      console.log(this.$validate.validateMoney);
-      return;
-      let reg = /(^\d+\.\d{2}$)|(^[0-9]*$)|(^\d+\.\d{1}$)/;
-      console.log(this.form.money);
-      console.log(reg.test(value));
-      if (value !== "" && !reg.test(value)) {
-        callback(new Error("格式错误,正确格式[0.00]"));
-      } else {
-        callback();
-      }
-    },
     getSchoolId() {
       let self = this;
       let user = self.$user();
@@ -263,7 +251,7 @@ export default {
       }
     },
     filterSchoolZoneName(value, row) {
-      if (row.thePublic == 1) row.tag = "公共";
+      if (value.thePublic == 1) row.tag = "公共";
       else row.tag = value.schoolZoneName;
       return row.tag;
     },
@@ -274,7 +262,7 @@ export default {
       return row.tag;
     },
     filterOpen(value, row) {
-      if (row.theOpen == 1) row.tag = "开启";
+      if (value.theOpen == 1) row.tag = "开启";
       else row.tag = "关闭";
       return row.tag;
     }

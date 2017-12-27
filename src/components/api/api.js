@@ -79,6 +79,9 @@ export const getStudentList = (pageNumber, pageSize, params) => { return axios.p
 //创建学员
 export const createStudent = params => { return axios.post(`reception/createStudent`, params).then(res => res.data); };
 
+//报名 createStudentApply/{studentId}
+export const createStudentApply = (studentId,params) => { return axios.post(`reception/createStudentApply/${studentId}`, params).then(res => res.data); };
+
 //教学=============
 // 查询教室
 export const getRoomList = (pageNumber, pageSize, params) => { return axios.post(`teach/getRoomList/${pageNumber}/${pageSize}`, params).then(res => res.data); };
@@ -90,6 +93,8 @@ export const getCourseList = (pageNumber, pageSize, params) => { return axios.po
 export const getCourseTreeList = (params) => { return axios.get(`teach/getCourseTreeList`, params).then(res => res.data); };
 //创建课程
 export const createCourse = params => { return axios.post(`teach/createCourse`, params).then(res => res.data); };
+//查询课程收费标准
+export const getChargeStandard = (courseId) => { return axios.get(`teach/getChargeStandard/`+courseId).then(res => res.data); };
 // 查询班级
 export const getSchoolClassList = (pageNumber, pageSize, params) => { return axios.post(`teach/getSchoolClassList/${pageNumber}/${pageSize}`, params).then(res => res.data); };
 // 创建班级
