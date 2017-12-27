@@ -101,11 +101,11 @@
                     <!-- <el-button @click="addChargeStandard" text-align="添加物品" icon="el-icon-edit" size="mini" type="primary"></el-button> -->
                    </el-form-item>
               </el-form-item>
-              <el-form-item  :label-width="formLabelWidth"  v-for="(goods, index) in form.goodsList"  style="margin-bottom:0px;">
+              <el-form-item  :label-width="formLabelWidth"  v-for="(goods, index) in goodsList"  style="margin-bottom:0px;">
                    <el-form-item  style="display:inline-block;width:100px;margin-bottom:5px;"size="mini" >
                        {{goods.goodsName}}
                    </el-form-item>
-                  
+
                    <el-form-item  style="display:inline-block;width:100px;margin-bottom:5px;"
                     :prop="'goodsList.' + index + '.amount'" :rules="[
                         { required: true, message: '必填项'}
@@ -122,7 +122,7 @@
                     :prop="'goodsList.' + index + '.totalPrice'" :rules="[
                         { required: true, message: '必填项'},
                         { type: 'number', message: '必须为数字值'}]" size="mini" >
-                        <el-input v-model.number="goods.totalPrice" placeholder="金额" ></el-input>
+                        <el-input placeholder="金额" disabled v-model="goods.totalPrice" ></el-input>
                    </el-form-item>
                    <el-form-item style="display:inline-block;width:100px;margin-bottom:5px;"   >
                         <el-button  size="mini" @click="removeGoods(goods)">删除</el-button>
@@ -136,12 +136,12 @@
         </el-dialog>
       </div>
     </el-tab-pane>
-    <el-tab-pane label="退货"> 
+    <el-tab-pane label="退货">
       配置管理</el-tab-pane>
     <el-tab-pane label="角色管理">角色管理</el-tab-pane>
     <el-tab-pane label="定时任务补偿">定时任务补偿</el-tab-pane>
   </el-tabs>
-    
+
 </template>
 
 
@@ -171,178 +171,185 @@ import MarketActivityDialog from "../../common/supply/MarketActivityDialog.vue";
 import GoodsDialog from "../../common/logistics/GoodsDialog.vue";
 import CourseDialog from "../../common/teach/CourseDialog.vue";
 import {
-    getRecordList,
-    findBranchParameterValueAll,
-    createRecord
+  getRecordList,
+  findBranchParameterValueAll,
+  createRecord
 } from "../../api/api";
 
 export default {
-    data() {
-        return {
-            tableData: [],
-            dialogFormVisible: false,
-            total: 0,
-            cur_page: 1,
-            page_size: 20,
-            queryForm: {
-                name: "",
-                schoolZoneId2: []
-            },
-            parameterValue: [],
-            form: {
-                //表单 v-modle绑定的值
-                goodsName: "",
-                contactId: "",
-                sourceId: "",
-                ownerId: "",
-                amount:"",
-                createTime: "",
-                schoolZoneId: "",
-                schoolName: "",
-                intentionId: [],
-                goodsList:[]
+  data() {
+    return {
+      tableData: [],
+      dialogFormVisible: false,
+      total: 0,
+      cur_page: 1,
+      page_size: 20,
+      queryForm: {
+        name: "",
+        schoolZoneId2: []
+      },
+      parameterValue: [],
+      form: {
+        //表单 v-modle绑定的值
+        goodsId: "",
+        
+        
+        amount: "",
+        createTime: "",
+        schoolZoneId: "",
+        schoolName: "",
+        intentionId: [],
+        goodsList: []
 
-            },
-            formLabelWidth: "120px",
-            loading: false,
-            loadingForm: false,
-            schoolId: "" //添加用户默认学校id
-        };
+      },
+      formLabelWidth: "120px",
+      loading: false,
+      loadingForm: false,
+      schoolId: "" //添加用户默认学校id
+    };
+  },
+  created() {
+    this.getData();
+    this.getSchoolId();
+    this.getParameterValue(10);
+  },
+  computed: {
+    goodsList() {
+      // this.form.goodsMoney.totalPrice=0;
+      this.form.goodsList.forEach(item => {
+        if (!item.price) item.price = 0;
+        item.totalPrice = Number(item.price.mul(item.amount));
+      })
+      return this.form.goodsList;
+    }
+    //实时计算
+  },
+  methods: {
+    //初始化属性start
+    getSchoolId() {
+      let self = this;
+      let user = self.$user();
+      self.form.schoolZoneId = user.schoolZoneId;
+      self.form.schoolName = user.schoolZone.name;
+      self.schoolId = user.schoolZoneId;
     },
-    created() {
-        this.getData();
-        this.getSchoolId();
-        this.getParameterValue(10);
+    getParameterValue(id) {
+      let self = this;
+      findBranchParameterValueAll(id).then(data => {
+        if (data.code == 200) {
+          self.parameterValue = data.data;
+          self.form.contactId = self.parameterValue[0].id;
+        }
+      });
     },
-    computed: {
-        //实时计算
+    //初始化属性end
+    //分页方法start
+    handleSizeChange(val) {
+      console.log(this.page_size);
+      this.page_size = val;
+      this.getData();
     },
-    methods: {
-        //初始化属性start
-        getSchoolId() {
-            let self = this;
-            let user = self.$user();
-            self.form.schoolZoneId = user.schoolZoneId;
-            self.form.schoolName = user.schoolZone.name;
-            self.schoolId = user.schoolZoneId;
-        },
-        getParameterValue(id) {
-            let self = this;
-            findBranchParameterValueAll(id).then(data => {
-                if (data.code == 200) {
-                    self.parameterValue = data.data;
-                    self.form.contactId = self.parameterValue[0].id;
-                }
-            });
-        },
-        //初始化属性end
-        //分页方法start
-        handleSizeChange(val) {
-            console.log(this.page_size);
-            this.page_size = val;
-            this.getData();
-        },
-        //分页方法结束
-        handleCurrentChange(val) {
-            this.cur_page = val;
-            this.getData();
-        },
-        search(form) {
-            //搜索方法
-            this.cur_page = 1;
-            this.getData();
-        },
-        //加载数据
-        getData() {
-            let self = this;
-            self.loading = true;
-            getRecordList(
-                self.cur_page,
-                self.page_size,
-                self.queryForm
-            ).then(data => {
-                self.loading = false;
-                if (data.code == 200) {
-                    self.tableData = data.data.list;
-                    self.total = data.data.total;
-                } else {
-                    self.$message.error(data.data);
-                }
-            });
-        },
-        //保存表单
-        submitForm(formName) {
-            let self = this;
-            self.$refs[formName].validate(valid => {
-                if (valid) {
-                    self.loadingForm = true;
-                    createRecord(self.form).then(data => {
-                        self.$message.success(data.message);
-                        self.$refs[formName].resetFields();
-                        self.dialogFormVisible = false;
-                        self.getData();
-                    });
-                } else {
-                    return false;
-                }
-            });
-        },
-        //数据过滤
+    //分页方法结束
+    handleCurrentChange(val) {
+      this.cur_page = val;
+      this.getData();
+    },
+    search(form) {
+      //搜索方法
+      this.cur_page = 1;
+      this.getData();
+    },
+    //加载数据
+    getData() {
+      let self = this;
+      self.loading = true;
+      getRecordList(
+        self.cur_page,
+        self.page_size,
+        self.queryForm
+      ).then(data => {
+        self.loading = false;
+        if (data.code == 200) {
+          self.tableData = data.data.list;
+          self.total = data.data.total;
+        } else {
+          self.$message.error(data.data);
+        }
+      });
+    },
+    //保存表单
+    submitForm(formName) {
+      let self = this;
+      self.$refs[formName].validate(valid => {
+        if (valid) {
+          self.loadingForm = true;
+          createRecord(self.form).then(data => {
+            self.$message.success(data.message);
+            self.$refs[formName].resetFields();
+            self.dialogFormVisible = false;
+            self.getData();
+          });
+        } else {
+          return false;
+        }
+      });
+    },
+    //数据过滤
 
-        //控件方法
-        handleEdit(index, row) {
-            this.form.fatherId = row.id;
-            this.form.fatherName = row.name;
-            this.dialogFormVisible = true;
-        },
-        handleDelete(index, row) { },
-        handleSchool(data) {
-            this.form.schoolName = data.name;
-            this.form.schoolZoneId = data.id;
-            this.form.roles = [];
-        },
-        handleCheckChange(allNode) {
-            let self = this;
-            self.queryForm.schoolZoneId2 = [];
-            for (let i = 0; i < allNode.length; i++) {
-                self.queryForm.schoolZoneId2.push(allNode[i].id);
-            }
-        },
-        removeGoods(item) {
-            var index = this.form.chargeStandard.indexOf(item);
-            if (index !== -1) {
-                this.form.chargeStandard.splice(index, 1);
-            }
-        },
-        addGoods(data) {
-          let self =this;
-          data.forEach(item=>{
-            let falg = false;
-            if(self.form.goodsList){
-              self.form.goodsList.forEach(goods=>{
-                if(goods.goodsId == item.id){
-                  falg = true;
-                  return;
-                }
-              })
-            }
-            if(falg){
-              self.$message.warning(item.name+"已存在物品列表");
+    //控件方法
+    handleEdit(index, row) {
+      this.form.fatherId = row.id;
+      this.form.fatherName = row.name;
+      this.dialogFormVisible = true;
+    },
+    handleDelete(index, row) { },
+    handleSchool(data) {
+      this.form.schoolName = data.name;
+      this.form.schoolZoneId = data.id;
+      this.form.roles = [];
+    },
+    handleCheckChange(allNode) {
+      let self = this;
+      self.queryForm.schoolZoneId2 = [];
+      for (let i = 0; i < allNode.length; i++) {
+        self.queryForm.schoolZoneId2.push(allNode[i].id);
+      }
+    },
+    removeGoods(item) {
+      var index = this.form.goodsList.indexOf(item);
+      if (index !== -1) {
+        this.form.goodsList.splice(index, 1);
+      }
+    },
+    addGoods(data) {
+      let self = this;
+      data.forEach(item => {
+        let falg = false;
+        if (self.form.goodsList) {
+          self.form.goodsList.forEach(goods => {
+            if (goods.goodsId == item.id) {
+              falg = true;
               return;
             }
-            self.form.goodsList.push(
-              {
-                price: item.price,
-                amount:1,
-                totalPrice:item.price,
-                goodsId:item.id,
-                goodsName:item.name
-            })
+          })
+        }
+        if (falg) {
+          self.$message.warning(item.name + "已存在物品列表");
+          return;
+        }
+        self.form.goodsList.push(
+          {
+            price: item.price,
+            amount: 1,
+            totalPrice: item.price,
+            goodsId: item.id,
+            goodsName: item.name
+          })
 
-          });
-        },
+      });
     },
-    components: { SchoolTree, UserDialog, MarketActivityDialog, CourseDialog,GoodsDialog } //注入组件
+  },
+  components: { SchoolTree, UserDialog, MarketActivityDialog, CourseDialog, GoodsDialog } //注入组件
 };
 </script>
 
