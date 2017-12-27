@@ -14,10 +14,10 @@
               </el-select>
             </el-form-item>
             <el-form-item >
-               <el-select v-model="queryForm.classStatus" value=1 clearable placeholder="报班状态"
+               <el-select v-model="queryForm.classStatus" value=1 clearable placeholder="报名状态"
                           class="handle-select mr10">
-                  <el-option key="1" label="未报班" value="1"></el-option>
-                  <el-option key="2" label="已报班" value="2"></el-option>
+                  <el-option key="1" label="未报名" value="1"></el-option>
+                  <el-option key="2" label="已报名" value="2"></el-option>
               </el-select>
             </el-form-item>
             <el-form-item>
@@ -57,7 +57,7 @@
             prop="ownerId">
         </el-table-column>
         <el-table-column
-            label="报班状态"
+            label="报名状态"
             prop="classStatus" :formatter="filterClassStatus">
         </el-table-column>
         <el-table-column
@@ -288,8 +288,8 @@ export default {
       return row.tag;
     },
     filterClassStatus(value, row) {
-      if (value.classStatus == 1) row.tag = "未报班";
-      else row.tag = "已报班";
+      if (value.classStatus == 1) row.tag = "未报名";
+      else row.tag = "已报名";
       return row.tag;
     },
     //控件方法
