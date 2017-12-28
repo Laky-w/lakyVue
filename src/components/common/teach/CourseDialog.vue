@@ -96,6 +96,7 @@
 
 
 <script>
+import SchoolTree from "../../common/system/SchoolTree.vue";
 import { getCourseList,findBranchParameterValueAll } from "../../api/api";
 export default {
   data() {
@@ -269,6 +270,6 @@ export default {
       default: 1
     }
   },
-  components: {} //注入组件
+  components: {SchoolTree} //注入组件
 };
 </script>

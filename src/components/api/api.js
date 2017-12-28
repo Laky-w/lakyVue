@@ -79,9 +79,12 @@ export const getStudentList = (pageNumber, pageSize, params) => { return axios.p
 //创建学员
 export const createStudent = params => { return axios.post(`reception/createStudent`, params).then(res => res.data); };
 
-//报名 createStudentApply/{studentId}
+//报名
 export const createStudentApply = (studentId,params) => { return axios.post(`reception/createStudentApply/${studentId}`, params).then(res => res.data); };
-
+//查询订单  getOrderList
+export const getOrderList = (pageNumber, pageSize, params) => { return axios.post(`reception/getOrderList/${pageNumber}/${pageSize}`, params).then(res => res.data); };
+//查询订单详情 getOrderDetailList
+export const getOrderDetailList = (orderId) => { return axios.get(`reception/getOrderDetailList/${orderId}`).then(res => res.data); };
 //教学=============
 // 查询教室
 export const getRoomList = (pageNumber, pageSize, params) => { return axios.post(`teach/getRoomList/${pageNumber}/${pageSize}`, params).then(res => res.data); };
@@ -99,6 +102,8 @@ export const getChargeStandard = (courseId) => { return axios.get(`teach/getChar
 export const getSchoolClassList = (pageNumber, pageSize, params) => { return axios.post(`teach/getSchoolClassList/${pageNumber}/${pageSize}`, params).then(res => res.data); };
 // 创建班级
 export const createSchoolClass = params => { return axios.post(`teach/createSchoolClass`, params).then(res => res.data); };
+//查询待分班学员
+export const getWaitStudentList = (pageNumber, pageSize, params) => { return axios.post(`teach/getWaitStudentList/${pageNumber}/${pageSize}`, params).then(res => res.data); };
 //教学=============>>>
 
 //财务=============>>>
