@@ -177,7 +177,6 @@ export default {
     //初始化属性end
     //分页方法start
     handleSizeChange(val) {
-      console.log(this.page_size);
       this.page_size = val;
       this.getData();
     },

@@ -52,8 +52,10 @@ export default {
   },
   methods: {
     handleDateChange: function(val) {
+      if(val){
         val[0]=val[0]+" 00:00:00";
         val[1]=val[1]+" 23:59:59";
+      }
     }
   },
   watch: {

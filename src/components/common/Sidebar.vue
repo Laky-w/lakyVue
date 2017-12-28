@@ -3,7 +3,7 @@
         <div :class="{'active':isCollapse,'unactive':!isCollapse}" >
             <span @click="changeCollapse"><i class="el-icon-menu"></i></span>
         </div>
-        <el-menu :default-active="onRoutes" class="el-menu-vertical-demo"  :collapse="isCollapse"  router>
+        <el-menu :default-active="onRoutes" unique-opened class="el-menu-vertical-demo"  :collapse="isCollapse"  router>
             <template v-for="item in items">
                 <sub-menu :data="item"></sub-menu>
             </template>
