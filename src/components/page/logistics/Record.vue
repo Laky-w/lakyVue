@@ -71,7 +71,7 @@
               </el-pagination>
           </div>
           <el-dialog title="添加进货" :visible.sync="dialogFormVisible" width="750px">
-            <el-form :model="form" ref="ruleForm2">
+            <el-form :model="form" ref="ruleForm">
               <el-form-item label="进货日期" :label-width="formLabelWidth" style="display:inline-block;">
                 <el-date-picker
                 type="date"  v-model="form.createTime"
@@ -101,7 +101,7 @@
                     <!-- <el-button @click="addChargeStandard" text-align="添加物品" icon="el-icon-edit" size="mini" type="primary"></el-button> -->
                    </el-form-item>
               </el-form-item>
-              <el-form-item  :label-width="formLabelWidth"  v-for="(goods, index) in goodsList"  style="margin-bottom:0px;">
+              <el-form-item  :label-width="formLabelWidth"  v-for="(goods, index) in goodsList" :key="index"  style="margin-bottom:0px;">
                    <el-form-item  style="display:inline-block;width:100px;margin-bottom:5px;"size="mini" >
                        {{goods.goodsName}}
                    </el-form-item>
@@ -114,8 +114,7 @@
                    </el-form-item>
                    <el-form-item style="display:inline-block;width:100px;margin-bottom:5px;"
                     :prop="'goodsList.' + index + '.price'"   :rules="[
-                        { required: true, message: '必填项'},
-                        { validator:$validate.validateMoney, trigger: 'blur'}]" size="mini"  >
+                        { required: true, message: '必填项'},{ validator:$validate.validateMoney, trigger: 'blur',}]" size="mini"  >
                        <el-input v-model.number="goods.price" placeholder="费用"  ></el-input>
                    </el-form-item>
                     <el-form-item   style="display:inline-block;width:100px;margin-bottom:5px;"
@@ -164,7 +163,7 @@
 
 
 // =========================================
-<script>
+<script scoped>
 import SchoolTree from "../../common/system/SchoolTree.vue";
 import UserDialog from "../../common/system/UserDialog.vue";
 import MarketActivityDialog from "../../common/supply/MarketActivityDialog.vue";
@@ -191,14 +190,10 @@ export default {
       parameterValue: [],
       form: {
         //表单 v-modle绑定的值
-        goodsId: "",
-        
-        
+
+        clazzId:"",
         amount: "",
         createTime: "",
-        schoolZoneId: "",
-        schoolName: "",
-        intentionId: [],
         goodsList: []
 
       },
@@ -280,9 +275,14 @@ export default {
     //保存表单
     submitForm(formName) {
       let self = this;
+      if (self.form.goodsList.length==0) {
+        self.$message.error("请选择物品");
+        return false;
+      }
       self.$refs[formName].validate(valid => {
         if (valid) {
           self.loadingForm = true;
+          let formJson = JSON.stringify(self.form.goodsList);
           createRecord(self.form).then(data => {
             self.$message.success(data.message);
             self.$refs[formName].resetFields();
