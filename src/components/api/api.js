@@ -106,6 +106,10 @@ export const createSchoolClass = params => { return axios.post(`teach/createScho
 export const getFinanceAccount = (pageNumber, pageSize, params) => { return axios.post(`finance/getFinanceAccountList/${pageNumber}/${pageSize}`, params).then(res => res.data); };
 //创建财务账户
 export const createFinanceAccount = params => { return axios.post(`finance/createFinanceAccount`, params).then(res => res.data); };
+//查询收支记录
+export const getMoneyRecord = (pageNumber, pageSize, params) => { return axios.post(`finance/getMoneyRecordList/${pageNumber}/${pageSize}`, params).then(res => res.data); };
+//查询收支记录账户明细
+export const getMoneyRecordAccountList = (recordId) => { return axios.get(`finance/getMoneyRecordAccountList/${recordId}`).then(res => res.data); };
 //财务============
 
 //后勤=============
