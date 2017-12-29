@@ -14,26 +14,28 @@
             </el-form>
         </div>
         <div style="margin:5px;">
-            <el-button type="primary" icon="el-icon-edit" size="mini" @click="dialogFormVisible=true">添加物资</el-button>
             <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
         </div>
-        <el-table 
-            :data="tableData" stripe v-loading="loading" border
+        <el-table
+            :data="tableData" stripe v-loading="loading" border show-summary
             style="width: 100%">
             <el-table-column
             label="物品" prop="goodsName" >
+            </el-table-column>
+            <el-table-column
+            label="类别" prop="clazzName" >
             </el-table-column>
             <el-table-column
             label="校区"
             prop="schoolZoneId">
             </el-table-column>
             <el-table-column
-            label="消耗数量"
-            prop="consumeAmount" >
-            </el-table-column>
-            <el-table-column
             label="剩余数量"
             prop="lastAmount" >
+            </el-table-column>
+            <el-table-column
+            label="消耗数量"
+            prop="consumeAmount" >
             </el-table-column>
         </el-table>
         <div class="pagination">
@@ -46,42 +48,13 @@
                 :total="total">
             </el-pagination>
         </div>
-        <el-dialog title="添加物资" :visible.sync="dialogFormVisible" width="750px" custom-class="dialog-form"
-                   :close-on-click-modal=false>
-            <el-form :model="form" ref="ruleForm" inline size="small">
-                <el-form-item label="物品" :label-width="formLabelWidth" prop="goodsId"
-                              :rules="[{ required: true, message: '物品必填'},{ min: 2, max: 20, message: '长度在 2 到 20 个字符', trigger: 'blur' }]">
-                    <el-input v-model="form.goodsId" placeholder="物品名称"></el-input>
-                </el-form-item>
-                <el-form-item label="校区" :label-width="formLabelWidth" prop="schoolName"
-                              :rules="[{ required: true, message: '部门必填'}]">
-                    <school-tree @nodeClick="handleSchool" the-type="2" :name="form.schoolName"
-                                 :default-value="schoolId"></school-tree>
-                </el-form-item>
-               
-                <el-form-item label="消耗数量" :label-width="formLabelWidth" prop="consumeAmount"
-                :rules="[{validator:$validate.validateMoney, trigger: 'blur'}]">
-                <el-input v-model="form.consumeAmount"   placeholder="0"  clearable>
-                </el-input>
-                </el-form-item>
-                <el-form-item label="剩余数量" :label-width="formLabelWidth" prop="lastAmount"
-                :rules="[{validator:$validate.validateMoney, trigger: 'blur'}]">
-                <el-input v-model="form.lastAmount"   placeholder="0"  clearable>
-                </el-input>
-                </el-form-item>
-            </el-form>
-            <div slot="footer" class="dialog-footer">
-                <el-button @click="dialogFormVisible = false">取 消</el-button>
-                <el-button :loading="loadingForm" type="primary" @click="submitForm('ruleForm')">保 存</el-button>
-            </div>
-        </el-dialog>
     </div>
-        
+
 </template>
 // =========================================
 <script>
 import SchoolTree from "../../common/system/SchoolTree.vue";
-import { createRepository, getRepositoryList } from "../../api/api";
+import { getRepositoryList } from "../../api/api";
 export default {
   data() {
     return {
@@ -161,23 +134,7 @@ export default {
         }
       });
     },
-    //保存表单
-    submitForm(formName) {
-      let self = this;
-      self.$refs[formName].validate(valid => {
-        if (valid) {
-          self.loadingForm = true;
-          createRepository(self.form).then(data => {
-            self.$message.success(data.message);
-            self.$refs[formName].resetFields();
-            self.dialogFormVisible = false;
-            self.getData();
-          });
-        } else {
-          return false;
-        }
-      });
-    },
+
 
 
     //控件方法

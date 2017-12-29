@@ -28,7 +28,7 @@
         style="width: 100%">
          <el-table-column type="expand">
           <template slot-scope="props">
-            <el-form label-position="left" inline class="demo-table-expand" :loading="loadingAccount">
+            <el-form label-position="left" inline class="order-table-expand" :loading="loadingAccount">
               <el-form-item v-for="(item,index) in props.row.detailList" :label="'明细'+(index+1)+'：'" :key="index" class="detail-content">
                 <el-form-item label="课程：">{{item.courseName}}</el-form-item>
                 <el-form-item label="班级：">{{item.className}}</el-form-item>
@@ -66,7 +66,7 @@
         <el-table-column
         sortable
         label="欠费"
-        prop="total">
+        prop="refund" :formatter="filterTotal">
         </el-table-column>
         <el-table-column
         label="下单人"
@@ -98,21 +98,21 @@
   </div>
 </template>
 <style >
-.demo-table-expand {
+.order-table-expand {
   font-size: 0;
   min-height: 50px;
 }
-.demo-table-expand label {
+.order-table-expand label {
   /* width: 90px; */
   color: #99a9bf;
 }
-.demo-table-expand .el-form-item {
+.order-table-expand .el-form-item {
   margin-right: 0;
   margin-bottom: 0;
   /* padding-left: 45px; */
   /* width: 100%; */
 }
-.demo-table-expand .detail-content{
+.order-table-expand .detail-content{
   padding-left: 45px;
   width: 100%;
   border-top: 1px solid #ebeef5;
@@ -252,7 +252,13 @@ export default {
         row.tag = "未交齐"
       }
       return row.tag;
-    }
+    },
+    filterTotal (value, row) {
+      value.refund = value.total.sub(value.receivable).sub(value.subtractMoney);
+      // value.refund =30;
+      row.tag=value.refund;
+      return row.tag;
+    },
   },
   components: { SchoolTree, DateRange } //注入组件
 }
