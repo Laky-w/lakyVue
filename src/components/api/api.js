@@ -126,6 +126,7 @@ export const createGoods = params => { return axios.post(`logistics/createGoods`
 export const getRecordList = (pageNumber, pageSize, params) => { return axios.post(`logistics/getRecordList/${pageNumber}/${pageSize}`, params).then(res => res.data); };
 // 创建库存
 export const createGoodsRecord = (params) => { return axios.post(`logistics/createGoodsRecord`, params).then(res => res.data); };
+export const createRecord = (goodsId) => { return axios.post(`logistics/createRecord` + goodsId).then(res => res.data); };
 //查询出入库存
 export const getRepositoryList = (pageNumber, pageSize, params) => { return axios.post(`logistics/getRepositoryList/${pageNumber}/${pageSize}`, params).then(res => res.data); };
 // 创建出入库存
