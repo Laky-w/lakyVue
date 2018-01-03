@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<el-input ref="text1" v-if="buttonType==1" 
+		<el-input ref="text1" v-if="buttonType==1"
 			:placeholder="placeholderText"
 			v-model="userInput" readonly="">
 			<i slot="suffix"  style="cursor: pointer;" class="el-input__icon el-icon-more"
@@ -47,6 +47,10 @@
             <el-table-column
                 label="类别"
                 prop="clazzId">
+            </el-table-column>
+            <el-table-column
+                label="库存"
+                prop="lastAmount">
             </el-table-column>
             <el-table-column
                 label="创建时间" sortable
@@ -111,176 +115,181 @@
 
 <script>
 import SchoolTree from "../../common/system/SchoolTree.vue";
-import { getGoodsList,findBranchParameterValueAll } from "../../api/api";
+import { getGoodsList, findBranchParameterValueAll } from "../../api/api";
 export default {
   data() {
-	return {
-	  userInput: "",
-	  userId: "",
-	  dialogTableVisible: false,
-	  tableData: [],
-	  total: 0,
-	  cur_page: 1,
-	  page_size: 20,
-	  parameterValue: [],
-	  schoolId:"",//添加用户默认学校id
-	  queryForm: {
-		name: "",
-		clazzId: []
-	  },
-	  formLabelWidth: "120px",
-	  loading: false,
-	  schoolId: "" //添加用户默认学校id
-	};
+    return {
+      userInput: "",
+      userId: "",
+      dialogTableVisible: false,
+      tableData: [],
+      total: 0,
+      cur_page: 1,
+      page_size: 20,
+      parameterValue: [],
+      schoolId: "",//添加用户默认学校id
+      queryForm: {
+        name: "",
+        clazzId: [],
+        schoolZoneId2:[]
+      },
+      formLabelWidth: "120px",
+      loading: false,
+    };
   },
-  created() {},
+  created() { },
   watch: {
-	value(val) {
-	  if (!val || val.length == 0) {
-		this.userInput = "";
-		this.userId ="";
-	  }
-	},
-	userId(val) {
-	  if (this.selectedType != 1) {
-		let userInput = "";
-		val = [];
-		for (let i = 0; i < this.userId.length; i++) {
-		  userInput += this.userId[i].name + ",";
-		  val.push(this.userId[i].id);
-		}
-		this.userInput = userInput.substring(0, userInput.length - 1);
-	  }
-	  this.$emit("input", val);
-	}
+    value(val) {
+      if (!val || val.length == 0) {
+        this.userInput = "";
+        this.userId = "";
+      }
+    },
+    userId(val) {
+      if (this.selectedType != 1) {
+        let userInput = "";
+        val = [];
+        for (let i = 0; i < this.userId.length; i++) {
+          userInput += this.userId[i].name + ",";
+          val.push(this.userId[i].id);
+        }
+        this.userInput = userInput.substring(0, userInput.length - 1);
+      }
+      this.$emit("input", val);
+    }
   },
   methods: {
-	//初始化属性start
-	getParameterValue(id) {
-	  let self = this;
-	  findBranchParameterValueAll(id).then(data => {
-		if (data.code == 200) {
-		  self.parameterValue = data.data;
-		}
-	  });
-	},
-	//初始化属性end
-	//分页方法start
-	handleSizeChange(val) {
-	  this.page_size = val;
-	  this.getData();
-	},
-	//分页方法结束
-	handleCurrentChange(val) {
-	  this.cur_page = val;
-	  this.getData();
-	},
-	search(form) {
-	  //搜索方法
-	  this.cur_page = 1;
-	  this.getData();
-	},
-	//加载数据
-	getData() {
-	  let self = this;
-	  self.loading = true;
-	  getGoodsList(self.cur_page,self.page_size,self.queryForm).then(data => {
-		self.loading = false;
-		if (data.code == 200) {
-		  self.tableData = data.data.list;
-		  self.total = data.data.total;
-		} else {
-		  self.$message.error(data.data);
-		}
-	  });
-	},
-	//控件方法
-	handleEdit(index, row) {
-	  this.form.fatherId = row.id;
-	  this.form.fatherName = row.name;
-	  this.dialogFormVisible = true;
-	},
-	handleDelete(index, row) {},
-	//数据过滤
-  filterType(value, row) {
+    //初始化属性start
+    getParameterValue(id) {
+      let self = this;
+      findBranchParameterValueAll(id).then(data => {
+        if (data.code == 200) {
+          self.parameterValue = data.data;
+        }
+      });
+    },
+    getSchoolId() {
+      let self = this;
+      let user = self.$user();
+      self.queryForm.schoolZoneId2.push(user.schoolZoneId);
+    },
+    //初始化属性end
+    //分页方法start
+    handleSizeChange(val) {
+      this.page_size = val;
+      this.getData();
+    },
+    //分页方法结束
+    handleCurrentChange(val) {
+      this.cur_page = val;
+      this.getData();
+    },
+    search(form) {
+      //搜索方法
+      this.cur_page = 1;
+      this.getData();
+    },
+    //加载数据
+    getData() {
+      let self = this;
+      self.loading = true;
+      getGoodsList(self.cur_page, self.page_size, self.queryForm).then(data => {
+        self.loading = false;
+        if (data.code == 200) {
+          self.tableData = data.data.list;
+          self.total = data.data.total;
+        } else {
+          self.$message.error(data.data);
+        }
+      });
+    },
+    //控件方法
+    handleEdit(index, row) {
+      this.form.fatherId = row.id;
+      this.form.fatherName = row.name;
+      this.dialogFormVisible = true;
+    },
+    handleDelete(index, row) { },
+    //数据过滤
+    filterType(value, row) {
       if (value.theType == 1) row.tag = "正常";
       else row.tag = "封存";
       return row.tag;
-  },
-	handleRowClick(row, event, column) {
-	  if (this.selectedType == 1) {
-		this.userInput = row.name;
-		this.userId = row.id;
-	  } else {
-		if (this.userId == "") {
-		  this.userId = [];
-		} else {
-		  let falg = false;
-		  for (let i = 0; i < this.userId.length; i++) {
-			if (this.userId[i].id == row.id) {
-			  falg = true;
-			  break;
-			}
-		  }
-		  if (falg) return;
-		}
-		// if (this.userInput == "") {
-		//   this.userInput += row.name;
-		// } else {
-		//   this.userInput += "," + row.name;
-		// }
-		this.userId.push(row);
-	  }
-	},
-	handleOpenDialog() {
-	  this.dialogTableVisible = true;
-	  if (this.tableData.length == 0) {
-		this.getData();
-		this.getParameterValue(9);
-	  }
-	},
-	handleCheckChange(allNode) {
-	  let self = this;
-	  self.queryForm.schoolZoneId2 = [];
-	  for (let i = 0; i < allNode.length; i++) {
-		self.queryForm.schoolZoneId2.push(allNode[i].id);
-	  }
-	},
-	handleOK(){
-	  this.dialogTableVisible=false;
-	  this.$emit("selectData",this.userId);
-	},
-	handleTagClose(tag) {
-	  console.log(tag);
-	  for (let i = 0; i < this.userId.length; i++) {
-		if (this.userId[i].id == tag.id) {
-		  // delete this.userId[i];
-		  this.userId.splice(i, 1);
-		  break;
-		}
-	  }
-	}
+    },
+    handleRowClick(row, event, column) {
+      if (this.selectedType == 1) {
+        this.userInput = row.name;
+        this.userId = row.id;
+      } else {
+        if (this.userId == "") {
+          this.userId = [];
+        } else {
+          let falg = false;
+          for (let i = 0; i < this.userId.length; i++) {
+            if (this.userId[i].id == row.id) {
+              falg = true;
+              break;
+            }
+          }
+          if (falg) return;
+        }
+        // if (this.userInput == "") {
+        //   this.userInput += row.name;
+        // } else {
+        //   this.userInput += "," + row.name;
+        // }
+        this.userId.push(row);
+      }
+    },
+    handleOpenDialog() {
+      this.dialogTableVisible = true;
+      if (this.tableData.length == 0) {
+        this.getData();
+        this.getParameterValue(9);
+      }
+    },
+    handleCheckChange(allNode) {
+      let self = this;
+      self.queryForm.schoolZoneId2 = [];
+      for (let i = 0; i < allNode.length; i++) {
+        self.queryForm.schoolZoneId2.push(allNode[i].id);
+      }
+    },
+    handleOK() {
+      this.dialogTableVisible = false;
+      this.$emit("selectData", this.userId);
+    },
+    handleTagClose(tag) {
+      console.log(tag);
+      for (let i = 0; i < this.userId.length; i++) {
+        if (this.userId[i].id == tag.id) {
+          // delete this.userId[i];
+          this.userId.splice(i, 1);
+          break;
+        }
+      }
+    }
   },
   props: {
-	value: "",
-	title: {
-	  default: "选择物品"
-	},
-	placeholderText: {
-	  default: "物品"
-	},
-	theType: {
-	  default: 0
-	},
-	parentSchoolId: "",
-	selectedType: {
-	  //1单选 2 多选
-	  default: 1
-	},
-	buttonType:{
-		default:1
-	},
-	type: { //按钮类型
+    value: "",
+    title: {
+      default: "选择物品"
+    },
+    placeholderText: {
+      default: "物品"
+    },
+    theType: {
+      default: 0
+    },
+    parentSchoolId: "",
+    selectedType: {
+      //1单选 2 多选
+      default: 1
+    },
+    buttonType: {
+      default: 1
+    },
+    type: { //按钮类型
       default: "primary"
     },
     icon: { //按钮图标
@@ -291,6 +300,6 @@ export default {
     },
 
   },
-  components: {SchoolTree} //注入组件
+  components: { SchoolTree } //注入组件
 };
 </script>

@@ -15,7 +15,7 @@
           </el-form>
       </div>
       <div style="margin:5px;">
-        <el-button type="primary" icon="el-icon-edit" size="mini" @click="dialogFormVisible=true">添加进货</el-button>
+        <el-button type="primary" icon="el-icon-edit" size="mini" @click="dialogFormVisible=true">添加调拨</el-button>
         <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
       </div>
       <el-table
@@ -28,11 +28,15 @@
               label="校区"
               prop="schoolZoneName">
           </el-table-column>
+           <el-table-column
+              label="调入校区"
+              prop="schoolZoneId2">
+          </el-table-column>
           <!-- <el-table-column
               label="类别" prop="clazzName">
           </el-table-column> -->
           <el-table-column
-              label="进货数量"
+              label="调拨数量"
               prop="amount">
           </el-table-column>
           <el-table-column
@@ -42,8 +46,8 @@
               label="总额" prop="totalPrice" :formatter="filterTotalPrice">
           </el-table-column>
           <el-table-column
-              label="供货商"
-              prop="supplierName">
+              label="经手人"
+              prop="userName">
           </el-table-column>
           <el-table-column
               label="进货时间" sortable
@@ -71,20 +75,25 @@
               :total="total">
           </el-pagination>
       </div>
-      <el-dialog title="添加进货" :visible.sync="dialogFormVisible" width="750px">
+      <el-dialog title="添加调拨" :visible.sync="dialogFormVisible" width="750px">
         <el-form :model="form" ref="ruleForm">
-          <el-form-item label="进货日期" prop="createTime" :label-width="formLabelWidth" style="display:inline-block;">
+          <el-form-item label="调拨日期" prop="createTime" :label-width="formLabelWidth" style="display:inline-block;">
             <el-date-picker
             type="date"  v-model="form.createTime" format="yyyy-MM-dd"
-            placeholder="进货日期">
+            placeholder="调拨日期">
             </el-date-picker>
           </el-form-item>
+           <el-form-item label="校区" :label-width="formLabelWidth" prop="schoolName" style="display:inline-block;"
+                          :rules="[{ required: true, message: '校区必填'}]">
+                <school-tree @nodeClick="handleSchool" the-type="2" :name="form.schoolName"
+                              :default-value="schoolId"></school-tree>
+            </el-form-item>
           <el-form-item label="供应商" :label-width="formLabelWidth" prop="supplierId" style="display:inline-block;" :rules="[{required:true,message:'供应商必填'}]">
               <el-select v-model="form.supplierId"  placeholder="供应商" >
                 <el-option v-for="(item,index) in parameterValue" :key="item.id" :label="item.name" :value="item.id"></el-option>
               </el-select>
           </el-form-item>
-          <el-form-item label="进货信息" required :label-width="formLabelWidth" size="mini" style="margin-bottom:0px;">
+          <el-form-item label="调拨信息" required :label-width="formLabelWidth" size="mini" style="margin-bottom:0px;">
               <el-form-item class="freeTitle" size="mini">
                     名称
                 </el-form-item>
@@ -111,13 +120,15 @@
                 :prop="'goodsList.' + index + '.amount'" :rules="[
                     { required: true, message: '必填项'}
                     ]" size="mini" >
-                    <el-input v-model.number="goods.amount" placeholder="数量" ></el-input>
+                    <!-- <el-input v-model.number="goods.amount" placeholder="数量" ></el-input> -->
+                    <el-input-number style="width:100px" v-model.number="goods.amount":min="0" placeholder="价格"></el-input-number>
                 </el-form-item>
                 <el-form-item style="display:inline-block;width:100px;margin-bottom:5px;"
                 :prop="'goodsList.' + index + '.price'"   :rules="[
                     { required: true, message: '必填项'},
                     { validator:$validate.validateMoney, trigger: 'blur'}]" size="mini"  >
-                    <el-input v-model.number="goods.price" placeholder="费用"  ></el-input>
+                    <!-- <el-input v-model.number="goods.price" placeholder="费用"  ></el-input> -->
+                    <el-input-number style="width:100px" v-model.number="goods.price":min="0" placeholder="价格"></el-input-number>
                 </el-form-item>
                 <el-form-item   style="display:inline-block;width:100px;margin-bottom:5px;"
                 :prop="'goodsList.' + index + '.totalPrice'" :rules="[
@@ -180,14 +191,14 @@ export default {
       queryForm: {
         name: "",
         schoolZoneId2: [],
-        theType:1//进货
+        theType:6//调拨
       },
       parameterValue: [],
       form: {
         //表单 v-modle绑定的值
         amount: "",
         createTime: new Date().Format("yyyy-MM-dd"),
-        supplierId:"",//供货商
+        userId:"",//供货商
         goodsList: []//进货列表
 
       },
@@ -214,6 +225,14 @@ export default {
   },
   methods: {
     //初始化属性start
+    getSchoolId() {
+      let self = this;
+      let user = self.$user();
+      self.form.schoolZoneId = user.schoolZoneId;
+      self.form.schoolName = user.schoolZone.name;
+      self.schoolId = user.schoolZoneId;
+    },
+
     getParameterValue(id) {
       let self = this;
       findBranchParameterValueAll(id).then(data => {
@@ -296,6 +315,11 @@ export default {
         self.queryForm.schoolZoneId2.push(allNode[i].id);
       }
     },
+    handleSchool(data) {
+      this.form.schoolName = data.name;
+      this.form.schoolZoneId = data.id;
+      this.form.roles = [];
+    },
     removeGoods(item) {
       var index = this.form.goodsList.indexOf(item);
       if (index !== -1) {
@@ -323,7 +347,9 @@ export default {
             price: item.price,
             amount: 1,
             totalPrice: item.price,
-            theType:1,
+            theType:6,
+            schoolZoneId2: [],
+            schoolName:item.schoolName,
             goodsId: item.id,
             goodsName: item.name
           })

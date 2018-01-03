@@ -38,6 +38,10 @@
                 prop="clazzId">
             </el-table-column>
             <el-table-column
+                label="库存"
+                prop="lastAmount">
+            </el-table-column>
+            <el-table-column
                 label="创建时间" sortable
                 prop="createTime">
             </el-table-column>
@@ -160,7 +164,8 @@ export default {
         name: "",
         theType: 1,
         clazzId: "",
-        price: ""
+        price: "",
+        lastAmount:1
       },
       pickerOptions2: {
         disabledDate: time => {
