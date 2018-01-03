@@ -104,6 +104,15 @@ export const getSchoolClassList = (pageNumber, pageSize, params) => { return axi
 export const createSchoolClass = params => { return axios.post(`teach/createSchoolClass`, params).then(res => res.data); };
 //查询待分班学员
 export const getWaitStudentList = (pageNumber, pageSize, params) => { return axios.post(`teach/getWaitStudentList/${pageNumber}/${pageSize}`, params).then(res => res.data); };
+//创建上课时间段
+export const createScheduleStandard = params => { return axios.post(`teach/createScheduleStandard`, params).then(res => res.data); };
+//查询排课时间段
+export const getScheduleStandard = (pageNumber, pageSize, params) => { return axios.post(`teach/getScheduleStandard/${pageNumber}/${pageSize}`, params).then(res => res.data); };
+//班级排课
+export const createClassSchedule = params => { return axios.post(`teach/createClassSchedule`, params).then(res => res.data); };
+//查询班级排课
+export const getClassSchedule = (pageNumber, pageSize, params) => { return axios.post(`teach/getClassSchedule/${pageNumber}/${pageSize}`, params).then(res => res.data); };
+
 //教学=============>>>
 
 //财务=============>>>

@@ -6,7 +6,7 @@
             <i slot="suffix"  style="cursor: pointer;" class="el-input__icon el-icon-more" @click="dialogTableVisible=true"></i>
         </el-input>
         <el-dialog :title="title" ref="dialog2" :visible.sync="dialogTableVisible" v-drag=""
-             :modal-append-to-body=false append-to-body :close-on-click-modal=false>
+             :modal-append-to-body=false append-to-body :close-on-click-modal="false">
              <div class="table">
                 <div class="handle-box">
                     <el-form ref="queryForm" :inline="true" :model="queryForm" label-width="80px" size="mini">
@@ -14,7 +14,7 @@
                             <el-input v-model="queryForm.userName"  placeholder="用户名" clearable class="handle-input mr10"></el-input>
                         </el-form-item>
                         <el-form-item >
-                        <school-tree  :is-show-checkbox=true @handleCheckChange ="handleCheckChange"
+                        <school-tree  v-if="isAll" :is-show-checkbox=true @handleCheckChange ="handleCheckChange"
                         place-text="部门" the-type="3" :parent-id="parentSchoolId"></school-tree>
                         </el-form-item>
 
@@ -25,11 +25,11 @@
                     :data="tableData" stripe v-loading="loading" border @row-click="handleRowClick"
                     style="width: 100%">
                     <el-table-column
-                    label="校区/部门" prop="schoolZone.name" >
+                    label="校区/部门" prop="schoolZone.name" v-if="isAll">
                     </el-table-column>
                     <el-table-column
-                    label="用户名"
-                    prop="userName">
+                    label="姓名"
+                    prop="name">
                     </el-table-column>
                     <el-table-column
                     label="联系方式"
@@ -62,16 +62,31 @@
                             @current-change ="handleCurrentChange"
                             :page-sizes="[20, 50, 100, 200]"
                             :page-size="page_size"
-                            layout="total, sizes, prev, pager, next, jumper"
+                            layout="total,prev, pager, next, jumper"
                             :total="total">
                     </el-pagination>
                 </div>
                 <div style=" overflow: hidden;">
-                    <div style="float: left;">
+                    <!-- <div style="float: left;">
                     已选择：<el-input size="small" style="width:70%"
                                 v-model="userInput" disabled>
                             </el-input>
 
+                    </div> -->
+                    <div style="float: left;" v-if="selectedType==1">
+                    已选择：
+                    <el-input size="small" style="width:70%;"
+                      v-model="userInput" disabled>
+                    </el-input >
+                    </div>
+                    <div style="float: left;" v-else>
+                        已选择：
+                      <el-tag size="mini" style="margin-right:3px"
+                        v-for="tag in userId"
+                        :key="tag.id" @close="handleTagClose(tag)"
+                        closable>
+                        {{tag.name}}
+                      </el-tag>
                     </div>
                     <div style="float: right;">
                         <el-button size="small" @click="userInput='';userId='';dialogTableVisible=false">取消</el-button>
@@ -93,7 +108,7 @@ import { getUserList } from "../../api/api";
 export default {
   data() {
     return {
-      userInput: "",
+      userInput: this.defaultText,
       userId: "",
       dialogTableVisible: false,
       tableData: [],
@@ -112,6 +127,9 @@ export default {
   },
   created() {
     this.queryForm.theType = this.theType;
+    if (!this.isAll) {
+      this.queryForm.schoolZoneId2.push(this.parentSchoolId);
+    }
     this.getUser();
   },
   watch: {
@@ -119,7 +137,19 @@ export default {
       if (!val) this.userInput = "";
     },
     userId(val) {
+      if (this.selectedType != 1) {
+        let userInput = "";
+        val = [];
+        for (let i = 0; i < this.userId.length; i++) {
+          userInput += this.userId[i].name + ",";
+          val.push(this.userId[i].id);
+        }
+        this.userInput = userInput.substring(0, userInput.length - 1);
+      }
       this.$emit("input", val);
+    },
+    defaultText(val){
+      this.userInput=val;
     },
     parentSchoolId(val) {
       this.queryForm.parentSchoolId = val;
@@ -151,7 +181,7 @@ export default {
       let self = this;
       self.loading = true;
       getUserList(self.cur_page,self.page_size,self.queryForm).then(data=>{
-self.loading = false;
+      self.loading = false;
           if (data.code == 200) {
             self.tableData = data.data.list;
             self.total = data.data.total;
@@ -179,8 +209,33 @@ self.loading = false;
       }
     },
     handleRowClick(row, event, column) {
-      this.userInput = row.userName;
-      this.userId = row.id;
+      if (this.selectedType == 1) {
+        this.userInput = row.name;
+        this.userId = row.id;
+      } else {
+        if (this.userId == "") {
+          this.userId = [];
+        } else {
+          let falg = false;
+          for (let i = 0; i < this.userId.length; i++) {
+            if (this.userId[i].id == row.id) {
+              falg = true;
+              break;
+            }
+          }
+          if (falg) return;
+        }
+        this.userId.push(row);
+      }
+    },
+    handleTagClose(tag) {
+      for (let i = 0; i < this.userId.length; i++) {
+        if (this.userId[i].id == tag.id) {
+          // delete this.userId[i];
+          this.userId.splice(i, 1);
+          break;
+        }
+      }
     }
   },
   props: {
@@ -191,10 +246,18 @@ self.loading = false;
     placeholderText: {
       default: "老师"
     },
-    theType: {
+    theType: {//包括部门
       default: 0
     },
-    parentSchoolId: ""
+    isAll:{ //显示全部校区
+      default: true
+    },
+    defaultText:"",//默认文本
+    parentSchoolId: "",
+    selectedType: {
+      //1单选 2 多选
+      default: 1
+    }
   },
   components: { SchoolTree } //注入组件
 };
