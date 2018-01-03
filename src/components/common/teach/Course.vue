@@ -1,7 +1,7 @@
 <template>
     <div class="block">
         <el-cascader style="width:100%"
-            placeholder="试试搜索：课程名称"
+            placeholder="试试搜索：课程名称/类别名称/类型"
             :options="options"  expand-trigger="hover" v-model="selectedOptions"
             filterable>
         </el-cascader>

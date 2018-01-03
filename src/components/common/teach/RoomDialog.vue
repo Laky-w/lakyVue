@@ -76,7 +76,7 @@ export default {
   data() {
     return {
       userId: "",
-      userInput: "",
+      userInput: this.defaultText,
       dialogTableVisible: false,
       tableData: [],
       total: 0,
@@ -104,6 +104,9 @@ export default {
     },
     userId(val) {
       this.$emit("input", val); //向父组件v-modle传值。
+    },
+    defaultText(val){
+      this.userInput=val;
     },
     parentSchoolId(val) {
       console.log(val);
@@ -175,7 +178,8 @@ export default {
     isAll: {
       default: true
     },
-    parentSchoolId: ""
+    parentSchoolId: "",
+    defaultText:""//默认文本
   },
   components: { SchoolTree } //注入组件
 };

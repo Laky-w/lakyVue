@@ -9,7 +9,6 @@
                     <school-tree :is-show-checkbox=true :the-type="2" place-text="校区"
                                  @handleCheckChange="handleCheckChange"></school-tree>
                 </el-form-item>
-
                 <el-button type="mini" icon="el-icon-search" @click="search('queryForm')">搜索</el-button>
             </el-form>
         </div>
@@ -55,17 +54,22 @@
                 label="计划结课日期"
                 prop="endDate">
             </el-table-column>
-            <!-- <el-table-column label="操作">
+            <el-table-column label="操作">
             <template slot-scope="scope">
-                <el-button
-                size="mini"
-                @click="handleEdit(scope.$index, scope.row)">添加</el-button>
-                <el-button
-                size="mini"
-                type="danger"
-                @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+              <el-dropdown  @command="handleCommand">
+                <el-button type="primary" size="mini">
+                  操作<i class="el-icon-arrow-down el-icon--right"></i>
+                </el-button>
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item :command="{item:'a',class:scope.row}">排课</el-dropdown-item>
+                  <!-- <el-dropdown-item>狮子头</el-dropdown-item>
+                  <el-dropdown-item>螺蛳粉</el-dropdown-item>
+                  <el-dropdown-item>双皮奶</el-dropdown-item>
+                  <el-dropdown-item>蚵仔煎</el-dropdown-item> -->
+                </el-dropdown-menu>
+              </el-dropdown>
             </template>
-            </el-table-column> -->
+            </el-table-column>
         </el-table>
         <div class="pagination">
             <el-pagination
@@ -78,77 +82,23 @@
             </el-pagination>
         </div>
         <el-dialog title="开班" :visible.sync="dialogFormVisible" :close-on-click-modal=false>
-            <el-form :model="form" ref="ruleForm">
-                <el-form-item label="名称" :label-width="formLabelWidth" prop="name"
-                              :rules="[{ required: true, message: '班级名称必填'}]">
-                    <el-input v-model="form.name" placeholder="班级名称"></el-input>
-                </el-form-item>
-                <el-form-item label="课程" :label-width="formLabelWidth" prop="courseId"
-                              :rules="[{ required: true, message: '课程必填'}]">
-                    <course v-model="form.courseId"></course>
-                </el-form-item>
-                <el-form-item label="校区" :label-width="formLabelWidth" prop="schoolName"
-                              :rules="[{ required: true, message: '校区必填'}]">
-                    <school-tree @nodeClick="handleSchool" :name="form.schoolName" :the-type="2" place-text="校区"
-                                 :default-value="schoolId"></school-tree>
-                </el-form-item>
-                <el-form-item label="主教" :label-width="formLabelWidth" prop="mainTeacherId">
-                    <user-dialog v-model="form.mainTeacherId" title="选择主教"
-                                 :the-type="3" :parent-school-id="form.schoolZoneId"
-                                 placeholder-text="主教"></user-dialog>
-                </el-form-item>
-                <el-form-item label="班主任" :label-width="formLabelWidth" prop="teacherId">
-                    <user-dialog v-model="form.teacherId" title="选择班主任"
-                                 :the-type="3" :parent-school-id="form.schoolZoneId"
-                                 placeholder-text="班主任"></user-dialog>
-                </el-form-item>
-                <el-form-item label="默认教室" :label-width="formLabelWidth" prop="roomId">
-                    <room-dialog v-model="form.roomId" :parent-school-id="form.schoolZoneId"
-                                 :is-all="false"></room-dialog>
-                </el-form-item>
-                <el-form-item label="计划开班日期" :label-width="formLabelWidth" prop="startDate">
-                    <el-date-picker
-                        v-model="form.startDate"
-                        type="date" value-format="yyyy-MM-dd"
-                        placeholder="计划开班日期" :picker-options="pickerOptions1">
-                    </el-date-picker>
-                </el-form-item>
-                <el-form-item label="计划结课日期" :label-width="formLabelWidth" prop="endDate">
-                    <el-date-picker
-                        v-model="form.endDate" :picker-options="pickerOptions2"
-                        type="date" value-format="yyyy-MM-dd"
-                        placeholder="计划结课日期">
-                    </el-date-picker>
-                </el-form-item>
-                <el-form-item label="备注" :label-width="formLabelWidth" prop="remarks">
-                    <el-input v-model="form.remarks" :rows=3 type="textarea" placeholder="备注"></el-input>
-                </el-form-item>
-            </el-form>
-            <div slot="footer" class="dialog-footer">
-                <el-button @click="dialogFormVisible = false">取 消</el-button>
-                <el-button :loading="loadingForm" type="primary" @click="submitForm('ruleForm')">确 定</el-button>
-            </div>
+          <class-form ref="classForm"></class-form>
+          <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogFormVisible=false;">取 消</el-button>
+            <el-button :loading="loadingForm" type="primary" @click="submitForm('classForm')">确 定</el-button>
+          </div>
+        </el-dialog>
+        <el-dialog title="排课" :visible.sync="dialogScheduleFormVisible" :close-on-click-modal=false>
+          <schedule-form ref="scheduleForm" :currentClass="currentClass"></schedule-form>
+          <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogScheduleFormVisible=false;">取 消</el-button>
+            <el-button :loading="loadingForm" type="primary" @click="submitForm('scheduleForm')">确 定</el-button>
+          </div>
         </el-dialog>
     </div>
 </template>
 
 <style scoped>
-.ms-tree-space {
-  position: relative;
-  top: 1px;
-  display: inline-block;
-  font-family: "Glyphicons Halflings";
-  font-style: normal;
-  font-weight: 400;
-  line-height: 1;
-  width: 18px;
-  height: 14px;
-}
-
-.ms-tree-space::before {
-  content: "";
-}
-
 table td {
   line-height: 26px;
 }
@@ -156,15 +106,15 @@ table td {
 
 <script>
 import SchoolTree from "../../common/system/SchoolTree.vue";
-import UserDialog from "../../common/system/UserDialog.vue";
-import Course from "../../common/teach/Course.vue";
-import RoomDialog from "../../common/teach/RoomDialog.vue";
-import { createSchoolClass, getSchoolClassList } from "../../api/api";
+import ClassForm from "./ClassForm.vue";
+import ScheduleForm from "./ScheduleForm.vue";
+import { getSchoolClassList } from "../../api/api";
 export default {
   data() {
     return {
       tableData: [],
       dialogFormVisible: false,
+      dialogScheduleFormVisible: false,
       total: 0,
       cur_page: 1,
       page_size: 20,
@@ -174,61 +124,16 @@ export default {
         theType: "",
         schoolZoneId2: []
       },
-      pickerOptions1: {
-        disabledDate(time) {
-          return time.getTime() < Date.now();
-        }
-      },
-      form: {
-        //表单 v-modle绑定的值
-        name: "",
-        courseId: "",
-        mainTeacherId: "",
-        teacherId: "",
-        startDate: "",
-        endDate: "",
-        schoolZoneId: "",
-        schoolName: ""
-      },
-      pickerOptions2: {
-        disabledDate: time => {
-          if (this.form.startDate) {
-            return time.getTime() < new Date(this.form.startDate);
-          } else {
-            return time.getTime() < Date.now();
-          }
-        }
-      },
-      formLabelWidth: "120px",
+      currentClass: {},//当前班级
       loading: false,
-      loadingForm: false,
-      schoolId: "" //添加用户默认学校id
+      loadingForm: false
     };
   },
   created() {
     this.getData();
-    this.getSchoolId();
-  },
-  computed: {
-    //实时计算
-    startDate() {
-      return this.form.startDate;
-    }
-  },
-  watch: {
-    startDate(val) {
-      this.form.endDate = "";
-    }
   },
   methods: {
     //初始化属性start
-    getSchoolId() {
-      let self = this;
-      let user = self.$user();
-      self.form.schoolZoneId = user.schoolZoneId;
-      self.form.schoolName = user.schoolZone.name;
-      self.schoolId = user.schoolZoneId;
-    },
     //初始化属性end
     //分页方法start
     handleSizeChange(val) {
@@ -266,22 +171,13 @@ export default {
     //保存表单
     submitForm(formName) {
       let self = this;
-      self.$refs[formName].validate(valid => {
-        if (valid) {
-          self.loadingForm = true;
-          createSchoolClass(self.form).then(data => {
-            self.loadingForm = false;
-            if (data.code == 200) {
-              self.$message.success(data.message);
-              self.dialogFormVisible = false;
-              self.getData();
-              self.$refs[formName].resetFields();
-            } else {
-              this.$message.error(data.data);
-            }
-          });
-        } else {
-          return false;
+      // self.loadingForm = true;
+      this.$refs[formName].submitForm(function (data) {
+        self.loadingForm = false;
+        if (data !== false) {
+          self.dialogFormVisible = false;
+          self.loadingForm = false;
+          self.getData();
         }
       });
     },
@@ -302,19 +198,29 @@ export default {
       this.form.fatherName = row.name;
       this.dialogFormVisible = true;
     },
-    handleDelete(index, row) {},
-    handleSchool(data) {
-      this.form.schoolName = data.name;
-      this.form.schoolZoneId = data.id;
-    },
+    handleDelete(index, row) { },
     handleCheckChange(allNode) {
       let self = this;
       self.queryForm.schoolZoneId2 = [];
       for (let i = 0; i < allNode.length; i++) {
         self.queryForm.schoolZoneId2.push(allNode[i].id);
       }
+    },
+    handleCommand(command) {
+      // console.log(command);
+      let self = this;
+      switch (command.item) {
+        case "a":
+          self.currentClass = command.class;
+          console.log(self.currentClass);
+          self.dialogScheduleFormVisible = true;
+          break;
+
+        default:
+          break;
+      }
     }
   },
-  components: { SchoolTree, Course, UserDialog, RoomDialog } //注入组件
+  components: { ClassForm, SchoolTree, ScheduleForm } //注入组件
 };
 </script>
