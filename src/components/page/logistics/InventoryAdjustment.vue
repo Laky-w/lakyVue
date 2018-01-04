@@ -3,7 +3,7 @@
       <div class="handle-box">
           <el-form ref="queryForm" :inline="true" :model="queryForm" label-width="80px" size="mini">
               <el-form-item>
-                  <el-input v-model="queryForm.goodsName" clearable placeholder="物资"
+                  <el-input v-model="queryForm.name" clearable placeholder="物品"
                             class="handle-input mr10"></el-input>
               </el-form-item>
               <el-form-item>
@@ -33,7 +33,7 @@
           </el-table-column> -->
           <el-table-column
               label="数量"
-              prop="amount">
+              prop="amount" sortable>
           </el-table-column>
           <!-- <el-table-column
               label="单价" prop="price">
@@ -76,8 +76,9 @@
           </el-pagination>
       </div>
       <el-dialog title="添加调整" :visible.sync="dialogFormVisible" width="750px">
-        <el-form :model="form" ref="ruleForm">
-          <el-form-item label="登记日期" prop="createTime" :label-width="formLabelWidth" style="display:inline-block;">
+        <el-form :model="form" ref="ruleForm" >
+          <el-form-item label="登记日期" prop="createTime" :label-width="formLabelWidth"
+          :rules="[{ required: true, message: '登记日期必填'}]">
             <el-date-picker
             type="date"  v-model="form.createTime" format="yyyy-MM-dd"
             placeholder="登记日期">
@@ -101,20 +102,17 @@
                     调整后库存数量
                 </el-form-item>
                 <el-form-item size="mini"  style="display: inline-block;">
-                <goods-dialog :button-type="2" @selectData="addGoods" placeholder-text="添加物品" selected-type=2></goods-dialog>
+                <goods-dialog :button-type="2" @selectData="addGoods" placeholder-text="添加物品" selected-type=2 ></goods-dialog>
                 <!-- <el-button @click="addChargeStandard" text-align="添加物品" icon="el-icon-edit" size="mini" type="primary"></el-button> -->
                 </el-form-item>
           </el-form-item>
-          <el-form-item  :label-width="formLabelWidth"  v-for="(goods, index) in goodsList"  style="margin-bottom:0px;" :key="goods.goodsId">
+          <el-form-item  :label-width="formLabelWidth"  v-for="(goods, index) in form.goodsList"  style="margin-bottom:0px;" :key="goods.goodsId">
                 <el-form-item  style="display:inline-block;width:100px;margin-bottom:5px;"size="mini" >
                     {{goods.goodsName}}
                 </el-form-item>
 
-                <el-form-item  style="display:inline-block;width:100px;margin-bottom:5px;"
-                :prop="'goodsList.' + index + '.amount'" :rules="[
-                    { required: true, message: '必填项'}
-                    ]" size="mini" >
-                    <el-input-number style="width:100px" v-model.number="goods.amount":min="0" placeholder="数量" disabled></el-input-number>
+                <el-form-item  style="display:inline-block;width:100px;margin-bottom:5px;" >
+                    {{goods.oldAmount}}
                     <!-- <el-input v-model.number="goods.amount" placeholder="数量"  ></el-input> -->
                 </el-form-item>
                 <!-- <el-form-item style="display:inline-block;width:100px;margin-bottom:5px;"
@@ -122,13 +120,13 @@
                     { required: true, message: '必填项'},
                     { validator:$validate.validateMoney, trigger: 'blur'}]" size="mini"  >
                     <el-input v-model.number="goods.price" placeholder="费用"  ></el-input>
-                </el-form-item>
+                </el-form-item> -->
                 <el-form-item   style="display:inline-block;width:100px;margin-bottom:5px;"
-                :prop="'goodsList.' + index + '.totalPrice'" :rules="[
+                :prop="'goodsList.' + index + '.amount'" :rules="[
                     { required: true, message: '必填项'},
                     { type: 'number', message: '必须为数字值'}]" size="mini" >
-                    <el-input placeholder="金额" disabled v-model="goods.totalPrice" ></el-input>
-                </el-form-item> -->
+                    <el-input-number style="width:100px" v-model.number="goods.amount":min="0" placeholder="数量" ></el-input-number>
+                </el-form-item>
                 <el-form-item style="display:inline-block;width:100px;margin-bottom:5px;"   >
                     <el-button  size="mini" @click="removeGoods(goods)">删除</el-button>
                 </el-form-item>
@@ -184,12 +182,13 @@ export default {
       queryForm: {
         name: "",
         schoolZoneId2: [],
-        theType:4//领用
+        theType:7//领用
       },
       parameterValue: [],
       form: {
         //表单 v-modle绑定的值
         amount: "",
+        lastAmount:"",
         createTime: new Date().Format("yyyy-MM-dd"),
         otherName:"",//领用人
         userId:"",
@@ -207,14 +206,6 @@ export default {
     this.getParameterValue(10);
   },
   computed: {
-    goodsList() {
-      // this.form.goodsMoney.totalPrice=0;
-      this.form.goodsList.forEach(item => {
-        if (!item.price) item.price = 0;
-        item.totalPrice = Number(item.price.mul(item.amount));
-      })
-      return this.form.goodsList;
-    }
     //实时计算
   },
   methods: {
@@ -272,6 +263,7 @@ export default {
           let goodsJson = JSON.stringify(self.form);
           createGoodsRecord({goodsRecordJson:goodsJson}).then(data => {
             self.dialogFormVisible = false;
+            self.loadingForm = false;
             if(data.code==200){
               self.$message.success(data.message);
               self.$refs[formName].resetFields();
@@ -326,14 +318,14 @@ export default {
         self.form.goodsList.push(
           {
             price: item.price,
-            amount: 1,
+            oldAmount:item.lastAmount,
+            amount:item.lastAmount,
             totalPrice: item.price,
-            theType:4,
+            theType:7,
             otherName:item.otherName,
             goodsId: item.id,
             goodsName: item.name
           })
-
       });
     },
     filterTotalPrice(value,row){

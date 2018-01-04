@@ -3,7 +3,7 @@
       <div class="handle-box">
           <el-form ref="queryForm" :inline="true" :model="queryForm" label-width="80px" size="mini">
               <el-form-item>
-                  <el-input v-model="queryForm.goodsName" clearable placeholder="物资"
+                  <el-input v-model="queryForm.name" clearable placeholder="物品"
                             class="handle-input mr10"></el-input>
               </el-form-item>
               <el-form-item>
@@ -19,7 +19,7 @@
         <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
       </div>
       <el-table
-          :data="tableData" stripe v-loading="loading" border show-summary
+          :data="tableData" stripe v-loading="loading" border show-summary :summary-method="getSummaries"
           style="width: 100%">
           <el-table-column
               label="物品" prop="goodsName">
@@ -33,17 +33,17 @@
           </el-table-column> -->
           <el-table-column
               label="借阅数量"
-              prop="amount">
+              prop="amount" sortable>
           </el-table-column>
           <el-table-column
               label="借阅人"
               prop="otherName">
           </el-table-column>
           <el-table-column
-              label="归还日期" prop="returnDate">
+              label="归还日期" prop="returnDate" sortable>
           </el-table-column>
           <el-table-column
-              label="归还状态" prop="returnStatus" :formatter="filterStatus">
+              label="归还状态" prop="returnStatus" sortable :formatter="filterStatus">
           </el-table-column>
            <el-table-column
               label="经手人"
@@ -53,17 +53,13 @@
               label="借阅日期" sortable
               prop="createTime">
           </el-table-column>
-          <!-- <el-table-column label="操作">
+          <el-table-column label="操作">
           <template slot-scope="scope">
               <el-button
-              size="mini"
-              @click="handleEdit(scope.$index, scope.row)">添加</el-button>
-              <el-button
-              size="mini"
-              type="danger"
-              @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+              size="mini" v-if="scope.row.returnStatus ==1"
+              @click="handleReturn(scope.$index, scope.row)">归还</el-button>
           </template>
-          </el-table-column> -->
+          </el-table-column>
       </el-table>
       <div class="pagination">
           <el-pagination
@@ -77,7 +73,7 @@
       </div>
       <el-dialog title="添加借阅" :visible.sync="dialogFormVisible" width="750px">
         <el-form :model="form" ref="ruleForm">
-          <el-form-item label="借阅日期" prop="createTime" :label-width="formLabelWidth" style="display:inline-block;">
+          <el-form-item label="借阅日期" prop="createTime" :label-width="formLabelWidth" style="display:inline-block;" :rules="[{required:true,message:'借阅日期必填'}]">
             <el-date-picker
             type="date"  v-model="form.createTime" format="yyyy-MM-dd"
             placeholder="借阅日期">
@@ -102,7 +98,7 @@
                     总额
                 </el-form-item> -->
                 <el-form-item size="mini"  style="display: inline-block;">
-                <goods-dialog :button-type="2" @selectData="addGoods" placeholder-text="添加物品" selected-type=2></goods-dialog>
+                <goods-dialog :button-type="2" @selectData="addGoods" placeholder-text="添加物品" selected-type=2 v-model="selectedGoods"></goods-dialog>
                 <!-- <el-button @click="addChargeStandard" text-align="添加物品" icon="el-icon-edit" size="mini" type="primary"></el-button> -->
                 </el-form-item>
           </el-form-item>
@@ -115,7 +111,7 @@
                 :prop="'goodsList.' + index + '.amount'" :rules="[
                     { required: true, message: '必填项'}
                     ]" size="mini" >
-                    <el-input-number style="width:100px" v-model.number="goods.amount":min="0" placeholder="价格"></el-input-number>
+                    <el-input-number style="width:100px" v-model.number="goods.amount":min="0" placeholder="价格" :max="goods.oldAmount"></el-input-number>
                     <!-- <el-input v-model.number="goods.amount" placeholder="数量" ></el-input> -->
                 </el-form-item>
                 <el-form-item style="display:inline-block;width:100px;margin-bottom:5px;center" size="mini"  >
@@ -168,7 +164,8 @@ import CourseDialog from "../../common/teach/CourseDialog.vue";
 import {
   getRecordList,
   findBranchParameterValueAll,
-  createGoodsRecord
+  createGoodsRecord,
+  returnLibrary
 } from "../../api/api";
 
 export default {
@@ -182,16 +179,17 @@ export default {
       queryForm: {
         name: "",
         schoolZoneId2: [],
-        theType:5//图书借阅
+        theType: 5//图书借阅
       },
+      selectedGoods: [],//选择物品
       parameterValue: [],
       form: {
         //表单 v-modle绑定的值
         amount: "",
         createTime: new Date().Format("yyyy-MM-dd"),
-        userId:"",//经手人
-        returnStatus:1,
-        otherName:"",//借阅人
+        userId: "",//经手人
+        returnStatus: 1,
+        otherName: "",//借阅人
         goodsList: []//进货列表
 
       },
@@ -261,9 +259,10 @@ export default {
         if (valid) {
           self.loadingForm = true;
           let goodsJson = JSON.stringify(self.form);
-          createGoodsRecord({goodsRecordJson:goodsJson}).then(data => {
+          createGoodsRecord({ goodsRecordJson: goodsJson }).then(data => {
             self.dialogFormVisible = false;
-            if(data.code==200){
+            self.loadingForm = false;
+            if (data.code == 200) {
               self.$message.success(data.message);
               self.$refs[formName].resetFields();
               self.getData();
@@ -277,17 +276,25 @@ export default {
       });
     },
     //数据过滤
-    filterStatus(value, row){
+    filterStatus(value, row) {
 
       if (value.returnStatus == 1) row.tag = "未归还";
       else row.tag = "已归还";
       return row.tag;
     },
     //控件方法
-    handleEdit(index, row) {
-      this.form.fatherId = row.id;
-      this.form.fatherName = row.name;
-      this.dialogFormVisible = true;
+    handleReturn(index, row) {
+      let self = this;
+      self.$confirm('确定归还吗?', '提示', { type: 'warning' }).then(() => {
+        returnLibrary(row.id).then(data => {
+          if (data.code == 200) {
+            self.$message.success(data.message);
+            self.getData();
+          } else {
+            self.$message.error(data.message);
+          }
+        });
+      }).catch(() => { });
     },
     handleDelete(index, row) { },
     handleCheckChange(allNode) {
@@ -323,16 +330,45 @@ export default {
           {
             price: item.sellPrice,
             amount: 1,
-            theType:5,
-            returnStatus:1,
-            otherName:item.otherName,
+            theType: 5,
+            returnStatus: 1,
+            otherName: item.otherName,
             goodsId: item.id,
+            oldAmount: item.lastAmount,
             goodsName: item.name
           })
-
+        self.selectedGoods = [];
       });
     },
-    filterTotalPrice(value,row){
+    getSummaries(param) {
+      let { columns, data } = param;
+      let sums = [];
+      columns.forEach((column, index) => {
+        if (column.label == "归还状态") {
+          sums[index] = '';
+          return;
+        }
+        if (index === 0) {
+            sums[index] = '合计';
+            return;
+          }
+        let values = data.map(item => Number(item[column.property]));
+        if (!values.every(value => isNaN(value))) {
+          sums[index] = values.reduce((prev, curr) => {
+            let value = Number(curr);
+            if (!isNaN(value)) {
+              return Number(prev).add(value);
+            } else {
+              return prev;
+            }
+          }, 0);
+        } else {
+          sums[index] = '';
+        }
+      });
+      return sums;
+    },
+    filterTotalPrice(value, row) {
       value.totalPrice = value.amount.mul(value.price);
       row.tag = value.totalPrice;
       return row.tag;

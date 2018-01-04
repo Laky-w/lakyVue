@@ -71,6 +71,12 @@ export default {
     this.getSchool();
   },
   watch: {
+    value(val){
+      console.log(val);
+      if(!val){
+        this.filterText="";
+      }
+    },
     filterText(val) {
       if (!val) {
         this.$refs.tree2.setCheckedKeys([]);
@@ -148,6 +154,7 @@ export default {
   },
 
   props: {
+    value:"",
     name: "",
     isShowCheckbox: {
       default: false

@@ -139,5 +139,6 @@ export const createGoodsRecord = (params) => { return axios.post(`logistics/crea
 export const getRepositoryList = (pageNumber, pageSize, params) => { return axios.post(`logistics/getRepositoryList/${pageNumber}/${pageSize}`, params).then(res => res.data); };
 // 创建出入库存
 export const createRepository = params => { return axios.post(`logistics/createRepository`, params).then(res => res.data); };
-
+// 归还图书
+export const returnLibrary = id => { return axios.put(`logistics/returnLibrary/${id}`).then(res => res.data); };
 //后勤=============

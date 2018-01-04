@@ -3,7 +3,7 @@
       <div class="handle-box">
           <el-form ref="queryForm" :inline="true" :model="queryForm" label-width="80px" size="mini">
               <el-form-item>
-                  <el-input v-model="queryForm.goodsName" clearable placeholder="物资"
+                  <el-input v-model="queryForm.name" clearable placeholder="物品"
                             class="handle-input mr10"></el-input>
               </el-form-item>
               <el-form-item>
@@ -33,13 +33,13 @@
           </el-table-column> -->
           <el-table-column
               label="销售数量"
-              prop="amount">
+              prop="amount" sortable>
           </el-table-column>
           <el-table-column
-              label="单价" prop="price">
+              label="单价" prop="price" sortable>
           </el-table-column>
           <el-table-column
-              label="总额" prop="totalPrice" :formatter="filterTotalPrice">
+              label="总额" prop="totalPrice" :formatter="filterTotalPrice" sortable>
           </el-table-column>
           <el-table-column
               label="购买人"
@@ -77,7 +77,7 @@
       </div>
       <el-dialog title="添加销售" :visible.sync="dialogFormVisible" width="750px">
         <el-form :model="form" ref="ruleForm">
-          <el-form-item label="销售日期" prop="createTime" :label-width="formLabelWidth" style="display:inline-block;">
+          <el-form-item label="销售日期" prop="createTime" :label-width="formLabelWidth" style="display:inline-block;" :rules="[{required:true,message:'销售日期必填'}]">
             <el-date-picker
             type="date"  v-model="form.createTime" format="yyyy-MM-dd"
             placeholder="销售日期">
@@ -101,7 +101,7 @@
                     总额
                 </el-form-item>
                 <el-form-item size="mini"  style="display: inline-block;">
-                <goods-dialog :button-type="2" @selectData="addGoods" placeholder-text="添加物品" selected-type=2></goods-dialog>
+                <goods-dialog :button-type="2" @selectData="addGoods" placeholder-text="添加物品" v-model="selectedGoods" selected-type=2></goods-dialog>
                 <!-- <el-button @click="addChargeStandard" text-align="添加物品" icon="el-icon-edit" size="mini" type="primary"></el-button> -->
                 </el-form-item>
           </el-form-item>
@@ -114,7 +114,7 @@
                 :prop="'goodsList.' + index + '.amount'" :rules="[
                     { required: true, message: '必填项'}
                     ]" size="mini" >
-                    <el-input-number style="width:100px" v-model.number="goods.amount":min="0" placeholder="价格"></el-input-number>
+                    <el-input-number style="width:100px" v-model.number="goods.amount":min="0" :max="goods.oldAmount" placeholder="价格"></el-input-number>
                     <!-- <el-input v-model.number="goods.amount" placeholder="数量" ></el-input> -->
                 </el-form-item>
                 <el-form-item style="display:inline-block;width:100px;margin-bottom:5px;"
@@ -187,6 +187,7 @@ export default {
         schoolZoneId2: [],
         theType:3//销售
       },
+      selectedGoods:[],//选择物品
       parameterValue: [],
       form: {
         //表单 v-modle绑定的值
@@ -272,7 +273,7 @@ export default {
           let goodsJson = JSON.stringify(self.form);
           createGoodsRecord({goodsRecordJson:goodsJson}).then(data => {
             self.dialogFormVisible = false;
-            // self.loadingForm = false;
+            self.loadingForm = false;
             if(data.code==200){
               self.$message.success(data.message);
               self.$refs[formName].resetFields();
@@ -330,10 +331,12 @@ export default {
             amount: 1,
             totalPrice: item.price,
             theType:3,
+            oldAmount:item.lastAmount,
             otherName:item.otherName,
             goodsId: item.id,
             goodsName: item.name
           })
+          self.selectedGoods = [];
 
       });
     },

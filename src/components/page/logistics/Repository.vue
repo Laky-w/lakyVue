@@ -20,14 +20,14 @@
             :data="tableData" stripe v-loading="loading" border show-summary
             style="width: 100%">
             <el-table-column
+            label="校区"
+            prop="schoolZoneId">
+            </el-table-column>
+            <el-table-column
             label="物品" prop="goodsName" >
             </el-table-column>
             <el-table-column
             label="类别" prop="clazzName" >
-            </el-table-column>
-            <el-table-column
-            label="校区"
-            prop="schoolZoneId">
             </el-table-column>
             <el-table-column
             label="剩余数量"

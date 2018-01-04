@@ -3,7 +3,7 @@
       <div class="handle-box">
           <el-form ref="queryForm" :inline="true" :model="queryForm" label-width="80px" size="mini">
               <el-form-item>
-                  <el-input v-model="queryForm.goodsName" clearable placeholder="物资"
+                  <el-input v-model="queryForm.name" clearable placeholder="物品"
                             class="handle-input mr10"></el-input>
               </el-form-item>
               <el-form-item>
@@ -30,28 +30,28 @@
           </el-table-column>
            <el-table-column
               label="调入校区"
-              prop="schoolZoneId2">
+              prop="schoolZoneNameIn">
           </el-table-column>
           <!-- <el-table-column
               label="类别" prop="clazzName">
           </el-table-column> -->
           <el-table-column
               label="调拨数量"
-              prop="amount">
+              prop="amount" sortable>
           </el-table-column>
           <el-table-column
-              label="单价" prop="price">
+              label="单价" prop="price" sortable>
           </el-table-column>
           <el-table-column
-              label="总额" prop="totalPrice" :formatter="filterTotalPrice">
+              label="总额"  prop="totalPrice" sortable :formatter="filterTotalPrice">
           </el-table-column>
           <el-table-column
               label="经手人"
               prop="userName">
           </el-table-column>
           <el-table-column
-              label="进货时间" sortable
-              prop="createTime">
+              label="进货时间"
+              prop="createTime" sortable>
           </el-table-column>
           <!-- <el-table-column label="操作">
           <template slot-scope="scope">
@@ -77,21 +77,15 @@
       </div>
       <el-dialog title="添加调拨" :visible.sync="dialogFormVisible" width="750px">
         <el-form :model="form" ref="ruleForm">
-          <el-form-item label="调拨日期" prop="createTime" :label-width="formLabelWidth" style="display:inline-block;">
+          <el-form-item label="调拨日期" prop="createTime" :label-width="formLabelWidth" style="display:inline-block;" :rules="[{required:true,message:'调拨日期必填'}]">
             <el-date-picker
             type="date"  v-model="form.createTime" format="yyyy-MM-dd"
             placeholder="调拨日期">
             </el-date-picker>
           </el-form-item>
-           <el-form-item label="校区" :label-width="formLabelWidth" prop="schoolName" style="display:inline-block;"
-                          :rules="[{ required: true, message: '校区必填'}]">
-                <school-tree @nodeClick="handleSchool" the-type="2" :name="form.schoolName"
-                              :default-value="schoolId"></school-tree>
-            </el-form-item>
-          <el-form-item label="供应商" :label-width="formLabelWidth" prop="supplierId" style="display:inline-block;" :rules="[{required:true,message:'供应商必填'}]">
-              <el-select v-model="form.supplierId"  placeholder="供应商" >
-                <el-option v-for="(item,index) in parameterValue" :key="item.id" :label="item.name" :value="item.id"></el-option>
-              </el-select>
+          <el-form-item label="调入校区" :label-width="formLabelWidth" prop="schoolZoneId" style="display:inline-block;"
+                        :rules="[{ required: true, message: '校区必填'}]">
+              <school-tree @nodeClick="handleSchool" the-type="2" :name="form.schoolName" v-model="form.schoolZoneId"></school-tree>
           </el-form-item>
           <el-form-item label="调拨信息" required :label-width="formLabelWidth" size="mini" style="margin-bottom:0px;">
               <el-form-item class="freeTitle" size="mini">
@@ -107,7 +101,7 @@
                     总额
                 </el-form-item>
                 <el-form-item size="mini"  style="display: inline-block;">
-                <goods-dialog :button-type="2" @selectData="addGoods" placeholder-text="添加物品" selected-type=2></goods-dialog>
+                <goods-dialog :button-type="2" @selectData="addGoods" placeholder-text="添加物品" selected-type=2 v-model="selectedGoods"></goods-dialog>
                 <!-- <el-button @click="addChargeStandard" text-align="添加物品" icon="el-icon-edit" size="mini" type="primary"></el-button> -->
                 </el-form-item>
           </el-form-item>
@@ -121,7 +115,7 @@
                     { required: true, message: '必填项'}
                     ]" size="mini" >
                     <!-- <el-input v-model.number="goods.amount" placeholder="数量" ></el-input> -->
-                    <el-input-number style="width:100px" v-model.number="goods.amount":min="0" placeholder="价格"></el-input-number>
+                    <el-input-number style="width:100px" v-model.number="goods.amount":min="0" placeholder="价格" :max="goods.oldAmount"></el-input-number>
                 </el-form-item>
                 <el-form-item style="display:inline-block;width:100px;margin-bottom:5px;"
                 :prop="'goodsList.' + index + '.price'"   :rules="[
@@ -196,12 +190,14 @@ export default {
       parameterValue: [],
       form: {
         //表单 v-modle绑定的值
+        schoolZoneId:"",
+        schoolName:"",
         amount: "",
-        createTime: new Date().Format("yyyy-MM-dd"),
-        userId:"",//供货商
+        createTime: new Date(),
         goodsList: []//进货列表
 
       },
+      selectedGoods:[],//选择物品
       formLabelWidth: "120px",
       loading: false,
       loadingForm: false,
@@ -281,14 +277,19 @@ export default {
     submitForm(formName) {
       let self = this;
       self.$refs[formName].validate(valid => {
+        self.$refs[formName].resetFields();
+        console.log(self.form);
+        return;
         if (valid) {
           self.loadingForm = true;
           let goodsJson = JSON.stringify(self.form);
           createGoodsRecord({goodsRecordJson:goodsJson}).then(data => {
             self.dialogFormVisible = false;
+            self.loadingForm = false;
             if(data.code==200){
               self.$message.success(data.message);
               self.$refs[formName].resetFields();
+              self.form.goodsList =[];
               self.getData();
             } else {
               self.$message.error(data.message);
@@ -318,7 +319,6 @@ export default {
     handleSchool(data) {
       this.form.schoolName = data.name;
       this.form.schoolZoneId = data.id;
-      this.form.roles = [];
     },
     removeGoods(item) {
       var index = this.form.goodsList.indexOf(item);
@@ -349,11 +349,12 @@ export default {
             totalPrice: item.price,
             theType:6,
             schoolZoneId2: [],
+            oldAmount: item.lastAmount,
             schoolName:item.schoolName,
             goodsId: item.id,
             goodsName: item.name
           })
-
+          self.selectedGoods = [];
       });
     },
     filterTotalPrice(value,row){

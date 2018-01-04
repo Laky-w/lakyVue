@@ -3,7 +3,7 @@
       <div class="handle-box">
           <el-form ref="queryForm" :inline="true" :model="queryForm" label-width="80px" size="mini">
               <el-form-item>
-                  <el-input v-model="queryForm.goodsName" clearable placeholder="物资"
+                  <el-input v-model="queryForm.name" clearable placeholder="物品"
                             class="handle-input mr10"></el-input>
               </el-form-item>
               <el-form-item>
@@ -32,15 +32,15 @@
               label="类别" prop="clazzName">
           </el-table-column> -->
           <el-table-column
-              label="进货数量"
+              label="进货数量" sortable
               prop="amount">
           </el-table-column>
           </el-table-column>
           <el-table-column
-              label="单价" prop="price">
+              label="单价" prop="price" sortable>
           </el-table-column>
           <el-table-column
-              label="总额" prop="totalPrice" :formatter="filterTotalPrice">
+              label="总额" sortable prop="totalPrice" :formatter="filterTotalPrice">
           </el-table-column>
           <el-table-column
               label="供货商"
@@ -78,7 +78,7 @@
       </div>
       <el-dialog title="添加进货" :visible.sync="dialogFormVisible" width="750px">
         <el-form :model="form" ref="ruleForm">
-          <el-form-item label="进货日期" prop="createTime" :label-width="formLabelWidth" style="display:inline-block;">
+          <el-form-item label="进货日期" prop="createTime" :label-width="formLabelWidth" style="display:inline-block;" :rules="[{required:true,message:'进货日期必填'}]">
             <el-date-picker
             type="date"  v-model="form.createTime" format="yyyy-MM-dd"
             placeholder="进货日期">
@@ -103,7 +103,7 @@
                     总额
                 </el-form-item>
                 <el-form-item size="mini"  style="display: inline-block;">
-                <goods-dialog :button-type="2" @selectData="addGoods" placeholder-text="添加物品" selected-type=2></goods-dialog>
+                <goods-dialog :button-type="2" @selectData="addGoods" placeholder-text="添加物品" selected-type=2 v-model="selectedGoods"></goods-dialog>
                 <!-- <el-button @click="addChargeStandard" text-align="添加物品" icon="el-icon-edit" size="mini" type="primary"></el-button> -->
                 </el-form-item>
           </el-form-item>
@@ -187,14 +187,15 @@ export default {
       queryForm: {
         name: "",
         schoolZoneId2: [],
-        theType:1//进货
+        theType: 1//进货
       },
+      selectedGoods: [],//选择的物品
       parameterValue: [],
       form: {
         //表单 v-modle绑定的值
         amount: "",
         createTime: new Date().Format("yyyy-MM-dd"),
-        supplierId:"",//供货商
+        supplierId: "",//供货商
         goodsList: []//进货列表
 
       },
@@ -272,10 +273,10 @@ export default {
         if (valid) {
           self.loadingForm = true;
           let goodsJson = JSON.stringify(self.form);
-          createGoodsRecord({goodsRecordJson:goodsJson}).then(data => {
-            // self.dialogFormVisible = false;
-             self.loadingForm = false;
-            if(data.code==200){
+          createGoodsRecord({ goodsRecordJson: goodsJson }).then(data => {
+            self.dialogFormVisible = false;
+            self.loadingForm = false;
+            if (data.code == 200) {
               self.$message.success(data.message);
               self.$refs[formName].resetFields();
               self.getData();
@@ -331,14 +332,17 @@ export default {
             price: item.price,
             amount: 1,
             totalPrice: item.price,
-            theType:1,
+            theType: 1,
             goodsId: item.id,
             goodsName: item.name
-          })
+          }
 
+        )
+        self.selectedGoods = [];
       });
     },
-    filterTotalPrice(value,row){
+
+    filterTotalPrice(value, row) {
       value.totalPrice = value.amount.mul(value.price);
       row.tag = value.totalPrice;
       return row.tag;

@@ -131,7 +131,7 @@ export default {
       queryForm: {
         name: "",
         clazzId: [],
-        schoolZoneId2:[]
+        schoolZoneId2: []
       },
       formLabelWidth: "120px",
       loading: false,

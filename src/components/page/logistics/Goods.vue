@@ -234,7 +234,7 @@ export default {
       self.$refs[formName].validate(valid => {
         if (valid) {
           self.loadingForm = true;
-          createGoods().then(data => {
+          createGoods(self.form).then(data => {
             self.loadingForm = false;
             if (data.code == 200) {
               self.$message.success(data.message);
