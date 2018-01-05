@@ -79,7 +79,7 @@
           </div>
           <el-form-item prop="checkedDay" :rules="[{ required: true, message: '该项必填'}]">
             <el-checkbox-group v-model="weekForm.checkedDay">
-              <el-checkbox v-for="item in weeks" :label="item.id">{{item.label}}</el-checkbox>
+              <el-checkbox v-for="item in weeks" :label="item.id" :key="item.id">{{item.label}}</el-checkbox>
             </el-checkbox-group>
           </el-form-item>
         </el-card>
