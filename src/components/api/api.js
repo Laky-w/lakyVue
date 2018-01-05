@@ -27,6 +27,8 @@ export const findBranchParameterValueAll = (id, params) => { return axios.get(`o
 export const createBranchParameterValue = params => { return axios.post(`organization/createBranchParameterValue`, params).then(res => res.data); };
 //查询全部校区
 export const findSchoolZoneAll = (type, params) => { return axios.get(`organization/findSchoolZoneAll/${type}`, params).then(res => res.data); };
+//查询校区详情
+export const getSchoolZoneView = id => { return axios.get(`organization/getSchoolZoneView/${id}`).then(res => res.data); };
 //findChildSchoolZoneAll
 export const findChildSchoolZoneAll = (type, pid, params) => { return axios.get(`organization/findChildSchoolZoneAll/${type}/${pid}`, params).then(res => res.data); };
 //创建校区或部门
@@ -80,7 +82,7 @@ export const getStudentList = (pageNumber, pageSize, params) => { return axios.p
 export const createStudent = params => { return axios.post(`reception/createStudent`, params).then(res => res.data); };
 
 //报名
-export const createStudentApply = (studentId,params) => { return axios.post(`reception/createStudentApply/${studentId}`, params).then(res => res.data); };
+export const createStudentApply = (studentId, params) => { return axios.post(`reception/createStudentApply/${studentId}`, params).then(res => res.data); };
 //查询订单  getOrderList
 export const getOrderList = (pageNumber, pageSize, params) => { return axios.post(`reception/getOrderList/${pageNumber}/${pageSize}`, params).then(res => res.data); };
 //查询订单详情 getOrderDetailList
@@ -97,7 +99,7 @@ export const getCourseTreeList = (params) => { return axios.get(`teach/getCourse
 //创建课程
 export const createCourse = params => { return axios.post(`teach/createCourse`, params).then(res => res.data); };
 //查询课程收费标准
-export const getChargeStandard = (courseId) => { return axios.get(`teach/getChargeStandard/`+courseId).then(res => res.data); };
+export const getChargeStandard = (courseId) => { return axios.get(`teach/getChargeStandard/` + courseId).then(res => res.data); };
 // 查询班级
 export const getSchoolClassList = (pageNumber, pageSize, params) => { return axios.post(`teach/getSchoolClassList/${pageNumber}/${pageSize}`, params).then(res => res.data); };
 // 创建班级

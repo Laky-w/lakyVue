@@ -24,10 +24,6 @@
                 <el-option v-for="(item,index) in parameterValue" :key="item.id" :label="item.name" :value="item.id"></el-option>
               </el-select>
             </el-form-item>
-            <!-- <el-form-item >
-                        <school-tree  :is-show-checkbox=true @handleCheckChange ="handleCheckChange"></school-tree>
-                        </el-form-item> -->
-
             <el-button type="mini" icon="el-icon-search" @click="search('queryForm')">搜索</el-button>
           </el-form>
         </div>
@@ -50,7 +46,6 @@
             已选择：
             <el-input size="small" style="width:70%;" v-model="userInput" disabled>
             </el-input>
-
           </div>
           <div style="float: left;" v-else>
             已选择：

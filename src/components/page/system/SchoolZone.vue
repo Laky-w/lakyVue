@@ -25,7 +25,7 @@
           <i :class="{ 'el-icon-sort': scope.row.theType ==1 }"></i>
           <i :class="{ 'el-icon-sold-out': scope.row.theType ==2 }"></i>
           <i :class="{ 'el-icon-tickets': scope.row.theType ==3 }"></i>
-          {{ scope.row.name }}
+          <a href="javascript:void(0)" @click="handleView(scope.row.id)">{{ scope.row.name }}</a>
         </template>
       </el-table-column>
       <el-table-column label="负责人" prop="owner">
@@ -50,15 +50,12 @@
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">添加
+          <el-button v-if="scope.row.theType!==3" size="mini" @click="handleEdit(scope.$index, scope.row)">添加
           </el-button>
-          <!-- <el-button
-                    size="mini"
-                    type="danger"
-                    @click="handleDelete(scope.$index, scope.row)">删除</el-button> -->
         </template>
       </el-table-column>
     </el-table>
+    <school-zone-view :view-id="viewId" :dialog-view-visible.sync="dialogViewVisible" ref="view"></school-zone-view>
     <el-dialog title="添加校区/部门" :visible.sync="dialogFormVisible" :close-on-click-modal=false>
       <el-form :model="form" ref="ruleForm">
         <el-form-item label="名称" :label-width="formLabelWidth" prop="name" :rules="[{ required: true, message: '名称必填'}]">
@@ -124,13 +121,16 @@ table td {
 </style>
 
 <script>
+import SchoolZoneView from "./SchoolZoneView.vue";
 import { findSchoolZoneAll, createSchoolZone } from "../../api/api";
 export default {
   data() {
     return {
       tableData: [],
+      viewId: "",//详情id
       treeStructure: true,
       dialogFormVisible: false,
+      dialogViewVisible: false,
       queryForm: {
         schoolName: ""
       },
@@ -226,7 +226,7 @@ export default {
       } else {
         Array.from(data).forEach(function (record) {
           if (record._expanded === undefined) {
-            record["_expanded"] = expandedAll;
+            record["_expanded"] = false;
           }
           if (parent) {
             record["_parent"] = parent;
@@ -242,19 +242,19 @@ export default {
           record["selected"] = false;
           record["_show"] = true;
           record["_level"] = _level;
+          //record["_expanded"]
           tmp.push(record);
           if (record.childrenList && record.childrenList.length > 0) {
             let children = self.parseSchoolTree(
               record.childrenList,
               record,
               _level,
-              expandedAll
+              false
             );
             tmp = tmp.concat(children);
           }
         });
       }
-
       return tmp;
     },
     submitForm(formName) {
@@ -306,12 +306,19 @@ export default {
       if (row.theType === 1) return true;
       return row.theType == value;
     },
+    handleView(id) {
+      let self = this;
+      self.viewId = id;
+      self.dialogViewVisible = true;
+      // self.$refs["view"].show();
+    },
     handleEdit(index, row) {
       this.form.fatherId = row.id;
       this.form.fatherName = row.name;
       this.dialogFormVisible = true;
     },
     handleDelete(index, row) { }
-  }
+  },
+  components: { SchoolZoneView } //注入组件
 };
 </script>
