@@ -1,14 +1,16 @@
 <template>
-    <div  class="sidebar" style="float:left">
-        <div :class="{'active':isCollapse,'unactive':!isCollapse}" >
-            <span @click="changeCollapse"><i class="el-icon-menu"></i></span>
-        </div>
-        <el-menu :default-active="onRoutes" unique-opened class="el-menu-vertical-demo"  :collapse="isCollapse"  router>
-            <template v-for="item in items">
-                <sub-menu :data="item"></sub-menu>
-            </template>
-        </el-menu>
+  <div class="sidebar" style="float:left">
+    <div :class="{'active':isCollapse,'unactive':!isCollapse}">
+      <span @click="changeCollapse">
+        <i class="el-icon-menu"></i>
+      </span>
     </div>
+    <el-menu :default-active="onRoutes" unique-opened class="el-menu-vertical-demo" :collapse="isCollapse" router>
+      <template v-for="item in items">
+        <sub-menu :data="item"></sub-menu>
+      </template>
+    </el-menu>
+  </div>
 </template>
 
 <script>
@@ -28,7 +30,7 @@ export default {
       this.$emit("changeCollapseEvent", this.isCollapse);
     }
   },
-  created: function() {
+  created: function () {
     var self = this;
     getMenu().then(data => {
       self.items = data.data;

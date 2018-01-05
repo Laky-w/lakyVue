@@ -1,60 +1,44 @@
 <template>
-    <div class="table">
-        <div class="handle-box">
-            <el-form ref="queryForm" :inline="true" :model="queryForm" label-width="80px" size="mini">
-                <el-form-item>
-                    <el-input v-model="queryForm.content" clearable placeholder="公告内容"
-                              class="handle-input mr10"></el-input>
-                </el-form-item>
-                <el-form-item>
-                    <el-select v-model="queryForm.theType" value=1 clearable placeholder="通知范围"
-                               class="handle-select mr10">
-                        <el-option key="1" label="机构公告" value="1"></el-option>
-                        <el-option key="2" label="校区公告" value="2"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item>
-                    <date-range startPlaceholder="有效日期" v-model="queryForm.lastDatetime"
-                                endPlaceholder="有效日期"></date-range>
-                </el-form-item>
-                <el-form-item>
-                    <school-tree :is-show-checkbox=true @handleCheckChange="handleCheckChange"></school-tree>
-                </el-form-item>
+  <div class="table">
+    <div class="handle-box">
+      <el-form ref="queryForm" :inline="true" :model="queryForm" label-width="80px" size="mini">
+        <el-form-item>
+          <el-input v-model="queryForm.content" clearable placeholder="公告内容" class="handle-input mr10"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-select v-model="queryForm.theType" value=1 clearable placeholder="通知范围" class="handle-select mr10">
+            <el-option key="1" label="机构公告" value="1"></el-option>
+            <el-option key="2" label="校区公告" value="2"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <date-range startPlaceholder="有效日期" v-model="queryForm.lastDatetime" endPlaceholder="有效日期"></date-range>
+        </el-form-item>
+        <el-form-item>
+          <school-tree :is-show-checkbox=true @handleCheckChange="handleCheckChange"></school-tree>
+        </el-form-item>
 
-                <el-button type="mini" icon="el-icon-search" @click="search('queryForm')">搜索</el-button>
-            </el-form>
-        </div>
-        <div style="margin:5px;">
-            <el-button type="primary" icon="el-icon-edit" size="mini" @click="dialogFormVisible=true">添加公告</el-button>
-            <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
-        </div>
-        <el-table
-            :data="tableData" stripe v-loading="loading"
-            style="width: 100%">
-            <el-table-column
-                label="校区" prop="schoolZone.name">
-            </el-table-column>
-            <el-table-column
-                label="用户名"
-                prop="user.name">
-            </el-table-column>
-            <el-table-column
-                label="发布时间"
-                prop="createDatetime">
-            </el-table-column>
-            <el-table-column
-                label="公告内容"
-                prop="content">
-            </el-table-column>
-            <el-table-column
-                label="有效时间"
-                prop="lastDatetime">
-            </el-table-column>
-            <el-table-column
-                label="通知范围"
-                prop="theType" :formatter="filterType">
-            </el-table-column>
-            <!-- <el-table-column label="操作">
+        <el-button type="mini" icon="el-icon-search" @click="search('queryForm')">搜索</el-button>
+      </el-form>
+    </div>
+    <div style="margin:5px;">
+      <el-button type="primary" icon="el-icon-edit" size="mini" @click="dialogFormVisible=true">添加公告</el-button>
+      <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
+    </div>
+    <el-table :data="tableData" stripe v-loading="loading" style="width: 100%">
+      <el-table-column label="校区" prop="schoolZone.name">
+      </el-table-column>
+      <el-table-column label="用户名" prop="user.name">
+      </el-table-column>
+      <el-table-column label="发布时间" prop="createDatetime">
+      </el-table-column>
+      <el-table-column label="公告内容" prop="content">
+      </el-table-column>
+      <el-table-column label="有效时间" prop="lastDatetime">
+      </el-table-column>
+      <el-table-column label="通知范围" prop="theType" :formatter="filterType">
+      </el-table-column>
+      <!-- <el-table-column label="操作">
             <template slot-scope="scope">
                 <el-button
                 size="mini"
@@ -65,42 +49,33 @@
                 @click="handleDelete(scope.$index, scope.row)">删除</el-button>
             </template>
             </el-table-column> -->
-        </el-table>
-        <div class="pagination">
-            <el-pagination
-                @size-change="handleSizeChange"
-                @current-change="handleCurrentChange"
-                :page-sizes="[20, 50, 100, 200]"
-                :page-size="page_size"
-                layout="total, sizes, prev, pager, next, jumper"
-                :total="total">
-            </el-pagination>
-        </div>
-        <el-dialog title="添加公告" :visible.sync="dialogFormVisible" width="750px" :close-on-click-modal=false>
-            <el-form :model="form" ref="ruleForm">
-                <el-form-item label="公告范围" :label-width="formLabelWidth" required>
-                    <el-radio-group v-model="form.theType">
-                        <el-radio :label="1">机构公告</el-radio>
-                        <el-radio :label="2">校区公告</el-radio>
-                    </el-radio-group>
-                </el-form-item>
-                <el-form-item label="有效时间" prop="lastDatetime" :label-width="formLabelWidth">
-                    <el-date-picker style="width:100%" v-model="form.lastDatetime" value-format="yyyy-MM-dd HH:mm:ss"
-                                    type="datetime" placeholder="有效时间"></el-date-picker>
-                </el-form-item>
-                <el-form-item label="公告内容" prop="content" :label-width="formLabelWidth"
-                              :rules="[{ required: true, message: '必选项'} ,{ min: 10, max: 50, message: '长度在 10 到 50 个字符', trigger: 'blur' }]">
-                    <el-input v-model="form.content" :rows=5 type="textarea" placeholder="请输入公告内容"
-                              auto-complete="off"></el-input>
-                </el-form-item>
-
-            </el-form>
-            <div slot="footer" class="dialog-footer">
-                <el-button @click="dialogFormVisible = false">取 消</el-button>
-                <el-button :loading="loadingForm" type="primary" @click="submitForm('ruleForm')">保 存</el-button>
-            </div>
-        </el-dialog>
+    </el-table>
+    <div class="pagination">
+      <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[20, 50, 100, 200]" :page-size="page_size" layout="total, sizes, prev, pager, next, jumper" :total="total">
+      </el-pagination>
     </div>
+    <el-dialog title="添加公告" :visible.sync="dialogFormVisible" width="750px" :close-on-click-modal=false>
+      <el-form :model="form" ref="ruleForm">
+        <el-form-item label="公告范围" :label-width="formLabelWidth" required>
+          <el-radio-group v-model="form.theType">
+            <el-radio :label="1">机构公告</el-radio>
+            <el-radio :label="2">校区公告</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="有效时间" prop="lastDatetime" :label-width="formLabelWidth">
+          <el-date-picker style="width:100%" v-model="form.lastDatetime" value-format="yyyy-MM-dd HH:mm:ss" type="datetime" placeholder="有效时间"></el-date-picker>
+        </el-form-item>
+        <el-form-item label="公告内容" prop="content" :label-width="formLabelWidth" :rules="[{ required: true, message: '必选项'} ,{ min: 10, max: 50, message: '长度在 10 到 50 个字符', trigger: 'blur' }]">
+          <el-input v-model="form.content" :rows=5 type="textarea" placeholder="请输入公告内容" auto-complete="off"></el-input>
+        </el-form-item>
+
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button :loading="loadingForm" type="primary" @click="submitForm('ruleForm')">保 存</el-button>
+      </div>
+    </el-dialog>
+  </div>
 </template>
 
 
@@ -210,7 +185,7 @@ export default {
         this.queryForm.schoolZoneId2.push(allNode[i].id);
       }
     },
-    handleDelete(index, row) {}
+    handleDelete(index, row) { }
   },
   components: {
     SchoolTree,

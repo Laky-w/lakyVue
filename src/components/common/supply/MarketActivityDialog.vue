@@ -1,72 +1,52 @@
 <template>
-    <div>
-        <el-input ref="text1"
-            :placeholder="placeholderText"
-            v-model="userInput" readonly="">
-            <i slot="suffix"  style="cursor: pointer;" class="el-input__icon el-icon-more"
-            @click="handleOpenDialog"></i>
-        </el-input>
-        <el-dialog :title="title"  :visible.sync="dialogTableVisible"
-             :modal-append-to-body=false append-to-body :close-on-click-modal=false>
-            <div class="table">
-                <div class="handle-box">
-                    <el-form ref="queryForm" :inline="true" :model="queryForm" label-width="80px" size="mini">
-                        <el-form-item  >
-                            <el-input v-model="queryForm.name" clearable placeholder="活动名称" class="handle-input mr10"></el-input>
-                        </el-form-item>
-                        <el-form-item>
-                            <el-select v-model="queryForm.categoryId" style="width:100%"  placeholder="活动分类" clearable>
-                                <el-option v-for="(item,index) in parameterValue" :key="item.id" :label="item.name" :value="item.id"></el-option>
-                            </el-select>
-                        </el-form-item>
-                        <el-form-item >
-                            <el-select v-model="queryForm.theType"   value=1 clearable placeholder="活动状态" class="handle-select mr10" >
-                                <el-option key="1" label="计划中" value="1"></el-option>
-                                <el-option key="2" label="进行中" value="2"></el-option>
-                                <el-option key="3" label="已结束" value="3"></el-option>
-                            </el-select>
-                        </el-form-item>
-                         <!-- <el-form-item >
+  <div>
+    <el-input ref="text1" :placeholder="placeholderText" v-model="userInput" readonly="">
+      <i slot="suffix" style="cursor: pointer;" class="el-input__icon el-icon-more" @click="handleOpenDialog"></i>
+    </el-input>
+    <el-dialog :title="title" :visible.sync="dialogTableVisible" :modal-append-to-body=false append-to-body :close-on-click-modal=false>
+      <div class="table">
+        <div class="handle-box">
+          <el-form ref="queryForm" :inline="true" :model="queryForm" label-width="80px" size="mini">
+            <el-form-item>
+              <el-input v-model="queryForm.name" clearable placeholder="活动名称" class="handle-input mr10"></el-input>
+            </el-form-item>
+            <el-form-item>
+              <el-select v-model="queryForm.categoryId" style="width:100%" placeholder="活动分类" clearable>
+                <el-option v-for="(item,index) in parameterValue" :key="item.id" :label="item.name" :value="item.id"></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item>
+              <el-select v-model="queryForm.theType" value=1 clearable placeholder="活动状态" class="handle-select mr10">
+                <el-option key="1" label="计划中" value="1"></el-option>
+                <el-option key="2" label="进行中" value="2"></el-option>
+                <el-option key="3" label="已结束" value="3"></el-option>
+              </el-select>
+            </el-form-item>
+            <!-- <el-form-item >
                             <school-tree  :is-show-checkbox=true @handleCheckChange ="handleCheckChange" :the-type="2" place-text="校区" ></school-tree>
                         </el-form-item> -->
-                        <el-button type="mini" icon="el-icon-search" @click="search('queryForm')">搜索</el-button>
-                    </el-form>
-                </div>
-                <el-table
-                    :data="tableData" stripe v-loading="loading" border  @row-click="handleRowClick"
-                    style="width: 100%">
-                    <el-table-column
-                    label="市场活动" prop="name" >
-                    </el-table-column>
-                    <el-table-column
-                    label="校区"
-                    prop="schoolZoneName">
-                    </el-table-column>
-                    <el-table-column
-                    label="负责人"
-                    prop="userName">
-                    </el-table-column>
-                    <el-table-column
-                    sortable
-                    label="状态"
-                    prop="theType" :formatter="filterType">
-                    </el-table-column>
-                    <el-table-column
-                    sortable min-width="145"
-                    label="计划招生人数"
-                    prop="targetNumber">
-                    </el-table-column>
-                    <el-table-column
-                    sortable min-width="110"
-                    label="活动分类"
-                    prop="cateGoryName">
-                    </el-table-column>
-                    <!-- <el-table-column
+            <el-button type="mini" icon="el-icon-search" @click="search('queryForm')">搜索</el-button>
+          </el-form>
+        </div>
+        <el-table :data="tableData" stripe v-loading="loading" border @row-click="handleRowClick" style="width: 100%">
+          <el-table-column label="市场活动" prop="name">
+          </el-table-column>
+          <el-table-column label="校区" prop="schoolZoneName">
+          </el-table-column>
+          <el-table-column label="负责人" prop="userName">
+          </el-table-column>
+          <el-table-column sortable label="状态" prop="theType" :formatter="filterType">
+          </el-table-column>
+          <el-table-column sortable min-width="145" label="计划招生人数" prop="targetNumber">
+          </el-table-column>
+          <el-table-column sortable min-width="110" label="活动分类" prop="cateGoryName">
+          </el-table-column>
+          <!-- <el-table-column
                     label="排序" sortable
                     prop="sort">
                     </el-table-column> -->
 
-                    <!-- <el-table-column label="操作">
+          <!-- <el-table-column label="操作">
                     <template slot-scope="scope">
                         <el-button
                         size="mini"
@@ -77,31 +57,25 @@
                         @click="handleDelete(scope.$index, scope.row)">删除</el-button>
                     </template>
                     </el-table-column> -->
-                </el-table>
-                <div class="pagination">
-                    <el-pagination
-                        @size-change="handleSizeChange"
-                        @current-change ="handleCurrentChange"
-                        :page-sizes="[20, 50, 100, 200]"
-                        :page-size="page_size"
-                        layout="total, sizes, prev, pager, next, jumper"
-                        :total="total">
-                    </el-pagination>
-                </div>
-                <div style=" overflow: hidden;">
-                    <div style="float: left;">
-                    已选择：<el-input size="small" style="width:70%"
-                                v-model="userInput" disabled>
-                            </el-input>
-                    </div>
-                    <div style="float: right;">
-                        <el-button size="small" @click="userInput='';userId='';dialogTableVisible=false">取消</el-button>
-                        <el-button size="small" type="primary"  @click="dialogTableVisible=false">确定</el-button>
-                    </div>
-                </div>
-            </div>
-        </el-dialog>
-    </div>
+        </el-table>
+        <div class="pagination">
+          <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[20, 50, 100, 200]" :page-size="page_size" layout="total, sizes, prev, pager, next, jumper" :total="total">
+          </el-pagination>
+        </div>
+        <div style=" overflow: hidden;">
+          <div style="float: left;">
+            已选择：
+            <el-input size="small" style="width:70%" v-model="userInput" disabled>
+            </el-input>
+          </div>
+          <div style="float: right;">
+            <el-button size="small" @click="userInput='';userId='';dialogTableVisible=false">取消</el-button>
+            <el-button size="small" type="primary" @click="dialogTableVisible=false">确定</el-button>
+          </div>
+        </div>
+      </div>
+    </el-dialog>
+  </div>
 </template>
 
 <style>
@@ -133,7 +107,7 @@ export default {
       schoolId: "" //添加用户默认学校id
     };
   },
-  created() {},
+  created() { },
   computed: {
     //实时计算
   },
@@ -196,7 +170,7 @@ export default {
       this.form.fatherName = row.name;
       this.dialogFormVisible = true;
     },
-    handleDelete(index, row) {},
+    handleDelete(index, row) { },
     handleSchool(data) {
       this.form.schoolName = data.name;
       this.form.schoolZoneId = data.id;

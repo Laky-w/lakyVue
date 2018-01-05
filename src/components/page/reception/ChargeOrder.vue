@@ -1,99 +1,67 @@
 <template>
   <div class="table">
     <div class="handle-box">
-        <el-form ref="queryForm" :inline="true" :model="queryForm" label-width="80px" size="mini">
-          <el-form-item >
-              <school-tree  :is-show-checkbox=true @handleCheckChange ="handleCheckChange" :the-type="2" place-text="校区" ></school-tree>
-          </el-form-item>
-           <el-form-item >
-              <el-select v-model="queryForm.costStatus"   clearable placeholder="缴费状态" class="handle-select mr10" >
-                  <el-option  key="1" label="已交齐" value="1"></el-option>
-                  <el-option  key="2" label="未交齐" value="2"></el-option>
-              </el-select>
-          </el-form-item>
-          <el-form-item>
-              <date-range startPlaceholder="下单日期" v-model="queryForm.createTime" endPlaceholder="下单日期"></date-range>
-          </el-form-item>
-          <el-button type="mini" icon="el-icon-search" @click="search('queryForm')">搜索</el-button>
-        </el-form>
+      <el-form ref="queryForm" :inline="true" :model="queryForm" label-width="80px" size="mini">
+        <el-form-item>
+          <school-tree :is-show-checkbox=true @handleCheckChange="handleCheckChange" :the-type="2" place-text="校区"></school-tree>
+        </el-form-item>
+        <el-form-item>
+          <el-select v-model="queryForm.costStatus" clearable placeholder="缴费状态" class="handle-select mr10">
+            <el-option key="1" label="已交齐" value="1"></el-option>
+            <el-option key="2" label="未交齐" value="2"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <date-range startPlaceholder="下单日期" v-model="queryForm.createTime" endPlaceholder="下单日期"></date-range>
+        </el-form-item>
+        <el-button type="mini" icon="el-icon-search" @click="search('queryForm')">搜索</el-button>
+      </el-form>
     </div>
     <div style="margin:5px;">
       <!-- <el-button type="primary" icon="el-icon-edit" size="mini" @click="dialogFormVisible=true">添加</el-button> -->
       <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
     </div>
-    <el-table
-        :summary-method="getSummaries"
-        show-summary
-        :data="tableData" stripe v-loading="loading" border @expand-change="handleExpandChange"
-        style="width: 100%">
-         <el-table-column type="expand">
-          <template slot-scope="props">
-            <el-form label-position="left" inline class="order-table-expand" :loading="loadingAccount">
-              <el-form-item v-for="(item,index) in props.row.detailList" :label="'明细'+(index+1)+'：'" :key="index" class="detail-content">
-                <el-form-item label="课程：">{{item.courseName}}</el-form-item>
-                <el-form-item label="班级：">{{item.className}}</el-form-item>
-                <el-form-item label="报班类型：">{{item.courseName}}</el-form-item>
-                <el-form-item label="课时：">{{item.number}}</el-form-item>
-                <el-form-item label="原单价：">{{item.price}}</el-form-item>
-                <el-form-item label="折扣：">{{item.discount}}</el-form-item>
-                <el-form-item label="售价：">{{item.sellPrice}}</el-form-item>
-                <el-form-item label="总价：">{{item.total}}</el-form-item>
-                <el-form-item label="减免：">{{item.subtractMoney}}</el-form-item>
-                <!-- {{item.name}}：<span style="color:#67c23a">{{item.money}}￥</span> -->
-              </el-form-item>
-            </el-form>
-          </template>
-        </el-table-column>
-        <el-table-column
-        label="学生"
-        prop="studentName">
-        </el-table-column>
-        <el-table-column
-        sortable
-        label="总额"
-        prop="total">
-        </el-table-column>
-        <el-table-column
-        sortable
-        label="抹零"
-        prop="subtractMoney">
-        </el-table-column>
-        <el-table-column
-        sortable
-        label="已交"
-        prop="receivable">
-        </el-table-column>
-        <el-table-column
-        sortable
-        label="欠费"
-        prop="refund" :formatter="filterTotal">
-        </el-table-column>
-        <el-table-column
-        label="下单人"
-        prop="userName">
-        </el-table-column>
-        <el-table-column
-        label="下单时间" sortable
-        prop="createTime">
-        </el-table-column>
-        <el-table-column
-        label="状态"
-        prop="costStatus" :formatter="filterCostStatus">
-        </el-table-column>
-         <el-table-column
-        label="校区"
-        prop="schoolZoneName" >
-        </el-table-column>
+    <el-table :summary-method="getSummaries" show-summary :data="tableData" stripe v-loading="loading" border @expand-change="handleExpandChange" style="width: 100%">
+      <el-table-column type="expand">
+        <template slot-scope="props">
+          <el-form label-position="left" inline class="order-table-expand" :loading="loadingAccount">
+            <el-form-item v-for="(item,index) in props.row.detailList" :label="'明细'+(index+1)+'：'" :key="index" class="detail-content">
+              <el-form-item label="课程：">{{item.courseName}}</el-form-item>
+              <el-form-item label="班级：">{{item.className}}</el-form-item>
+              <el-form-item label="报班类型：">{{item.courseName}}</el-form-item>
+              <el-form-item label="课时：">{{item.number}}</el-form-item>
+              <el-form-item label="原单价：">{{item.price}}</el-form-item>
+              <el-form-item label="折扣：">{{item.discount}}</el-form-item>
+              <el-form-item label="售价：">{{item.sellPrice}}</el-form-item>
+              <el-form-item label="总价：">{{item.total}}</el-form-item>
+              <el-form-item label="减免：">{{item.subtractMoney}}</el-form-item>
+              <!-- {{item.name}}：<span style="color:#67c23a">{{item.money}}￥</span> -->
+            </el-form-item>
+          </el-form>
+        </template>
+      </el-table-column>
+      <el-table-column label="学生" prop="studentName">
+      </el-table-column>
+      <el-table-column sortable label="总额" prop="total">
+      </el-table-column>
+      <el-table-column sortable label="抹零" prop="subtractMoney">
+      </el-table-column>
+      <el-table-column sortable label="已交" prop="receivable">
+      </el-table-column>
+      <el-table-column sortable label="欠费" prop="refund" :formatter="filterTotal">
+      </el-table-column>
+      <el-table-column label="下单人" prop="userName">
+      </el-table-column>
+      <el-table-column label="下单时间" sortable prop="createTime">
+      </el-table-column>
+      <el-table-column label="状态" prop="costStatus" :formatter="filterCostStatus">
+      </el-table-column>
+      <el-table-column label="校区" prop="schoolZoneName">
+      </el-table-column>
     </el-table>
     <div class="pagination">
-      <el-pagination
-            @size-change="handleSizeChange"
-            @current-change ="handleCurrentChange"
-            :page-sizes="[20, 50, 100, 200]"
-            :page-size="page_size"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="total">
-        </el-pagination>
+      <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[20, 50, 100, 200]" :page-size="page_size" layout="total, sizes, prev, pager, next, jumper" :total="total">
+      </el-pagination>
     </div>
   </div>
 </template>
@@ -112,7 +80,7 @@
   /* padding-left: 45px; */
   /* width: 100%; */
 }
-.order-table-expand .detail-content{
+.order-table-expand .detail-content {
   padding-left: 45px;
   width: 100%;
   border-top: 1px solid #ebeef5;
@@ -185,33 +153,33 @@ export default {
         }
       });
     },
-    getSummaries(param){
+    getSummaries(param) {
       let { columns, data } = param;
-        let sums = [];
-        columns.forEach((column, index) => {
-          if (index === 1) {
-            sums[index] = '合计';
-            return;
-          }
-          if(column.label=="状态"){
-            sums[index] = '';
-            return;
-          }
-          let values = data.map(item => Number(item[column.property]));
-          if (!values.every(value => isNaN(value))) {
-            sums[index] = values.reduce((prev, curr) => {
-              let value = Number(curr);
-              if (!isNaN(value)) {
-                return Number(prev).add(value);
-              } else {
-                return prev;
-              }
-            }, 0);
-            sums[index] += ' 元';
-          } else {
-            sums[index] = '';
-          }
-        });
+      let sums = [];
+      columns.forEach((column, index) => {
+        if (index === 1) {
+          sums[index] = '合计';
+          return;
+        }
+        if (column.label == "状态") {
+          sums[index] = '';
+          return;
+        }
+        let values = data.map(item => Number(item[column.property]));
+        if (!values.every(value => isNaN(value))) {
+          sums[index] = values.reduce((prev, curr) => {
+            let value = Number(curr);
+            if (!isNaN(value)) {
+              return Number(prev).add(value);
+            } else {
+              return prev;
+            }
+          }, 0);
+          sums[index] += ' 元';
+        } else {
+          sums[index] = '';
+        }
+      });
       return sums;
     },
     handleCheckChange(allNode) {
@@ -253,10 +221,10 @@ export default {
       }
       return row.tag;
     },
-    filterTotal (value, row) {
+    filterTotal(value, row) {
       value.refund = value.total.sub(value.receivable).sub(value.subtractMoney);
       // value.refund =30;
-      row.tag=value.refund;
+      row.tag = value.refund;
       return row.tag;
     },
   },

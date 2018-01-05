@@ -128,7 +128,7 @@ Number.prototype.add = function (arg) {
 
 
 //减法函数
-let subtr=(arg1, arg2) =>{
+let subtr = (arg1, arg2) => {
   var r1, r2, m, n;
   try {
     r1 = arg1.toString().split(".")[1].length;

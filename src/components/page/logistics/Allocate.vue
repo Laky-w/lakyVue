@@ -1,59 +1,42 @@
 <template>
   <div class="table">
-      <div class="handle-box">
-          <el-form ref="queryForm" :inline="true" :model="queryForm" label-width="80px" size="mini">
-              <el-form-item>
-                  <el-input v-model="queryForm.name" clearable placeholder="物品"
-                            class="handle-input mr10"></el-input>
-              </el-form-item>
-              <el-form-item>
-                  <school-tree :is-show-checkbox=true @handleCheckChange="handleCheckChange" :the-type="2"
-                              place-text="校区"></school-tree>
-              </el-form-item>
+    <div class="handle-box">
+      <el-form ref="queryForm" :inline="true" :model="queryForm" label-width="80px" size="mini">
+        <el-form-item>
+          <el-input v-model="queryForm.name" clearable placeholder="物品" class="handle-input mr10"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <school-tree :is-show-checkbox=true @handleCheckChange="handleCheckChange" :the-type="2" place-text="校区"></school-tree>
+        </el-form-item>
 
-              <el-button type="mini" icon="el-icon-search" @click="search('queryForm')">搜索</el-button>
-          </el-form>
-      </div>
-      <div style="margin:5px;">
-        <el-button type="primary" icon="el-icon-edit" size="mini" @click="dialogFormVisible=true">添加调拨</el-button>
-        <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
-      </div>
-      <el-table
-          :data="tableData" stripe v-loading="loading" border show-summary
-          style="width: 100%">
-          <el-table-column
-              label="物品" prop="goodsName">
-          </el-table-column>
-          <el-table-column
-              label="校区"
-              prop="schoolZoneName">
-          </el-table-column>
-           <el-table-column
-              label="调入校区"
-              prop="schoolZoneNameIn">
-          </el-table-column>
-          <!-- <el-table-column
+        <el-button type="mini" icon="el-icon-search" @click="search('queryForm')">搜索</el-button>
+      </el-form>
+    </div>
+    <div style="margin:5px;">
+      <el-button type="primary" icon="el-icon-edit" size="mini" @click="dialogFormVisible=true">添加调拨</el-button>
+      <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
+    </div>
+    <el-table :data="tableData" stripe v-loading="loading" border show-summary style="width: 100%">
+      <el-table-column label="物品" prop="goodsName">
+      </el-table-column>
+      <el-table-column label="校区" prop="schoolZoneName">
+      </el-table-column>
+      <el-table-column label="调入校区" prop="schoolZoneNameIn">
+      </el-table-column>
+      <!-- <el-table-column
               label="类别" prop="clazzName">
           </el-table-column> -->
-          <el-table-column
-              label="调拨数量"
-              prop="amount" sortable>
-          </el-table-column>
-          <el-table-column
-              label="单价" prop="price" sortable>
-          </el-table-column>
-          <el-table-column
-              label="总额"  prop="totalPrice" sortable :formatter="filterTotalPrice">
-          </el-table-column>
-          <el-table-column
-              label="经手人"
-              prop="userName">
-          </el-table-column>
-          <el-table-column
-              label="进货时间"
-              prop="createTime" sortable>
-          </el-table-column>
-          <!-- <el-table-column label="操作">
+      <el-table-column label="调拨数量" prop="amount" sortable>
+      </el-table-column>
+      <el-table-column label="单价" prop="price" sortable>
+      </el-table-column>
+      <el-table-column label="总额" prop="totalPrice" sortable :formatter="filterTotalPrice">
+      </el-table-column>
+      <el-table-column label="经手人" prop="userName">
+      </el-table-column>
+      <el-table-column label="进货时间" prop="createTime" sortable>
+      </el-table-column>
+      <!-- <el-table-column label="操作">
           <template slot-scope="scope">
               <el-button
               size="mini"
@@ -64,81 +47,69 @@
               @click="handleDelete(scope.$index, scope.row)">删除</el-button>
           </template>
           </el-table-column> -->
-      </el-table>
-      <div class="pagination">
-          <el-pagination
-              @size-change="handleSizeChange"
-              @current-change="handleCurrentChange"
-              :page-sizes="[20, 50, 100, 200]"
-              :page-size="page_size"
-              layout="total, sizes, prev, pager, next, jumper"
-              :total="total">
-          </el-pagination>
-      </div>
-      <el-dialog title="添加调拨" :visible.sync="dialogFormVisible" width="750px">
-        <el-form :model="form" ref="ruleForm">
-          <el-form-item label="调拨日期" prop="createTime" :label-width="formLabelWidth" style="display:inline-block;" :rules="[{required:true,message:'调拨日期必填'}]">
-            <el-date-picker
-            type="date"  v-model="form.createTime" format="yyyy-MM-dd"
-            placeholder="调拨日期">
-            </el-date-picker>
+    </el-table>
+    <div class="pagination">
+      <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[20, 50, 100, 200]" :page-size="page_size" layout="total, sizes, prev, pager, next, jumper" :total="total">
+      </el-pagination>
+    </div>
+    <el-dialog title="添加调拨" :visible.sync="dialogFormVisible" width="750px">
+      <el-form :model="form" ref="ruleForm">
+        <el-form-item label="调拨日期" prop="createTime" :label-width="formLabelWidth" style="display:inline-block;" :rules="[{required:true,message:'调拨日期必填'}]">
+          <el-date-picker type="date" v-model="form.createTime" format="yyyy-MM-dd" placeholder="调拨日期">
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="调入校区" :label-width="formLabelWidth" prop="schoolZoneId" style="display:inline-block;" :rules="[{ required: true, message: '校区必填'}]">
+          <school-tree @nodeClick="handleSchool" the-type="2" :name="form.schoolName" v-model="form.schoolZoneId"></school-tree>
+        </el-form-item>
+        <el-form-item label="调拨信息" required :label-width="formLabelWidth" size="mini" style="margin-bottom:0px;">
+          <el-form-item class="freeTitle" size="mini">
+            名称
           </el-form-item>
-          <el-form-item label="调入校区" :label-width="formLabelWidth" prop="schoolZoneId" style="display:inline-block;"
-                        :rules="[{ required: true, message: '校区必填'}]">
-              <school-tree @nodeClick="handleSchool" the-type="2" :name="form.schoolName" v-model="form.schoolZoneId"></school-tree>
+          <el-form-item class="freeTitle" size="mini">
+            数量
           </el-form-item>
-          <el-form-item label="调拨信息" required :label-width="formLabelWidth" size="mini" style="margin-bottom:0px;">
-              <el-form-item class="freeTitle" size="mini">
-                    名称
-                </el-form-item>
-                 <el-form-item class="freeTitle" size="mini">
-                    数量
-                </el-form-item>
-                <el-form-item class="freeTitle" size="mini">
-                    进价
-                </el-form-item>
-                <el-form-item class="freeTitle" size="mini">
-                    总额
-                </el-form-item>
-                <el-form-item size="mini"  style="display: inline-block;">
-                <goods-dialog :button-type="2" @selectData="addGoods" placeholder-text="添加物品" selected-type=2 v-model="selectedGoods"></goods-dialog>
-                <!-- <el-button @click="addChargeStandard" text-align="添加物品" icon="el-icon-edit" size="mini" type="primary"></el-button> -->
-                </el-form-item>
+          <el-form-item class="freeTitle" size="mini">
+            进价
           </el-form-item>
-          <el-form-item  :label-width="formLabelWidth"  v-for="(goods, index) in goodsList"  style="margin-bottom:0px;" :key="goods.goodsId">
-                <el-form-item  style="display:inline-block;width:100px;margin-bottom:5px;"size="mini" >
-                    {{goods.goodsName}}
-                </el-form-item>
+          <el-form-item class="freeTitle" size="mini">
+            总额
+          </el-form-item>
+          <el-form-item size="mini" style="display: inline-block;">
+            <goods-dialog :button-type="2" @selectData="addGoods" placeholder-text="添加物品" selected-type=2 v-model="selectedGoods"></goods-dialog>
+            <!-- <el-button @click="addChargeStandard" text-align="添加物品" icon="el-icon-edit" size="mini" type="primary"></el-button> -->
+          </el-form-item>
+        </el-form-item>
+        <el-form-item :label-width="formLabelWidth" v-for="(goods, index) in goodsList" style="margin-bottom:0px;" :key="goods.goodsId">
+          <el-form-item style="display:inline-block;width:100px;margin-bottom:5px;" size="mini">
+            {{goods.goodsName}}
+          </el-form-item>
 
-                <el-form-item  style="display:inline-block;width:100px;margin-bottom:5px;"
-                :prop="'goodsList.' + index + '.amount'" :rules="[
+          <el-form-item style="display:inline-block;width:100px;margin-bottom:5px;" :prop="'goodsList.' + index + '.amount'" :rules="[
                     { required: true, message: '必填项'}
-                    ]" size="mini" >
-                    <!-- <el-input v-model.number="goods.amount" placeholder="数量" ></el-input> -->
-                    <el-input-number style="width:100px" v-model.number="goods.amount":min="0" placeholder="价格" :max="goods.oldAmount"></el-input-number>
-                </el-form-item>
-                <el-form-item style="display:inline-block;width:100px;margin-bottom:5px;"
-                :prop="'goodsList.' + index + '.price'"   :rules="[
-                    { required: true, message: '必填项'},
-                    { validator:$validate.validateMoney, trigger: 'blur'}]" size="mini"  >
-                    <!-- <el-input v-model.number="goods.price" placeholder="费用"  ></el-input> -->
-                    <el-input-number style="width:100px" v-model.number="goods.price":min="0" placeholder="价格"></el-input-number>
-                </el-form-item>
-                <el-form-item   style="display:inline-block;width:100px;margin-bottom:5px;"
-                :prop="'goodsList.' + index + '.totalPrice'" :rules="[
-                    { required: true, message: '必填项'},
-                    { type: 'number', message: '必须为数字值'}]" size="mini" >
-                    <el-input placeholder="金额" disabled v-model="goods.totalPrice" ></el-input>
-                </el-form-item>
-                <el-form-item style="display:inline-block;width:100px;margin-bottom:5px;"   >
-                    <el-button  size="mini" @click="removeGoods(goods)">删除</el-button>
-                </el-form-item>
+                    ]" size="mini">
+            <!-- <el-input v-model.number="goods.amount" placeholder="数量" ></el-input> -->
+            <el-input-number style="width:100px" v-model.number="goods.amount" :min="0" placeholder="价格" :max="goods.oldAmount"></el-input-number>
           </el-form-item>
+          <el-form-item style="display:inline-block;width:100px;margin-bottom:5px;" :prop="'goodsList.' + index + '.price'" :rules="[
+                    { required: true, message: '必填项'},
+                    { validator:$validate.validateMoney, trigger: 'blur'}]" size="mini">
+            <!-- <el-input v-model.number="goods.price" placeholder="费用"  ></el-input> -->
+            <el-input-number style="width:100px" v-model.number="goods.price" :min="0" placeholder="价格"></el-input-number>
+          </el-form-item>
+          <el-form-item style="display:inline-block;width:100px;margin-bottom:5px;" :prop="'goodsList.' + index + '.totalPrice'" :rules="[
+                    { required: true, message: '必填项'},
+                    { type: 'number', message: '必须为数字值'}]" size="mini">
+            <el-input placeholder="金额" disabled v-model="goods.totalPrice"></el-input>
+          </el-form-item>
+          <el-form-item style="display:inline-block;width:100px;margin-bottom:5px;">
+            <el-button size="mini" @click="removeGoods(goods)">删除</el-button>
+          </el-form-item>
+        </el-form-item>
       </el-form>
-        <div slot="footer" class="dialog-footer">
-            <el-button @click="dialogFormVisible = false">取 消</el-button>
-            <el-button :loading="loadingForm" type="primary" @click="submitForm('ruleForm')">保 存</el-button>
-        </div>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button :loading="loadingForm" type="primary" @click="submitForm('ruleForm')">保 存</el-button>
+      </div>
     </el-dialog>
   </div>
 
@@ -185,19 +156,19 @@ export default {
       queryForm: {
         name: "",
         schoolZoneId2: [],
-        theType:6//调拨
+        theType: 6//调拨
       },
       parameterValue: [],
       form: {
         //表单 v-modle绑定的值
-        schoolZoneId:"",
-        schoolName:"",
+        schoolZoneId: "",
+        schoolName: "",
         amount: "",
         createTime: new Date(),
         goodsList: []//进货列表
 
       },
-      selectedGoods:[],//选择物品
+      selectedGoods: [],//选择物品
       formLabelWidth: "120px",
       loading: false,
       loadingForm: false,
@@ -283,13 +254,13 @@ export default {
         if (valid) {
           self.loadingForm = true;
           let goodsJson = JSON.stringify(self.form);
-          createGoodsRecord({goodsRecordJson:goodsJson}).then(data => {
+          createGoodsRecord({ goodsRecordJson: goodsJson }).then(data => {
             self.dialogFormVisible = false;
             self.loadingForm = false;
-            if(data.code==200){
+            if (data.code == 200) {
               self.$message.success(data.message);
               self.$refs[formName].resetFields();
-              self.form.goodsList =[];
+              self.form.goodsList = [];
               self.getData();
             } else {
               self.$message.error(data.message);
@@ -347,17 +318,17 @@ export default {
             price: item.price,
             amount: 1,
             totalPrice: item.price,
-            theType:6,
+            theType: 6,
             schoolZoneId2: [],
             oldAmount: item.lastAmount,
-            schoolName:item.schoolName,
+            schoolName: item.schoolName,
             goodsId: item.id,
             goodsName: item.name
           })
-          self.selectedGoods = [];
+        self.selectedGoods = [];
       });
     },
-    filterTotalPrice(value,row){
+    filterTotalPrice(value, row) {
       value.totalPrice = value.amount.mul(value.price);
       row.tag = value.totalPrice;
       return row.tag;

@@ -1,22 +1,20 @@
 <template>
-    <div>
-        <div style="margin-bottom: 5px;">
-            <el-breadcrumb separator-class="el-icon-arrow-right">
-                <el-breadcrumb-item   v-for="(item,index) in levelList" :key="item.id">
-                    <span v-if='index==levelList.length-1' class="redirect" @click="reload(index)">{{item.name}}</span>
-                    <span v-else class="no-redirect">{{item.name}}</span>
-                </el-breadcrumb-item>
-            </el-breadcrumb>
-        </div>
-        <div class="sidebar">
-            <router-link style="margin-left: 5px;cursor: pointer;" tag="span" v-for="item in visitedViews" :to="item.path" :key="item.id">
-               <el-tag size="mini" disable-transitions :style="visitedViewsCurrent.path==item.path?'color:#f5f7fa':'color:#2d2f33'" :key="item.id"
-                :color="visitedViewsCurrent.path==item.path?'#67c23a':''" @close.stop="closeTag(item.path,$event)"
-                closable>{{item.name}}
-              </el-tag>
-            </router-link>
-        </div>
+  <div>
+    <div style="margin-bottom: 5px;">
+      <el-breadcrumb separator-class="el-icon-arrow-right">
+        <el-breadcrumb-item v-for="(item,index) in levelList" :key="item.id">
+          <span v-if='index==levelList.length-1' class="redirect" @click="reload(index)">{{item.name}}</span>
+          <span v-else class="no-redirect">{{item.name}}</span>
+        </el-breadcrumb-item>
+      </el-breadcrumb>
     </div>
+    <div class="sidebar">
+      <router-link style="margin-left: 5px;cursor: pointer;" tag="span" v-for="item in visitedViews" :to="item.path" :key="item.id">
+        <el-tag size="mini" disable-transitions :style="visitedViewsCurrent.path==item.path?'color:#f5f7fa':'color:#2d2f33'" :key="item.id" :color="visitedViewsCurrent.path==item.path?'#67c23a':''" @close.stop="closeTag(item.path,$event)" closable>{{item.name}}
+        </el-tag>
+      </router-link>
+    </div>
+  </div>
 </template>
 <script>
 export default {

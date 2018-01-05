@@ -22,7 +22,7 @@
         <!-- <inventory-adjustment></inventory-adjustment> -->
       </el-tab-pane>
     </el-tabs>
-  <!-- <stock></stock> -->
+    <!-- <stock></stock> -->
     <component :is="tableName" transition="bounce" transition-mode="out-in"></component>
   </div>
 </template>
@@ -37,18 +37,18 @@ import Receive from "./Receive.vue";
 import InventoryAdjustment from "./InventoryAdjustment.vue";
 
 export default {
-  data(){
+  data() {
     return {
-      tableName:"stock"
+      tableName: "stock"
     }
   },
-  methods:{
-    handleTabClick(element){
-      this.tableName=element.name;
+  methods: {
+    handleTabClick(element) {
+      this.tableName = element.name;
       // console.log(element);
     }
   },
-  components: { Stock,Refund,Sale,Library,Receive,Allocate,InventoryAdjustment,} //注入组件
+  components: { Stock, Refund, Sale, Library, Receive, Allocate, InventoryAdjustment, } //注入组件
 };
 </script>
 

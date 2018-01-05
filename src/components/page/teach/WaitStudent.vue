@@ -1,47 +1,35 @@
 <template>
   <div class="table">
     <div class="handle-box">
-        <el-form ref="queryForm" :inline="true" :model="queryForm" label-width="80px" size="mini">
-            <el-form-item>
-                <el-input v-model="queryForm.name" clearable placeholder="姓名/拼音/电话"
-                          class="handle-input mr10"></el-input>
-            </el-form-item>
-             <el-form-item>
-              <course-dialog v-model="queryForm.courseId"></course-dialog>
-            </el-form-item>
-            <el-form-item>
-                <school-tree :is-show-checkbox=true @handleCheckChange="handleCheckChange" :the-type="2"
-                              place-text="校区"></school-tree>
-            </el-form-item>
+      <el-form ref="queryForm" :inline="true" :model="queryForm" label-width="80px" size="mini">
+        <el-form-item>
+          <el-input v-model="queryForm.name" clearable placeholder="姓名/拼音/电话" class="handle-input mr10"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <course-dialog v-model="queryForm.courseId"></course-dialog>
+        </el-form-item>
+        <el-form-item>
+          <school-tree :is-show-checkbox=true @handleCheckChange="handleCheckChange" :the-type="2" place-text="校区"></school-tree>
+        </el-form-item>
 
-            <el-button type="mini" icon="el-icon-search" @click="search('queryForm')">搜索</el-button>
-        </el-form>
+        <el-button type="mini" icon="el-icon-search" @click="search('queryForm')">搜索</el-button>
+      </el-form>
     </div>
     <div style="margin:5px;">
-        <el-button type="primary" icon="el-icon-edit" size="mini" @click="dialogFormVisible=true">分班</el-button>
-        <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
+      <el-button type="primary" icon="el-icon-edit" size="mini" @click="dialogFormVisible=true">分班</el-button>
+      <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
     </div>
-    <el-table
-        :data="tableData" stripe v-loading="loading" :row-class-name="tableRowClassName" border
-        style="width: 100%">
-        <el-table-column
-            label="姓名" prop="studentName">
-        </el-table-column>
-        <el-table-column
-            label="校区"
-            prop="schoolName">
-        </el-table-column>
-        <el-table-column
-            label="课程"
-            prop="courseName">
-        </el-table-column>
-        <el-table-column
-            label="报名时间" sortable
-            prop="createTime">
-        </el-table-column>
+    <el-table :data="tableData" stripe v-loading="loading" :row-class-name="tableRowClassName" border style="width: 100%">
+      <el-table-column label="姓名" prop="studentName">
+      </el-table-column>
+      <el-table-column label="校区" prop="schoolName">
+      </el-table-column>
+      <el-table-column label="课程" prop="courseName">
+      </el-table-column>
+      <el-table-column label="报名时间" sortable prop="createTime">
+      </el-table-column>
 
-
-        <!-- <el-table-column label="操作">
+      <!-- <el-table-column label="操作">
         <template slot-scope="scope">
             <el-button
             size="mini"
@@ -54,14 +42,8 @@
         </el-table-column> -->
     </el-table>
     <div class="pagination">
-        <el-pagination
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-            :page-sizes="[20, 50, 100, 200]"
-            :page-size="page_size"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="total">
-        </el-pagination>
+      <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[20, 50, 100, 200]" :page-size="page_size" layout="total, sizes, prev, pager, next, jumper" :total="total">
+      </el-pagination>
     </div>
   </div>
 </template>
@@ -91,7 +73,7 @@ export default {
       queryForm: {
         name: "",
         schoolZoneId2: [],
-        courseId:""
+        courseId: ""
       },
       parameterValue: [],
       form: {

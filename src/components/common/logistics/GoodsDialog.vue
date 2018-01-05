@@ -1,66 +1,44 @@
 <template>
-	<div>
-		<el-input ref="text1" v-if="buttonType==1"
-			:placeholder="placeholderText"
-			v-model="userInput" readonly="">
-			<i slot="suffix"  style="cursor: pointer;" class="el-input__icon el-icon-more"
-			@click="handleOpenDialog"></i>
-		</el-input>
-		<el-button v-if="buttonType==2" :type="type" :icon="icon" :size="size"  @click="handleOpenDialog">{{placeholderText}}</el-button>
-		<el-dialog :title="title"  :visible.sync="dialogTableVisible" v-drag=""
-			 :modal-append-to-body=false append-to-body :close-on-click-modal=false>
-			<div class="table">
-				<div class="handle-box">
-					<el-form ref="queryForm" :inline="true" :model="queryForm" label-width="80px" size="mini">
-						<el-form-item  >
-							<el-input v-model="queryForm.name" clearable  placeholder="物品名称"
-							class="handle-input mr10"></el-input>
-						</el-form-item>
-						<el-form-item>
-                    <el-select v-model="queryForm.clazzId" clearable style="width:100%" placeholder="类别">
-                        <el-option v-for="(item,index) in parameterValue" :key="item.id" :label="item.name"
-                                   :value="item.id"></el-option>
-                    </el-select>
-                </el-form-item>
-						<!-- <el-form-item >
+  <div>
+    <el-input ref="text1" v-if="buttonType==1" :placeholder="placeholderText" v-model="userInput" readonly="">
+      <i slot="suffix" style="cursor: pointer;" class="el-input__icon el-icon-more" @click="handleOpenDialog"></i>
+    </el-input>
+    <el-button v-if="buttonType==2" :type="type" :icon="icon" :size="size" @click="handleOpenDialog">{{placeholderText}}</el-button>
+    <el-dialog :title="title" :visible.sync="dialogTableVisible" v-drag="" :modal-append-to-body=false append-to-body :close-on-click-modal=false>
+      <div class="table">
+        <div class="handle-box">
+          <el-form ref="queryForm" :inline="true" :model="queryForm" label-width="80px" size="mini">
+            <el-form-item>
+              <el-input v-model="queryForm.name" clearable placeholder="物品名称" class="handle-input mr10"></el-input>
+            </el-form-item>
+            <el-form-item>
+              <el-select v-model="queryForm.clazzId" clearable style="width:100%" placeholder="类别">
+                <el-option v-for="(item,index) in parameterValue" :key="item.id" :label="item.name" :value="item.id"></el-option>
+              </el-select>
+            </el-form-item>
+            <!-- <el-form-item >
 						<school-tree  :is-show-checkbox=true @handleCheckChange ="handleCheckChange"></school-tree>
 						</el-form-item> -->
 
-						<el-button type="mini" icon="el-icon-search" @click="search('queryForm')">搜索</el-button>
-					</el-form>
-				</div>
-				<el-table
-            :data="tableData" stripe v-loading="loading" border @row-click="handleRowClick"
-            style="width: 100%">
-            <el-table-column
-                label="物品"
-                prop="name">
-            </el-table-column>
-            <el-table-column
-                label="成本价" sortable
-                prop="price">
-            </el-table-column>
-            <el-table-column
-                label="售价" sortable
-                prop="sellPrice">
-            </el-table-column>
-            <el-table-column
-                label="类别"
-                prop="clazzId">
-            </el-table-column>
-            <el-table-column
-                label="库存"
-                prop="lastAmount">
-            </el-table-column>
-            <el-table-column
-                label="创建时间" sortable
-                prop="createTime">
-            </el-table-column>
-            <el-table-column
-                label="状态" :formatter="filterType"
-                prop="theType">
-            </el-table-column>
-            <!-- <el-table-column label="操作">
+            <el-button type="mini" icon="el-icon-search" @click="search('queryForm')">搜索</el-button>
+          </el-form>
+        </div>
+        <el-table :data="tableData" stripe v-loading="loading" border @row-click="handleRowClick" style="width: 100%">
+          <el-table-column label="物品" prop="name">
+          </el-table-column>
+          <el-table-column label="成本价" sortable prop="price">
+          </el-table-column>
+          <el-table-column label="售价" sortable prop="sellPrice">
+          </el-table-column>
+          <el-table-column label="类别" prop="clazzId">
+          </el-table-column>
+          <el-table-column label="库存" prop="lastAmount">
+          </el-table-column>
+          <el-table-column label="创建时间" sortable prop="createTime">
+          </el-table-column>
+          <el-table-column label="状态" :formatter="filterType" prop="theType">
+          </el-table-column>
+          <!-- <el-table-column label="操作">
             <template slot-scope="scope">
                 <el-button
                 size="mini"
@@ -72,39 +50,31 @@
             </template>
             </el-table-column> -->
         </el-table>
-				<div class="pagination">
-					<el-pagination
-						@size-change="handleSizeChange"
-						@current-change ="handleCurrentChange"
-						:page-sizes="[20, 50, 100, 200]"
-						:page-size="page_size"
-						layout="total,prev, pager, next, jumper"
-						:total="total">
-					</el-pagination>
-				</div>
-				<div style=" overflow: hidden;">
-					<div style="float: left;" v-if="selectedType==1">
-					已选择：<el-input size="small" style="width:70%;"
-								v-model="userInput" disabled>
-							</el-input >
+        <div class="pagination">
+          <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[20, 50, 100, 200]" :page-size="page_size" layout="total,prev, pager, next, jumper" :total="total">
+          </el-pagination>
+        </div>
+        <div style=" overflow: hidden;">
+          <div style="float: left;" v-if="selectedType==1">
+            已选择：
+            <el-input size="small" style="width:70%;" v-model="userInput" disabled>
+            </el-input>
 
-					</div>
-					<div style="float: left;" v-else>
-						 已选择：<el-tag size="mini" style="margin-right:3px"
-							v-for="tag in userId"
-							:key="tag.id" @close="handleTagClose(tag)"
-							closable>
-							{{tag.name}}
-							</el-tag>
-						</div>
-					<div style="float: right;">
-						<el-button size="small" @click="userInput='';userId='';dialogTableVisible=false">取消</el-button>
-						<el-button size="small" type="primary"  @click="handleOK">确定</el-button>
-					</div>
-				</div>
-			</div>
-		</el-dialog>
-	</div>
+          </div>
+          <div style="float: left;" v-else>
+            已选择：
+            <el-tag size="mini" style="margin-right:3px" v-for="tag in userId" :key="tag.id" @close="handleTagClose(tag)" closable>
+              {{tag.name}}
+            </el-tag>
+          </div>
+          <div style="float: right;">
+            <el-button size="small" @click="userInput='';userId='';dialogTableVisible=false">取消</el-button>
+            <el-button size="small" type="primary" @click="handleOK">确定</el-button>
+          </div>
+        </div>
+      </div>
+    </el-dialog>
+  </div>
 </template>
 <style>
 .el-input.is-disabled .el-input__inner {

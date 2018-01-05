@@ -1,51 +1,45 @@
 <template>
-    <div class="table">
-        <div class="handle-box">
-            <el-form ref="queryForm" :inline="true" :model="queryForm" label-width="80px" size="mini">
-                <el-form-item  >
-                    <el-input v-model="queryForm.userName" clearable  placeholder="用户名" class="handle-input mr10"></el-input>
-                </el-form-item>
-                <el-form-item >
-                    <el-select v-model="queryForm.theType"   value=1 clearable placeholder="操作类型" class="handle-select mr10" >
-                        <el-option  label="增加" value="1"></el-option>
-                        <el-option  label="删除" value="2"></el-option>
-                        <el-option  label="修改" value="3"></el-option>
-                    </el-select>
-                </el-form-item>
-                 <el-form-item >
-                    <date-range startPlaceholder="操作日期" v-model="queryForm.theDate" endPlaceholder="操作日期" ></date-range>
-                 </el-form-item>
-                <el-form-item >
-                   <school-tree  :is-show-checkbox=true @handleCheckChange ="handleCheckChange"></school-tree>
-                </el-form-item>
-                <el-button type="mini" icon="el-icon-search" @click="search('queryForm')">搜索</el-button>
-            </el-form>
-        </div>
-        <el-table :data="tableData"  v-loading="loading" :row-class-name="tableRowClassName" border stripe style="width: 100%" >
-            <el-table-column prop="user.name" label="用户名" sortable >
-            </el-table-column>
-            <el-table-column prop="schoolZone.name" label="操作校区" >
-            </el-table-column>
-            <el-table-column prop="theType" label="操作" :formatter="filterType">
-            </el-table-column>
-            <el-table-column prop="title" sortable label="标题" >
-            </el-table-column>
-            <el-table-column prop="content"  label="内容" width="150">
-            </el-table-column>
-            <el-table-column prop="createTime" sortable label="操作时间" >
-            </el-table-column>
-        </el-table>
-        <div class="pagination">
-            <el-pagination
-                @size-change="handleSizeChange"
-                @current-change ="handleCurrentChange"
-                :page-sizes="[20, 50, 100, 200]"
-                :page-size="page_size"
-                layout="total, sizes, prev, pager, next, jumper"
-                :total="total">
-            </el-pagination>
-        </div>
+  <div class="table">
+    <div class="handle-box">
+      <el-form ref="queryForm" :inline="true" :model="queryForm" label-width="80px" size="mini">
+        <el-form-item>
+          <el-input v-model="queryForm.userName" clearable placeholder="用户名" class="handle-input mr10"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-select v-model="queryForm.theType" value=1 clearable placeholder="操作类型" class="handle-select mr10">
+            <el-option label="增加" value="1"></el-option>
+            <el-option label="删除" value="2"></el-option>
+            <el-option label="修改" value="3"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <date-range startPlaceholder="操作日期" v-model="queryForm.theDate" endPlaceholder="操作日期"></date-range>
+        </el-form-item>
+        <el-form-item>
+          <school-tree :is-show-checkbox=true @handleCheckChange="handleCheckChange"></school-tree>
+        </el-form-item>
+        <el-button type="mini" icon="el-icon-search" @click="search('queryForm')">搜索</el-button>
+      </el-form>
     </div>
+    <el-table :data="tableData" v-loading="loading" :row-class-name="tableRowClassName" border stripe style="width: 100%">
+      <el-table-column prop="user.name" label="用户名" sortable>
+      </el-table-column>
+      <el-table-column prop="schoolZone.name" label="操作校区">
+      </el-table-column>
+      <el-table-column prop="theType" label="操作" :formatter="filterType">
+      </el-table-column>
+      <el-table-column prop="title" sortable label="标题">
+      </el-table-column>
+      <el-table-column prop="content" label="内容" width="150">
+      </el-table-column>
+      <el-table-column prop="createTime" sortable label="操作时间">
+      </el-table-column>
+    </el-table>
+    <div class="pagination">
+      <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[20, 50, 100, 200]" :page-size="page_size" layout="total, sizes, prev, pager, next, jumper" :total="total">
+      </el-pagination>
+    </div>
+  </div>
 </template>
 
 <script>

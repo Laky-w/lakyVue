@@ -1,54 +1,36 @@
 <template>
-    <div class="table">
-        <div class="handle-box">
-            <el-form ref="queryForm" :inline="true" :model="queryForm" label-width="80px" size="mini">
-                <el-form-item  >
-                    <el-input v-model="queryForm.goodsName" clearable  placeholder="物品"
-                    class="handle-input mr10"></el-input>
-                </el-form-item>
-                <el-form-item>
-                    <school-tree :is-show-checkbox=true @handleCheckChange="handleCheckChange" :the-type="2"
-                                 place-text="校区"></school-tree>
-                </el-form-item>
-                <el-button type="mini" icon="el-icon-search" @click="search('queryForm')">搜索</el-button>
-            </el-form>
-        </div>
-        <div style="margin:5px;">
-            <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
-        </div>
-        <el-table
-            :data="tableData" stripe v-loading="loading" border show-summary
-            style="width: 100%">
-            <el-table-column
-            label="校区"
-            prop="schoolZoneId">
-            </el-table-column>
-            <el-table-column
-            label="物品" prop="goodsName" >
-            </el-table-column>
-            <el-table-column
-            label="类别" prop="clazzName" >
-            </el-table-column>
-            <el-table-column
-            label="剩余数量"
-            prop="lastAmount" >
-            </el-table-column>
-            <el-table-column
-            label="消耗数量"
-            prop="consumeAmount" >
-            </el-table-column>
-        </el-table>
-        <div class="pagination">
-          <el-pagination
-                @size-change="handleSizeChange"
-                @current-change ="handleCurrentChange"
-                :page-sizes="[20, 50, 100, 200]"
-                :page-size="page_size"
-                layout="total, sizes, prev, pager, next, jumper"
-                :total="total">
-            </el-pagination>
-        </div>
+  <div class="table">
+    <div class="handle-box">
+      <el-form ref="queryForm" :inline="true" :model="queryForm" label-width="80px" size="mini">
+        <el-form-item>
+          <el-input v-model="queryForm.goodsName" clearable placeholder="物品" class="handle-input mr10"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <school-tree :is-show-checkbox=true @handleCheckChange="handleCheckChange" :the-type="2" place-text="校区"></school-tree>
+        </el-form-item>
+        <el-button type="mini" icon="el-icon-search" @click="search('queryForm')">搜索</el-button>
+      </el-form>
     </div>
+    <div style="margin:5px;">
+      <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
+    </div>
+    <el-table :data="tableData" stripe v-loading="loading" border show-summary style="width: 100%">
+      <el-table-column label="校区" prop="schoolZoneId">
+      </el-table-column>
+      <el-table-column label="物品" prop="goodsName">
+      </el-table-column>
+      <el-table-column label="类别" prop="clazzName">
+      </el-table-column>
+      <el-table-column label="剩余数量" prop="lastAmount">
+      </el-table-column>
+      <el-table-column label="消耗数量" prop="consumeAmount">
+      </el-table-column>
+    </el-table>
+    <div class="pagination">
+      <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[20, 50, 100, 200]" :page-size="page_size" layout="total, sizes, prev, pager, next, jumper" :total="total">
+      </el-pagination>
+    </div>
+  </div>
 
 </template>
 // =========================================

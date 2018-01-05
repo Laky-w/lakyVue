@@ -4,78 +4,60 @@
       <el-form-item label="班级" :label-width="formLabelWidth" required>
         {{form.className}}
       </el-form-item>
-      <el-form-item label="任课老师" :label-width="formLabelWidth" prop="teacherId"
-                    :rules="[{ required: true, message: '任课老师必填'}]">
-          <user-dialog v-model="form.teacherId" title="选择任课老师"
-                        :the-type="3" :parent-school-id="form.schoolZoneId"
-                        placeholder-text="任课老师" :default-text="form.teacherName"/>
+      <el-form-item label="任课老师" :label-width="formLabelWidth" prop="teacherId" :rules="[{ required: true, message: '任课老师必填'}]">
+        <user-dialog v-model="form.teacherId" title="选择任课老师" :the-type="3" :parent-school-id="form.schoolZoneId" placeholder-text="任课老师" :default-text="form.teacherName" />
       </el-form-item>
-      <el-form-item label="助教" :label-width="formLabelWidth" >
-          <user-dialog v-model="form.helpTeacherId" title="选择助教" :selected-type="2"
-                        :the-type="3" :parent-school-id="form.schoolZoneId"
-                        placeholder-text="助教老师"/>
+      <el-form-item label="助教" :label-width="formLabelWidth">
+        <user-dialog v-model="form.helpTeacherId" title="选择助教" :selected-type="2" :the-type="3" :parent-school-id="form.schoolZoneId" placeholder-text="助教老师" />
       </el-form-item>
-      <el-form-item label="教室" :label-width="formLabelWidth" prop="roomId"  :rules="[{ required: true, message: '教室必填'}]">
-         <room-dialog v-model="form.roomId" :default-text="form.roomName"/>
+      <el-form-item label="教室" :label-width="formLabelWidth" prop="roomId" :rules="[{ required: true, message: '教室必填'}]">
+        <room-dialog v-model="form.roomId" :default-text="form.roomName" />
       </el-form-item>
-      <el-form-item label="排课日期" :label-width="formLabelWidth" prop="scheduleDate"  :rules="[{ required: true, message: '排课日期必填'}]">
-        <el-date-picker
-          v-model="form.scheduleDate"
-          type="daterange" format="yyyy-MM-dd"
-          range-separator="至"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期">
+      <el-form-item label="排课日期" :label-width="formLabelWidth" prop="scheduleDate" :rules="[{ required: true, message: '排课日期必填'}]">
+        <el-date-picker v-model="form.scheduleDate" type="daterange" format="yyyy-MM-dd" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="排课次数" :label-width="formLabelWidth" prop="maxCount">
-          <el-input-number style="width:100%" v-model="form.maxCount"  :min="0" />
+        <el-input-number style="width:100%" v-model="form.maxCount" :min="0" />
       </el-form-item>
-      <el-form-item label="上课时间" :label-width="formLabelWidth" prop="startDate"  >
-        <el-table
-            :data="form.classTimes" stripe  border empty-text="请选择上课时间"
-            style="width: 100%" class="scheduleTable">
-           <el-table-column label="星期" >
-              <template slot-scope="scope">
-                <el-form-item  size="mini" :prop="'classTimes.' + scope.$index + '.weekDay'" :rules="[{ required: true, message: '该项必填'}]">
-                  <el-select v-model="scope.row.weekDay"   placeholder="星期" class="handle-select" >
-                    <el-option v-for="item in weeks" :key="item.id" :label="item.label" :value="item.id"></el-option>
-                  </el-select>
-                </el-form-item>
-              </template>
-            </el-table-column>
-            <el-table-column label="上课时间" >
-              <template slot-scope="scope">
-                <el-form-item  size="mini" :prop="'classTimes.' + scope.$index + '.classTime'" :rules="[{ required: true, message: '该项必填'}]" >
-                  <el-time-picker
-                    is-range
-                    v-model="scope.row.classTime"
-                    range-separator="至"
-                    start-placeholder="开始时间"
-                    end-placeholder="结束时间"
-                    placeholder="选择上课时间">
-                  </el-time-picker>
-                </el-form-item>
-              </template>
-            </el-table-column>
-             <el-table-column label="课时" >
-              <template slot-scope="scope">
-                <el-form-item  size="mini" :prop="'classTimes.' + scope.$index + '.courseHour'" :rules="[{ required: true, message: '该项必填'}]">
-                  <el-input-number style="width:100%" v-model="scope.row.courseHour"  :min="0" />
-                </el-form-item>
-              </template>
-            </el-table-column>
+      <el-form-item label="上课时间" :label-width="formLabelWidth" prop="startDate">
+        <el-table :data="form.classTimes" stripe border empty-text="请选择上课时间" style="width: 100%" class="scheduleTable">
+          <el-table-column label="星期">
+            <template slot-scope="scope">
+              <el-form-item size="mini" :prop="'classTimes.' + scope.$index + '.weekDay'" :rules="[{ required: true, message: '该项必填'}]">
+                <el-select v-model="scope.row.weekDay" placeholder="星期" class="handle-select">
+                  <el-option v-for="item in weeks" :key="item.id" :label="item.label" :value="item.id"></el-option>
+                </el-select>
+              </el-form-item>
+            </template>
+          </el-table-column>
+          <el-table-column label="上课时间">
+            <template slot-scope="scope">
+              <el-form-item size="mini" :prop="'classTimes.' + scope.$index + '.classTime'" :rules="[{ required: true, message: '该项必填'}]">
+                <el-time-picker is-range v-model="scope.row.classTime" range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间" placeholder="选择上课时间">
+                </el-time-picker>
+              </el-form-item>
+            </template>
+          </el-table-column>
+          <el-table-column label="课时">
+            <template slot-scope="scope">
+              <el-form-item size="mini" :prop="'classTimes.' + scope.$index + '.courseHour'" :rules="[{ required: true, message: '该项必填'}]">
+                <el-input-number style="width:100%" v-model="scope.row.courseHour" :min="0" />
+              </el-form-item>
+            </template>
+          </el-table-column>
         </el-table>
         <el-form-item style="margin-top:10px">
-           <el-button type="success" @click="dialogVisible=true">添加上课时间</el-button>
+          <el-button type="success" @click="dialogVisible=true">添加上课时间</el-button>
         </el-form-item>
       </el-form-item>
     </el-form>
     <el-dialog title="选择日期" :visible.sync="dialogVisible" :close-on-click-modal="false" :append-to-body="true">
       <el-form :model="weekForm" ref="weekForm">
-        <el-card >
-          <div slot="header" >
+        <el-card>
+          <div slot="header">
             <el-checkbox v-model="workDay" @change="handleChangeWorkDay">工作日</el-checkbox>
-            <el-checkbox v-model="restDay" @change="handleChangeRestDay">周  末</el-checkbox>
+            <el-checkbox v-model="restDay" @change="handleChangeRestDay">周 末</el-checkbox>
           </div>
           <el-form-item prop="checkedDay" :rules="[{ required: true, message: '该项必填'}]">
             <el-checkbox-group v-model="weekForm.checkedDay">
@@ -83,43 +65,31 @@
             </el-checkbox-group>
           </el-form-item>
         </el-card>
-        <el-card >
-          <div slot="header" >
+        <el-card>
+          <div slot="header">
 
             <el-form-item label="常用时间段" :label-width="formLabelWidth" style="margin-bottom:0px">
               <el-select v-model="weekForm.schoolTime" placeholder="请选择" size="mini" @change="handleChangeSchoolTime">
-                <el-option
-                    v-for="item in schoolTimes"
-                    :key="item.id"
-                    :label="item.name"
-                    :value="item.id">
-                    <span style="float: left">{{ item.name }}</span>
-                    <span style="float: right; color: #8492a6; font-size: 13px">{{ item.startTime }}--{{ item.endTime }}</span>
+                <el-option v-for="item in schoolTimes" :key="item.id" :label="item.name" :value="item.id">
+                  <span style="float: left">{{ item.name }}</span>
+                  <span style="float: right; color: #8492a6; font-size: 13px">{{ item.startTime }}--{{ item.endTime }}</span>
                 </el-option>
               </el-select>
             </el-form-item>
           </div>
-          <el-table
-            :data="weekForm.classTimes" stripe  border empty-text="请选择上课时间"
-            style="width: 100%" class="scheduleTable">
-            <el-table-column label="上课时间" >
+          <el-table :data="weekForm.classTimes" stripe border empty-text="请选择上课时间" style="width: 100%" class="scheduleTable">
+            <el-table-column label="上课时间">
               <template slot-scope="scope">
-                <el-form-item  size="mini" :prop="'classTimes.' + scope.$index + '.classTime'" :rules="[{ required: true, message: '该项必填'}]" >
-                  <el-time-picker
-                    is-range
-                    v-model="scope.row.classTime"
-                    range-separator="至"
-                    start-placeholder="开始时间"
-                    end-placeholder="结束时间"
-                    placeholder="选择上课时间">
+                <el-form-item size="mini" :prop="'classTimes.' + scope.$index + '.classTime'" :rules="[{ required: true, message: '该项必填'}]">
+                  <el-time-picker is-range v-model="scope.row.classTime" range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间" placeholder="选择上课时间">
                   </el-time-picker>
                 </el-form-item>
               </template>
             </el-table-column>
-             <el-table-column label="课时" >
+            <el-table-column label="课时">
               <template slot-scope="scope">
-                <el-form-item  size="mini" :prop="'classTimes.' + scope.$index + '.courseHour'" :rules="[{ required: true, message: '该项必填'}]">
-                  <el-input-number style="width:100%" v-model="scope.row.courseHour"  :min="0" />
+                <el-form-item size="mini" :prop="'classTimes.' + scope.$index + '.courseHour'" :rules="[{ required: true, message: '该项必填'}]">
+                  <el-input-number style="width:100%" v-model="scope.row.courseHour" :min="0" />
                 </el-form-item>
               </template>
             </el-table-column>
@@ -128,7 +98,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible=false;">取 消</el-button>
-        <el-button  type="primary" @click="handleClickTimeOk">确 定</el-button>
+        <el-button type="primary" @click="handleClickTimeOk">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -144,7 +114,7 @@ import SchoolTree from "../../common/system/SchoolTree.vue";
 import UserDialog from "../../common/system/UserDialog.vue";
 import Course from "../../common/teach/Course.vue";
 import RoomDialog from "../../common/teach/RoomDialog.vue";
-import { createScheduleStandard,getScheduleStandard } from "../../api/api";
+import { createScheduleStandard, getScheduleStandard } from "../../api/api";
 export default {
   data() {
     return {
@@ -255,7 +225,7 @@ export default {
       let self = this;
       self.$refs["ruleForm"].validate(valid => {
         if (valid) {
-          createScheduleStandard({scheduleFormStr:JSON.stringify(self.form)}).then(data => {
+          createScheduleStandard({ scheduleFormStr: JSON.stringify(self.form) }).then(data => {
             if (data.code == 200) {
               self.$message.success(data.message);
               self.$refs["ruleForm"].resetFields();

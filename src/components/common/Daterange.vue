@@ -1,10 +1,6 @@
 <template>
-    <el-date-picker v-model="mVal"
-         value-format="yyyy-MM-dd"
-        type="daterange" align="center" unlink-panels range-separator="至"
-        :start-placeholder="startPlaceholder" @change ="handleDateChange"
-        :end-placeholder="endPlaceholder" :picker-options="pickerOptions">
-    </el-date-picker>
+  <el-date-picker v-model="mVal" value-format="yyyy-MM-dd" type="daterange" align="center" unlink-panels range-separator="至" :start-placeholder="startPlaceholder" @change="handleDateChange" :end-placeholder="endPlaceholder" :picker-options="pickerOptions">
+  </el-date-picker>
 </template>
 
 
@@ -51,10 +47,10 @@ export default {
     };
   },
   methods: {
-    handleDateChange: function(val) {
-      if(val){
-        val[0]=val[0]+" 00:00:00";
-        val[1]=val[1]+" 23:59:59";
+    handleDateChange: function (val) {
+      if (val) {
+        val[0] = val[0] + " 00:00:00";
+        val[1] = val[1] + " 23:59:59";
       }
     }
   },

@@ -1,21 +1,21 @@
 <template>
-    <div class="header">
-        <div class="logo">
-          <img src="../../../static/img/logo2.png" :title="branchName" width="80px">
-        </div>
-        <div class="notice"><i class="el-icon-location"></i>公告:{{notice}}</div>
-        <div class="user-info">
-            <el-dropdown trigger="click" @command="handleCommand">
-                <span class="el-dropdown-link">
-                    <img class="user-logo" :src="userHeadLogo" onerror="this.src='../../../static/img/headPhoto.jpg'">
-                    {{username}}
-                </span>
-                <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item command="loginout">退出</el-dropdown-item>
-                </el-dropdown-menu>
-            </el-dropdown>
-        </div>
+  <div class="header">
+    <div class="logo">
+      <img src="../../../static/img/logo2.png" :title="branchName" width="80px">
     </div>
+    <div class="notice">
+      <i class="el-icon-location"></i>公告:{{notice}}</div>
+    <div class="user-info">
+      <el-dropdown trigger="click" @command="handleCommand">
+        <span class="el-dropdown-link">
+          <img class="user-logo" :src="userHeadLogo" onerror="this.src='../../../static/img/headPhoto.jpg'"> {{username}}
+        </span>
+        <el-dropdown-menu slot="dropdown">
+          <el-dropdown-item command="loginout">退出</el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
+    </div>
+  </div>
 </template>
 <script>
 import { findNewNoticeAll, loginOut } from "../api/api";

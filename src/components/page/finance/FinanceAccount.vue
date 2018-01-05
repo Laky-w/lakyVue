@@ -1,56 +1,42 @@
 <template>
-    <div class="table">
-        <div class="handle-box">
-            <el-form ref="queryForm" :inline="true" :model="queryForm" label-width="80px" size="mini">
-                <el-form-item  >
-                    <el-input v-model="queryForm.name" clearable placeholder="账户名称" class="handle-input mr10"></el-input>
-                </el-form-item>
-                <el-form-item >
-                   <school-tree  :is-show-checkbox=true @handleCheckChange ="handleCheckChange" :the-type="2" place-text="校区" ></school-tree>
-                </el-form-item>
-                <el-form-item >
-                   <el-select v-model="queryForm.theType"   value=1 clearable placeholder="账户类型" class="handle-select mr10" >
-                        <el-option  key="1" label="现金账户" value="1"></el-option>
-                        <el-option  key="2" label="银行账户" value="2"></el-option>
-                        <el-option  key="3" label="第三方支付账户" value="3"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-button type="mini" icon="el-icon-search" @click="search('queryForm')">搜索</el-button>
-            </el-form>
-        </div>
-        <div style="margin:5px;">
-          <el-button type="primary" icon="el-icon-edit" size="mini" @click="dialogFormVisible=true">添加账户</el-button>
-          <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
-        </div>
-        <el-table
-            :data="tableData" stripe v-loading="loading" border
-            style="width: 100%">
-            <el-table-column
-            label="账户名称" prop="name" >
-            </el-table-column>
-            <el-table-column
-            label="校区"
-            prop="schoolZoneName" :formatter="filterSchoolZoneName">
-            </el-table-column>
-            <el-table-column
-            label="账户类型" sortable
-            prop="theType" :formatter="filterType">
-            </el-table-column>
+  <div class="table">
+    <div class="handle-box">
+      <el-form ref="queryForm" :inline="true" :model="queryForm" label-width="80px" size="mini">
+        <el-form-item>
+          <el-input v-model="queryForm.name" clearable placeholder="账户名称" class="handle-input mr10"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <school-tree :is-show-checkbox=true @handleCheckChange="handleCheckChange" :the-type="2" place-text="校区"></school-tree>
+        </el-form-item>
+        <el-form-item>
+          <el-select v-model="queryForm.theType" value=1 clearable placeholder="账户类型" class="handle-select mr10">
+            <el-option key="1" label="现金账户" value="1"></el-option>
+            <el-option key="2" label="银行账户" value="2"></el-option>
+            <el-option key="3" label="第三方支付账户" value="3"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-button type="mini" icon="el-icon-search" @click="search('queryForm')">搜索</el-button>
+      </el-form>
+    </div>
+    <div style="margin:5px;">
+      <el-button type="primary" icon="el-icon-edit" size="mini" @click="dialogFormVisible=true">添加账户</el-button>
+      <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
+    </div>
+    <el-table :data="tableData" stripe v-loading="loading" border style="width: 100%">
+      <el-table-column label="账户名称" prop="name">
+      </el-table-column>
+      <el-table-column label="校区" prop="schoolZoneName" :formatter="filterSchoolZoneName">
+      </el-table-column>
+      <el-table-column label="账户类型" sortable prop="theType" :formatter="filterType">
+      </el-table-column>
 
-            <el-table-column
-            label="前台账户"
-            prop="theOpen" :formatter="filterOpen">
-            </el-table-column>
-            <el-table-column
-            sortable
-            label="余额"
-            prop="money">
-            </el-table-column>
-            <el-table-column
-            label="描述"
-            prop="remarks" >
-            </el-table-column>
-            <!-- <el-table-column label="操作">
+      <el-table-column label="前台账户" prop="theOpen" :formatter="filterOpen">
+      </el-table-column>
+      <el-table-column sortable label="余额" prop="money">
+      </el-table-column>
+      <el-table-column label="描述" prop="remarks">
+      </el-table-column>
+      <!-- <el-table-column label="操作">
             <template slot-scope="scope">
                 <el-button
                 size="mini"
@@ -61,64 +47,55 @@
                 @click="handleDelete(scope.$index, scope.row)">删除</el-button>
             </template>
             </el-table-column> -->
-        </el-table>
-        <div class="pagination">
-          <el-pagination
-                @size-change="handleSizeChange"
-                @current-change ="handleCurrentChange"
-                :page-sizes="[20, 50, 100, 200]"
-                :page-size="page_size"
-                layout="total, sizes, prev, pager, next, jumper"
-                :total="total">
-            </el-pagination>
-        </div>
-        <el-dialog title="添加账户" :visible.sync="dialogFormVisible" :close-on-click-modal="false">
-          <el-form :model="form" ref="ruleForm" v-loading="loadingForm" >
-               <el-form-item label="名称" :label-width="formLabelWidth" prop="name"  :rules="[{ required: true, message: '班级名称必填'}]">
-                <el-input v-model="form.name"   placeholder="账户名称"  ></el-input>
-              </el-form-item>
-              <el-form-item label="类型" style="display: inline-block;" :label-width="formLabelWidth" prop="theType"  :rules="[{ required: true, message: '该项必填'}]">
-                <el-select v-model="form.theType"  placeholder="账户类型" >
-                    <el-option  key="1" label="现金账户" value="1"></el-option>
-                    <el-option  key="2" label="银行账户" value="2"></el-option>
-                    <el-option  key="3" label="第三方支付账户" value="3"></el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item label="用于前台收费" style="display:inline-block;" :label-width="formLabelWidth" prop="isOpen">
-                <el-switch
-                    v-model="form.isOpen" >
-                </el-switch>
-              </el-form-item>
-              <el-form-item label="公共账户" style="display:inline-block;" :label-width="formLabelWidth" prop="isPublic">
-                <el-switch
-                    v-model="form.isPublic" >
-                </el-switch>
-              </el-form-item>
-              <el-form-item label="校区" :label-width="formLabelWidth" prop="schoolName"  :rules="[{ required: true, message: '校区必填'}]">
-                <school-tree @nodeClick="handleSchool" :name="form.schoolName" :the-type="2" :disabled="form.isPublic" place-text="校区" :default-value="schoolId"></school-tree>
-              </el-form-item>
-               <el-form-item label="初始金额" :label-width="formLabelWidth" prop="money"
-               :rules="[{validator:$validate.validateMoney, trigger: 'blur'}]">
-               <el-input v-model="form.money"   placeholder="0"  clearable>
-                   <template slot="append">元(￥)</template>
-               </el-input>
-              </el-form-item>
-              <el-form-item label="描述" :label-width="formLabelWidth" prop="remarks">
-                <el-input v-model="form.remarks"   placeholder="描述"  clearable></el-input>
-              </el-form-item>
-          </el-form>
-          <div slot="footer" class="dialog-footer">
-              <el-button @click="dialogFormVisible = false">取 消</el-button>
-              <el-button type="primary" @click="submitForm('ruleForm')">保 存</el-button>
-          </div>
-        </el-dialog>
+    </el-table>
+    <div class="pagination">
+      <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[20, 50, 100, 200]" :page-size="page_size" layout="total, sizes, prev, pager, next, jumper" :total="total">
+      </el-pagination>
     </div>
+    <el-dialog title="添加账户" :visible.sync="dialogFormVisible" :close-on-click-modal="false">
+      <el-form :model="form" ref="ruleForm" v-loading="loadingForm">
+        <el-form-item label="名称" :label-width="formLabelWidth" prop="name" :rules="[{ required: true, message: '班级名称必填'}]">
+          <el-input v-model="form.name" placeholder="账户名称"></el-input>
+        </el-form-item>
+        <el-form-item label="类型" style="display: inline-block;" :label-width="formLabelWidth" prop="theType" :rules="[{ required: true, message: '该项必填'}]">
+          <el-select v-model="form.theType" placeholder="账户类型">
+            <el-option key="1" label="现金账户" value="1"></el-option>
+            <el-option key="2" label="银行账户" value="2"></el-option>
+            <el-option key="3" label="第三方支付账户" value="3"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="用于前台收费" style="display:inline-block;" :label-width="formLabelWidth" prop="isOpen">
+          <el-switch v-model="form.isOpen">
+          </el-switch>
+        </el-form-item>
+        <el-form-item label="公共账户" style="display:inline-block;" :label-width="formLabelWidth" prop="isPublic">
+          <el-switch v-model="form.isPublic">
+          </el-switch>
+        </el-form-item>
+        <el-form-item label="校区" :label-width="formLabelWidth" prop="schoolName" :rules="[{ required: true, message: '校区必填'}]">
+          <school-tree @nodeClick="handleSchool" :name="form.schoolName" :the-type="2" :disabled="form.isPublic" place-text="校区" :default-value="schoolId"></school-tree>
+        </el-form-item>
+        <el-form-item label="初始金额" :label-width="formLabelWidth" prop="money" :rules="[{validator:$validate.validateMoney, trigger: 'blur'}]">
+          <el-input v-model="form.money" placeholder="0" clearable>
+            <template slot="append">元(￥)</template>
+          </el-input>
+        </el-form-item>
+        <el-form-item label="描述" :label-width="formLabelWidth" prop="remarks">
+          <el-input v-model="form.remarks" placeholder="描述" clearable></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="submitForm('ruleForm')">保 存</el-button>
+      </div>
+    </el-dialog>
+  </div>
 </template>
 
 
 <script>
 import SchoolTree from "../../common/system/SchoolTree.vue";
-import { getFinanceAccount,createFinanceAccount } from "../../api/api";
+import { getFinanceAccount, createFinanceAccount } from "../../api/api";
 export default {
   data() {
     return {
@@ -236,7 +213,7 @@ export default {
       this.form.fatherName = row.name;
       this.dialogFormVisible = true;
     },
-    handleDelete(index, row) {},
+    handleDelete(index, row) { },
     handleSchool(data) {
       this.form.schoolName = data.name;
       this.form.schoolZoneId = data.id;

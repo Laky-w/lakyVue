@@ -1,59 +1,48 @@
 <template>
-    <div class="table">
-        <div class="handle-box">
-            <el-form ref="authorityform" :inline="true" :model="authorityform" label-width="80px" size="mini">
-                <el-form-item prop="name" :rules="[{ required: true, message: '名称必填'}]">
-                    <el-input v-model="authorityform.name" clearable
-                              placeholder="职能名称" class="handle-input mr10">
-                    </el-input>
-                </el-form-item>
-                <!-- <el-form-item >
+  <div class="table">
+    <div class="handle-box">
+      <el-form ref="authorityform" :inline="true" :model="authorityform" label-width="80px" size="mini">
+        <el-form-item prop="name" :rules="[{ required: true, message: '名称必填'}]">
+          <el-input v-model="authorityform.name" clearable placeholder="职能名称" class="handle-input mr10">
+          </el-input>
+        </el-form-item>
+        <!-- <el-form-item >
                     <el-select v-model="queryForm.theType"   value=1 clearable placeholder="下级类型" class="handle-select mr10" >
                         <el-option key="1" label="校区" value="1"></el-option>
                         <el-option key="2" label="部门" value="2"></el-option>
                     </el-select>
                 </el-form-item> -->
-            </el-form>
-        </div>
-        <el-table
-            :data="tableData" stripe v-loading="loading"
-            style="width: 100%" :row-style="showTr" border="" :row-class-name="selectTr">
-            <el-table-column fixed="left" width="300px"
-                             label="菜单">
-                <template slot-scope="scope">
-                    <span v-for="(space, levelIndex) in scope.row._level" class="ms-tree-space"></span>
-                    <span style="cursor: pointer;color: #3a8ee6;" v-if="toggleIconShow(scope.row)"
-                          @click="toggle(scope.$index)">
-                <i v-if="!scope.row._expanded" class="el-icon-circle-plus-outline" aria-hidden="true"></i>
-                <i v-if="scope.row._expanded" class="el-icon-remove-outline" aria-hidden="true"></i>
-                </span>
-                    <i :class="scope.row.icon"></i>
-                    {{ scope.row.title }}
-                </template>
-
-            </el-table-column>
-            <el-table-column label="权限">
-                <template slot-scope="scope">
-                    <el-checkbox v-if="scope.row.authoritiyCount>0" v-model="scope.row.checkAll"
-                                 :indeterminate="scope.row.isIndeterminate"
-                                 :true-label="scope.row.id+':true'" :false-label="scope.row.id+':false'"
-                                 @change="handleCheckAllChange">全选
-                    </el-checkbox>
-                    <el-checkbox-group style="display: inline-block;" v-model="scope.row.checkedAuthorities"
-                                       @change="handleCheckedCitiesChange">
-                        <el-checkbox v-for="(item, levelIndex) in scope.row.authorities" :label="item.id"
-                                     :key="item.id">{{item.name}}
-                        </el-checkbox>
-                    </el-checkbox-group>
-                </template>
-            </el-table-column>
-        </el-table>
-        <div
-            style="margin-top: 10px;text-align: right;padding: 5px;position: fixed;bottom: 0px;z-index: 99;width: 90%; background-color: #dfe4ed;">
-            <el-button @click="$router.push('/userRole');">取 消</el-button>
-            <el-button :loading="loadingForm" type="primary" @click="submitForm('authorityform')">保 存</el-button>
-        </div>
+      </el-form>
     </div>
+    <el-table :data="tableData" stripe v-loading="loading" style="width: 100%" :row-style="showTr" border="" :row-class-name="selectTr">
+      <el-table-column fixed="left" width="300px" label="菜单">
+        <template slot-scope="scope">
+          <span v-for="(space, levelIndex) in scope.row._level" class="ms-tree-space"></span>
+          <span style="cursor: pointer;color: #3a8ee6;" v-if="toggleIconShow(scope.row)" @click="toggle(scope.$index)">
+            <i v-if="!scope.row._expanded" class="el-icon-circle-plus-outline" aria-hidden="true"></i>
+            <i v-if="scope.row._expanded" class="el-icon-remove-outline" aria-hidden="true"></i>
+          </span>
+          <i :class="scope.row.icon"></i>
+          {{ scope.row.title }}
+        </template>
+
+      </el-table-column>
+      <el-table-column label="权限">
+        <template slot-scope="scope">
+          <el-checkbox v-if="scope.row.authoritiyCount>0" v-model="scope.row.checkAll" :indeterminate="scope.row.isIndeterminate" :true-label="scope.row.id+':true'" :false-label="scope.row.id+':false'" @change="handleCheckAllChange">全选
+          </el-checkbox>
+          <el-checkbox-group style="display: inline-block;" v-model="scope.row.checkedAuthorities" @change="handleCheckedCitiesChange">
+            <el-checkbox v-for="(item, levelIndex) in scope.row.authorities" :label="item.id" :key="item.id">{{item.name}}
+            </el-checkbox>
+          </el-checkbox-group>
+        </template>
+      </el-table-column>
+    </el-table>
+    <div style="margin-top: 10px;text-align: right;padding: 5px;position: fixed;bottom: 0px;z-index: 99;width: 90%; background-color: #dfe4ed;">
+      <el-button @click="$router.push('/userRole');">取 消</el-button>
+      <el-button :loading="loadingForm" type="primary" @click="submitForm('authorityform')">保 存</el-button>
+    </div>
+  </div>
 </template>
 
 <style>
@@ -83,7 +72,7 @@ table td {
 </style>
 
 <script>
-import { getMenu,createNewRole } from "../../api/api";
+import { getMenu, createNewRole } from "../../api/api";
 export default {
   data() {
     return {
@@ -125,7 +114,7 @@ export default {
     getSubsCheckedCount(id) {
       let self = this;
       let i = 0;
-      Array.from(self.tableData).forEach(function(record) {
+      Array.from(self.tableData).forEach(function (record) {
         if (record.id == id) {
           i += record.checkedAuthorities ? record.checkedAuthorities.length : 0; //选中的权限
         }
@@ -181,7 +170,7 @@ export default {
     parseSchoolTree(data, parent, level, expandedAll) {
       var self = this;
       let tmp = [];
-      Array.from(data).forEach(function(record) {
+      Array.from(data).forEach(function (record) {
         if (record._expanded === undefined) {
           record["_expanded"] = expandedAll;
         }
@@ -214,7 +203,7 @@ export default {
           );
           tmp = tmp.concat(children);
           let authoritiyCount = 0;
-          Array.from(children).forEach(function(node) {
+          Array.from(children).forEach(function (node) {
             authoritiyCount += node.authorities ? node.authorities.length : 0;
           });
           record["authoritiyCount"] += authoritiyCount;
@@ -259,7 +248,7 @@ export default {
       });
     },
     // 展开下级
-    toggle: function(trIndex) {
+    toggle: function (trIndex) {
       let me = this;
       let record = me.tableData[trIndex];
       record._expanded = !record._expanded;
@@ -287,13 +276,13 @@ export default {
       this.form.fatherName = row.name;
       this.dialogFormVisible = true;
     },
-    handleDelete(index, row) {},
+    handleDelete(index, row) { },
     handleCheckAllChange(val) {
       let vals = val.split(":");
       console.log(vals);
       //改变选中值。
       let self = this;
-      Array.from(self.tableData).forEach(function(record) {
+      Array.from(self.tableData).forEach(function (record) {
         if (vals[0] == record.id) {
           let authorities = [];
           // record.checkAll="5:true";
@@ -316,7 +305,7 @@ export default {
     },
     changeSubsChecked(id, flag) {
       let self = this;
-      Array.from(self.tableData).forEach(function(record) {
+      Array.from(self.tableData).forEach(function (record) {
         if (record.parentId == id) {
           //
           let authorities = [];

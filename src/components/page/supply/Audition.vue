@@ -1,55 +1,43 @@
 <template>
-    <div class="table">
-        <div class="handle-box">
-            <el-form ref="queryForm" :inline="true" :model="queryForm" label-width="80px" size="mini">
-                <el-form-item>
-                    <el-input v-model="queryForm.name" clearable placeholder="xx名称"
-                              class="handle-input mr10"></el-input>
-                </el-form-item>
-                <el-form-item>
-                    <el-select v-model="queryForm.theType" clearable placeholder="课程类型" class="handle-select mr10">
-                        <el-option key="1" label="一对一" value="1"></el-option>
-                        <el-option key="2" label="一对多" value="2"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item>
-                    <el-select v-model="queryForm.clazzId" multiple value=1 clearable placeholder="科目"
-                               class="handle-select mr10">
-                        <el-option v-for="(item,index) in parameterValue" :key="item.id" :label="item.name"
-                                   :value="item.id"></el-option>
-                    </el-select>
-                </el-form-item>
-                <!-- <el-form-item >
+  <div class="table">
+    <div class="handle-box">
+      <el-form ref="queryForm" :inline="true" :model="queryForm" label-width="80px" size="mini">
+        <el-form-item>
+          <el-input v-model="queryForm.name" clearable placeholder="xx名称" class="handle-input mr10"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-select v-model="queryForm.theType" clearable placeholder="课程类型" class="handle-select mr10">
+            <el-option key="1" label="一对一" value="1"></el-option>
+            <el-option key="2" label="一对多" value="2"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-select v-model="queryForm.clazzId" multiple value=1 clearable placeholder="科目" class="handle-select mr10">
+            <el-option v-for="(item,index) in parameterValue" :key="item.id" :label="item.name" :value="item.id"></el-option>
+          </el-select>
+        </el-form-item>
+        <!-- <el-form-item >
                    <school-tree  :is-show-checkbox=true @handleCheckChange ="handleCheckChange"></school-tree>
                 </el-form-item> -->
 
-                <el-button type="mini" icon="el-icon-search" @click="search('queryForm')">搜索</el-button>
-            </el-form>
-        </div>
-        <div style="margin:5px;">
-            <el-button type="primary" icon="el-icon-edit" size="mini" @click="dialogFormVisible=true">添加课程</el-button>
-            <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
-        </div>
-        <el-table
-            :data="tableData" stripe v-loading="loading" border
-            style="width: 100%">
-            <el-table-column
-                label="课程" prop="name">
-            </el-table-column>
-            <el-table-column
-                label="科目"
-                prop="clazzName">
-            </el-table-column>
-            <el-table-column
-                label="类型"
-                prop="theType" :formatter="filterTheType">
-            </el-table-column>
-            <el-table-column
-                label="描述"
-                prop="remarks">
-            </el-table-column>
+        <el-button type="mini" icon="el-icon-search" @click="search('queryForm')">搜索</el-button>
+      </el-form>
+    </div>
+    <div style="margin:5px;">
+      <el-button type="primary" icon="el-icon-edit" size="mini" @click="dialogFormVisible=true">添加课程</el-button>
+      <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
+    </div>
+    <el-table :data="tableData" stripe v-loading="loading" border style="width: 100%">
+      <el-table-column label="课程" prop="name">
+      </el-table-column>
+      <el-table-column label="科目" prop="clazzName">
+      </el-table-column>
+      <el-table-column label="类型" prop="theType" :formatter="filterTheType">
+      </el-table-column>
+      <el-table-column label="描述" prop="remarks">
+      </el-table-column>
 
-            <!-- <el-table-column label="操作">
+      <!-- <el-table-column label="操作">
             <template slot-scope="scope">
                 <el-button
                 size="mini"
@@ -60,47 +48,37 @@
                 @click="handleDelete(scope.$index, scope.row)">删除</el-button>
             </template>
             </el-table-column> -->
-        </el-table>
-        <div class="pagination">
-            <el-pagination
-                @size-change="handleSizeChange"
-                @current-change="handleCurrentChange"
-                :page-sizes="[20, 50, 100, 200]"
-                :page-size="page_size"
-                layout="total, sizes, prev, pager, next, jumper"
-                :total="total">
-            </el-pagination>
-        </div>
-        <el-dialog title="新增课程" :visible.sync="dialogFormVisible" :close-on-click-modal=false>
-            <el-form :model="form" ref="ruleForm">
-                <el-form-item label="名称" :label-width="formLabelWidth" prop="name"
-                              :rules="[{ required: true, message: '名称必填'}]">
-                    <el-input v-model="form.name" autofocus placeholder="课程名称" auto-complete="off"></el-input>
-                </el-form-item>
-                <el-form-item label="类型" :label-width="formLabelWidth" prop="theType"
-                              :rules="[{ required: true, message: '类型必填'}]">
-                    <el-select v-model="form.theType" style="width:100%" placeholder="课程类型">
-                        <el-option label="一对一" value="1"></el-option>
-                        <el-option label="一对多" value="2"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="科目" :label-width="formLabelWidth" prop="clazzId"
-                              :rules="[{ required: true, message: '科目必填'}]">
-                    <el-select v-model="form.clazzId" style="width:100%" placeholder="科目">
-                        <el-option v-for="(item,index) in parameterValue" :key="item.id" :label="item.name"
-                                   :value="item.id"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="描述" :label-width="formLabelWidth" prop="remarks">
-                    <el-input v-model="form.remarks" :rows=5 type="textarea" placeholder="请输入描述信息"></el-input>
-                </el-form-item>
-            </el-form>
-            <div slot="footer" class="dialog-footer">
-                <el-button @click="dialogFormVisible = false">取 消</el-button>
-                <el-button :loading="loadingForm" type="primary" @click="submitForm('ruleForm')">保 存</el-button>
-            </div>
-        </el-dialog>
+    </el-table>
+    <div class="pagination">
+      <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[20, 50, 100, 200]" :page-size="page_size" layout="total, sizes, prev, pager, next, jumper" :total="total">
+      </el-pagination>
     </div>
+    <el-dialog title="新增课程" :visible.sync="dialogFormVisible" :close-on-click-modal=false>
+      <el-form :model="form" ref="ruleForm">
+        <el-form-item label="名称" :label-width="formLabelWidth" prop="name" :rules="[{ required: true, message: '名称必填'}]">
+          <el-input v-model="form.name" autofocus placeholder="课程名称" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="类型" :label-width="formLabelWidth" prop="theType" :rules="[{ required: true, message: '类型必填'}]">
+          <el-select v-model="form.theType" style="width:100%" placeholder="课程类型">
+            <el-option label="一对一" value="1"></el-option>
+            <el-option label="一对多" value="2"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="科目" :label-width="formLabelWidth" prop="clazzId" :rules="[{ required: true, message: '科目必填'}]">
+          <el-select v-model="form.clazzId" style="width:100%" placeholder="科目">
+            <el-option v-for="(item,index) in parameterValue" :key="item.id" :label="item.name" :value="item.id"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="描述" :label-width="formLabelWidth" prop="remarks">
+          <el-input v-model="form.remarks" :rows=5 type="textarea" placeholder="请输入描述信息"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button :loading="loadingForm" type="primary" @click="submitForm('ruleForm')">保 存</el-button>
+      </div>
+    </el-dialog>
+  </div>
 </template>
 
 <style scoped>
@@ -268,7 +246,7 @@ export default {
       this.form.fatherName = row.name;
       this.dialogFormVisible = true;
     },
-    handleDelete(index, row) {},
+    handleDelete(index, row) { },
     handleSchool(data) {
       this.form.schoolName = data.name;
       this.form.schoolZoneId = data.id;

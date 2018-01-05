@@ -1,68 +1,48 @@
 <template>
-    <div>
-        <el-input
-            :placeholder="placeholderText"
-            v-model="userInput" readonly="">
-            <i slot="suffix"  style="cursor: pointer;" class="el-input__icon el-icon-more" @click="dialogTableVisible=true"></i>
-        </el-input>
-        <el-dialog :title="title" :visible.sync="dialogTableVisible"
-        :modal-append-to-body=false append-to-body :close-on-click-modal=false>
-            <div class="handle-box">
-                <el-form ref="queryForm" :inline="true" :model="queryForm" label-width="80px" size="mini">
-                    <el-form-item  >
-                        <el-input v-model="queryForm.name" clearable placeholder="教室名称" class="handle-input mr10"></el-input>
-                    </el-form-item>
-                    <el-form-item v-if="isAll">
-                        <school-tree  :is-show-checkbox=true @handleCheckChange ="handleCheckChange"
-                        place-text="校区" the-type="2" :parent-id="parentSchoolId"></school-tree>
-                    </el-form-item>
-                    </el-form-item>
-                    <el-button type="mini" icon="el-icon-search" @click="search('queryForm')">搜索</el-button>
-                </el-form>
-            </div>
-            <el-table
-                :data="tableData" stripe v-loading="loading" border
-                style="width: 100%" @row-click="handleRowClick">
-                <el-table-column
-                label="教室名称" prop="name" >
-                </el-table-column>
-                <el-table-column
-                label="校区" v-if="isAll"
-                prop="schoolZoneName">
-                </el-table-column>
-                <el-table-column
-                sortable
-                label="容纳人数"
-                prop="maxCount">
-                </el-table-column>
-                <el-table-column
-                label="排序" sortable
-                prop="sort">
-                </el-table-column>
-            </el-table>
-            <div class="pagination">
-                <el-pagination
-                        @size-change="handleSizeChange"
-                        @current-change ="handleCurrentChange"
-                        :page-sizes="[20, 50, 100, 200]"
-                        :page-size="page_size"
-                        layout="total, sizes, prev, pager, next, jumper"
-                        :total="total">
-                </el-pagination>
-            </div>
-            <div style=" overflow: hidden;">
-                <div style="float: left;">
-                已选择：<el-input size="small" style="width:70%"
-                            v-model="userInput" disabled>
-                        </el-input>
-                </div>
-                <div style="float: right;">
-                    <el-button size="small" @click="userInput='';userId='';dialogTableVisible=false">取消</el-button>
-                    <el-button size="small" type="primary"  @click="dialogTableVisible=false">确定</el-button>
-                </div>
-            </div>
-        </el-dialog>
-    </div>
+  <div>
+    <el-input :placeholder="placeholderText" v-model="userInput" readonly="">
+      <i slot="suffix" style="cursor: pointer;" class="el-input__icon el-icon-more" @click="dialogTableVisible=true"></i>
+    </el-input>
+    <el-dialog :title="title" :visible.sync="dialogTableVisible" :modal-append-to-body=false append-to-body :close-on-click-modal=false>
+      <div class="handle-box">
+        <el-form ref="queryForm" :inline="true" :model="queryForm" label-width="80px" size="mini">
+          <el-form-item>
+            <el-input v-model="queryForm.name" clearable placeholder="教室名称" class="handle-input mr10"></el-input>
+          </el-form-item>
+          <el-form-item v-if="isAll">
+            <school-tree :is-show-checkbox=true @handleCheckChange="handleCheckChange" place-text="校区" the-type="2" :parent-id="parentSchoolId"></school-tree>
+          </el-form-item>
+          </el-form-item>
+          <el-button type="mini" icon="el-icon-search" @click="search('queryForm')">搜索</el-button>
+        </el-form>
+      </div>
+      <el-table :data="tableData" stripe v-loading="loading" border style="width: 100%" @row-click="handleRowClick">
+        <el-table-column label="教室名称" prop="name">
+        </el-table-column>
+        <el-table-column label="校区" v-if="isAll" prop="schoolZoneName">
+        </el-table-column>
+        <el-table-column sortable label="容纳人数" prop="maxCount">
+        </el-table-column>
+        <el-table-column label="排序" sortable prop="sort">
+        </el-table-column>
+      </el-table>
+      <div class="pagination">
+        <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[20, 50, 100, 200]" :page-size="page_size" layout="total, sizes, prev, pager, next, jumper" :total="total">
+        </el-pagination>
+      </div>
+      <div style=" overflow: hidden;">
+        <div style="float: left;">
+          已选择：
+          <el-input size="small" style="width:70%" v-model="userInput" disabled>
+          </el-input>
+        </div>
+        <div style="float: right;">
+          <el-button size="small" @click="userInput='';userId='';dialogTableVisible=false">取消</el-button>
+          <el-button size="small" type="primary" @click="dialogTableVisible=false">确定</el-button>
+        </div>
+      </div>
+    </el-dialog>
+  </div>
 </template>
 <style>
 .el-input.is-disabled .el-input__inner {
@@ -105,8 +85,8 @@ export default {
     userId(val) {
       this.$emit("input", val); //向父组件v-modle传值。
     },
-    defaultText(val){
-      this.userInput=val;
+    defaultText(val) {
+      this.userInput = val;
     },
     parentSchoolId(val) {
       console.log(val);
@@ -179,7 +159,7 @@ export default {
       default: true
     },
     parentSchoolId: "",
-    defaultText:""//默认文本
+    defaultText: ""//默认文本
   },
   components: { SchoolTree } //注入组件
 };

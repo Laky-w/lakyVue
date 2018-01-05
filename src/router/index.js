@@ -120,9 +120,9 @@ function getRoutesSub(params) {
 }
 let routerFalg = false;
 export const getRoutesList = params => {
-  if(routerFalg) return; //初始化后不再重新初始化
+  if (routerFalg) return; //初始化后不再重新初始化
   let newRoutes = []
-  routerFalg=true;
+  routerFalg = true;
   if (params) {
     newRoutes = getRoutesSub(params);
   }

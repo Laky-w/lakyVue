@@ -1,22 +1,12 @@
 <template>
   <div style="position:relative;">
     <span @click="changeShow">
-      <el-input :disabled=disabled
-        :placeholder="placeText"  readonly="" :clearable="isShowCheckbox"
-        v-model="filterText">
-        <i slot="suffix"  style="cursor: pointer;" class="el-input__icon el-icon-arrow-down"></i>
+      <el-input :disabled=disabled :placeholder="placeText" readonly="" :clearable="isShowCheckbox" v-model="filterText">
+        <i slot="suffix" style="cursor: pointer;" class="el-input__icon el-icon-arrow-down"></i>
       </el-input>
     </span>
     <div :class="{treeDivH:isShow,treeDiv:true}">
-      <el-tree
-        class="filter-tree" :expand-on-click-node=false
-        :data="data2" node-key="id"
-        :props="defaultProps"
-        default-expand-all
-        :filter-node-method="filterNode"
-        @node-click="handleNodeClick" :show-checkbox="isShowCheckbox"
-         @check-change="handleCheckChange"
-        ref="tree2">
+      <el-tree class="filter-tree" :expand-on-click-node=false :data="data2" node-key="id" :props="defaultProps" default-expand-all :filter-node-method="filterNode" @node-click="handleNodeClick" :show-checkbox="isShowCheckbox" @check-change="handleCheckChange" ref="tree2">
       </el-tree>
     </div>
   </div>
@@ -71,10 +61,10 @@ export default {
     this.getSchool();
   },
   watch: {
-    value(val){
+    value(val) {
       console.log(val);
-      if(!val){
-        this.filterText="";
+      if (!val) {
+        this.filterText = "";
       }
     },
     filterText(val) {
@@ -154,7 +144,7 @@ export default {
   },
 
   props: {
-    value:"",
+    value: "",
     name: "",
     isShowCheckbox: {
       default: false

@@ -1,86 +1,57 @@
 <template>
-    <div class="table">
-        <div class="handle-box">
-            <el-form ref="queryForm" :inline="true" :model="queryForm" label-width="80px" size="mini">
-                <el-form-item>
-                    <el-input v-model="queryForm.name" clearable placeholder="活动名称"
-                              class="handle-input mr10"></el-input>
-                </el-form-item>
-                <el-form-item>
-                    <school-tree :is-show-checkbox=true @handleCheckChange="handleCheckChange" :the-type="2"
-                                 place-text="校区"></school-tree>
-                </el-form-item>
-                <el-form-item>
-                    <el-select v-model="queryForm.theType" value=1 clearable placeholder="活动状态"
-                               class="handle-select mr10">
-                        <el-option key="1" label="计划中" value="1"></el-option>
-                        <el-option key="2" label="进行中" value="2"></el-option>
-                        <el-option key="3" label="已结束" value="3"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item>
-                    <el-select v-model="queryForm.categoryId" style="width:100%" placeholder="活动分类" clearable>
-                        <el-option v-for="(item,index) in parameterValue" :key="item.id" :label="item.name"
-                                   :value="item.id"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-button type="mini" icon="el-icon-search" @click="search('queryForm')">搜索</el-button>
-            </el-form>
-        </div>
-        <div style="margin:5px;">
-            <el-button type="primary" icon="el-icon-edit" size="mini" @click="dialogFormVisible=true">添加活动</el-button>
-            <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
-        </div>
-        <el-table
-            :data="tableData" stripe v-loading="loading" border
-            style="width: 100%">
-            <el-table-column
-                label="市场活动" prop="name">
-            </el-table-column>
-            <el-table-column
-                label="校区"
-                prop="schoolZoneName">
-            </el-table-column>
-            <el-table-column
-                label="负责人"
-                prop="userName">
-            </el-table-column>
-            <el-table-column
-                sortable
-                label="状态"
-                prop="theType" :formatter="filterType">
-            </el-table-column>
-            <el-table-column
-                sortable
-                label="预算支出"
-                prop="cost">
-            </el-table-column>
-            <el-table-column
-                sortable
-                label="计划招生人数"
-                prop="targetNumber">
-            </el-table-column>
-            <el-table-column
-                sortable
-                label="活动分类"
-                prop="cateGoryName">
-            </el-table-column>
-            <el-table-column
-                sortable
-                label="计划开始日期"
-                prop="startDate">
-            </el-table-column>
-            <el-table-column
-                sortable
-                label="计划结束日期"
-                prop="endDate">
-            </el-table-column>
-            <!-- <el-table-column
+  <div class="table">
+    <div class="handle-box">
+      <el-form ref="queryForm" :inline="true" :model="queryForm" label-width="80px" size="mini">
+        <el-form-item>
+          <el-input v-model="queryForm.name" clearable placeholder="活动名称" class="handle-input mr10"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <school-tree :is-show-checkbox=true @handleCheckChange="handleCheckChange" :the-type="2" place-text="校区"></school-tree>
+        </el-form-item>
+        <el-form-item>
+          <el-select v-model="queryForm.theType" value=1 clearable placeholder="活动状态" class="handle-select mr10">
+            <el-option key="1" label="计划中" value="1"></el-option>
+            <el-option key="2" label="进行中" value="2"></el-option>
+            <el-option key="3" label="已结束" value="3"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-select v-model="queryForm.categoryId" style="width:100%" placeholder="活动分类" clearable>
+            <el-option v-for="(item,index) in parameterValue" :key="item.id" :label="item.name" :value="item.id"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-button type="mini" icon="el-icon-search" @click="search('queryForm')">搜索</el-button>
+      </el-form>
+    </div>
+    <div style="margin:5px;">
+      <el-button type="primary" icon="el-icon-edit" size="mini" @click="dialogFormVisible=true">添加活动</el-button>
+      <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
+    </div>
+    <el-table :data="tableData" stripe v-loading="loading" border style="width: 100%">
+      <el-table-column label="市场活动" prop="name">
+      </el-table-column>
+      <el-table-column label="校区" prop="schoolZoneName">
+      </el-table-column>
+      <el-table-column label="负责人" prop="userName">
+      </el-table-column>
+      <el-table-column sortable label="状态" prop="theType" :formatter="filterType">
+      </el-table-column>
+      <el-table-column sortable label="预算支出" prop="cost">
+      </el-table-column>
+      <el-table-column sortable label="计划招生人数" prop="targetNumber">
+      </el-table-column>
+      <el-table-column sortable label="活动分类" prop="cateGoryName">
+      </el-table-column>
+      <el-table-column sortable label="计划开始日期" prop="startDate">
+      </el-table-column>
+      <el-table-column sortable label="计划结束日期" prop="endDate">
+      </el-table-column>
+      <!-- <el-table-column
             label="排序" sortable
             prop="sort">
             </el-table-column> -->
 
-            <!-- <el-table-column label="操作">
+      <!-- <el-table-column label="操作">
             <template slot-scope="scope">
                 <el-button
                 size="mini"
@@ -91,75 +62,54 @@
                 @click="handleDelete(scope.$index, scope.row)">删除</el-button>
             </template>
             </el-table-column> -->
-        </el-table>
-        <div class="pagination">
-            <el-pagination
-                @size-change="handleSizeChange"
-                @current-change="handleCurrentChange"
-                :page-sizes="[20, 50, 100, 200]"
-                :page-size="page_size"
-                layout="total, sizes, prev, pager, next, jumper"
-                :total="total">
-            </el-pagination>
-        </div>
-        <el-dialog title="添加活动" :visible.sync="dialogFormVisible" :close-on-click-modal=false>
-            <el-form :model="form" ref="ruleForm">
-                <el-form-item label="名称" :label-width="formLabelWidth" prop="name"
-                              :rules="[{ required: true, message: '班级名称必填'}]">
-                    <el-input v-model="form.name" placeholder="活动名称"></el-input>
-                </el-form-item>
-                <el-form-item label="活动分类" :label-width="formLabelWidth" prop="categoryId"
-                              :rules="[{ required: true, message: '该项必填'}]">
-                    <el-select v-model="form.categoryId" style="width:100%" placeholder="活动分类">
-                        <el-option v-for="(item,index) in parameterValue" :key="item.id" :label="item.name"
-                                   :value="item.id"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="校区" :label-width="formLabelWidth" prop="schoolName"
-                              :rules="[{ required: true, message: '校区必填'}]">
-                    <school-tree @nodeClick="handleSchool" :name="form.schoolName" :the-type="2" place-text="校区"
-                                 :default-value="schoolId"></school-tree>
-                </el-form-item>
-                <el-form-item label="负责人" :label-width="formLabelWidth" prop="userId">
-                    <user-dialog v-model="form.userId" title="选择负责人"
-                                 :the-type="3" :parent-school-id="form.schoolZoneId"
-                                 placeholder-text="负责人"></user-dialog>
-                </el-form-item>
-                <el-form-item label="活动日期" :label-width="formLabelWidth" prop="startDate">
-                    <el-date-picker style="width:48%"
-                                    v-model="form.startDate"
-                                    type="date" value-format="yyyy-MM-dd"
-                                    placeholder="活动开始日期" :picker-options="pickerOptions1">
-                    </el-date-picker>
-                    - -
-                    <el-date-picker style="width:48%"
-                                    v-model="form.endDate" :picker-options="pickerOptions2"
-                                    type="date" value-format="yyyy-MM-dd"
-                                    placeholder="活动结束日期">
-                    </el-date-picker>
-                </el-form-item>
-                <el-form-item label="计划招生数量" :label-width="formLabelWidth" prop="targetNumber"
-                              :rules="[{type: 'number', message: '必须为数字值'}]">
-                    <el-input v-model.number="form.targetNumber" placeholder="计划招生数量"></el-input>
-                </el-form-item>
-                <el-form-item label="预算经费" :label-width="formLabelWidth" prop="cost"
-                              :rules="[{type: 'number', message: '必须为数字值'}]">
-                    <el-input v-model.number="form.cost" placeholder="预算经费"></el-input>
-                </el-form-item>
-            </el-form>
-            <div slot="footer" class="dialog-footer">
-                <el-button @click="dialogFormVisible = false">取 消</el-button>
-                <el-button :loading="loadingForm" type="primary" @click="submitForm('ruleForm')">保 存</el-button>
-            </div>
-        </el-dialog>
+    </el-table>
+    <div class="pagination">
+      <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[20, 50, 100, 200]" :page-size="page_size" layout="total, sizes, prev, pager, next, jumper" :total="total">
+      </el-pagination>
     </div>
+    <el-dialog title="添加活动" :visible.sync="dialogFormVisible" :close-on-click-modal=false>
+      <el-form :model="form" ref="ruleForm">
+        <el-form-item label="名称" :label-width="formLabelWidth" prop="name" :rules="[{ required: true, message: '班级名称必填'}]">
+          <el-input v-model="form.name" placeholder="活动名称"></el-input>
+        </el-form-item>
+        <el-form-item label="活动分类" :label-width="formLabelWidth" prop="categoryId" :rules="[{ required: true, message: '该项必填'}]">
+          <el-select v-model="form.categoryId" style="width:100%" placeholder="活动分类">
+            <el-option v-for="(item,index) in parameterValue" :key="item.id" :label="item.name" :value="item.id"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="校区" :label-width="formLabelWidth" prop="schoolName" :rules="[{ required: true, message: '校区必填'}]">
+          <school-tree @nodeClick="handleSchool" :name="form.schoolName" :the-type="2" place-text="校区" :default-value="schoolId"></school-tree>
+        </el-form-item>
+        <el-form-item label="负责人" :label-width="formLabelWidth" prop="userId">
+          <user-dialog v-model="form.userId" title="选择负责人" :the-type="3" :parent-school-id="form.schoolZoneId" placeholder-text="负责人"></user-dialog>
+        </el-form-item>
+        <el-form-item label="活动日期" :label-width="formLabelWidth" prop="startDate">
+          <el-date-picker style="width:48%" v-model="form.startDate" type="date" value-format="yyyy-MM-dd" placeholder="活动开始日期" :picker-options="pickerOptions1">
+          </el-date-picker>
+          - -
+          <el-date-picker style="width:48%" v-model="form.endDate" :picker-options="pickerOptions2" type="date" value-format="yyyy-MM-dd" placeholder="活动结束日期">
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="计划招生数量" :label-width="formLabelWidth" prop="targetNumber" :rules="[{type: 'number', message: '必须为数字值'}]">
+          <el-input v-model.number="form.targetNumber" placeholder="计划招生数量"></el-input>
+        </el-form-item>
+        <el-form-item label="预算经费" :label-width="formLabelWidth" prop="cost" :rules="[{type: 'number', message: '必须为数字值'}]">
+          <el-input v-model.number="form.cost" placeholder="预算经费"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button :loading="loadingForm" type="primary" @click="submitForm('ruleForm')">保 存</el-button>
+      </div>
+    </el-dialog>
+  </div>
 </template>
 
 
 <script>
 import SchoolTree from "../../common/system/SchoolTree.vue";
 import UserDialog from "../../common/system/UserDialog.vue";
-import { findBranchParameterValueAll, getActivityList,createActivity } from "../../api/api";
+import { findBranchParameterValueAll, getActivityList, createActivity } from "../../api/api";
 export default {
   data() {
     return {
@@ -304,7 +254,7 @@ export default {
       this.form.fatherName = row.name;
       this.dialogFormVisible = true;
     },
-    handleDelete(index, row) {},
+    handleDelete(index, row) { },
     handleSchool(data) {
       this.form.schoolName = data.name;
       this.form.schoolZoneId = data.id;

@@ -1,92 +1,63 @@
 <template>
-    <div>
-        <el-input ref="text1"
-            :placeholder="placeholderText"
-            v-model="userInput" readonly="">
-            <i slot="suffix"  style="cursor: pointer;" class="el-input__icon el-icon-more"
-            @click="handleOpenDialog"></i>
-        </el-input>
-        <el-dialog :title="title"  :visible.sync="dialogTableVisible" v-drag=""
-             :modal-append-to-body=false append-to-body :close-on-click-modal=false>
-            <div class="table">
-                <div class="handle-box">
-                    <el-form ref="queryForm" :inline="true" :model="queryForm" label-width="80px" size="mini">
-                        <el-form-item>
-                          <el-input v-model="queryForm.userName" placeholder="班级名称" class="handle-input mr10"></el-input>
-                        </el-form-item>
-                        <el-form-item>
-                          <school-tree :default-value="schoolId" :is-show-checkbox=true :the-type="2" place-text="校区"
-                              @handleCheckChange="handleCheckChange"></school-tree>
-                        </el-form-item>
+  <div>
+    <el-input ref="text1" :placeholder="placeholderText" v-model="userInput" readonly="">
+      <i slot="suffix" style="cursor: pointer;" class="el-input__icon el-icon-more" @click="handleOpenDialog"></i>
+    </el-input>
+    <el-dialog :title="title" :visible.sync="dialogTableVisible" v-drag="" :modal-append-to-body=false append-to-body :close-on-click-modal=false>
+      <div class="table">
+        <div class="handle-box">
+          <el-form ref="queryForm" :inline="true" :model="queryForm" label-width="80px" size="mini">
+            <el-form-item>
+              <el-input v-model="queryForm.userName" placeholder="班级名称" class="handle-input mr10"></el-input>
+            </el-form-item>
+            <el-form-item>
+              <school-tree :default-value="schoolId" :is-show-checkbox=true :the-type="2" place-text="校区" @handleCheckChange="handleCheckChange"></school-tree>
+            </el-form-item>
 
-                        <el-button type="mini" icon="el-icon-search" @click="search('queryForm')">搜索</el-button>
-                    </el-form>
-                </div>
-                <el-table
-                    :data="tableData" stripe v-loading="loading" border  @row-click="handleRowClick"
-                    style="width: 100%">
-                <el-table-column
-                    label="名称"
-                    prop="name">
-                </el-table-column>
-                <el-table-column
-                    label="课程"
-                    prop="courseName">
-                </el-table-column>
-                <el-table-column
-                    label="教室"
-                    prop="roomName">
-                </el-table-column>
-                <el-table-column
-                    label="班主任"
-                    prop="teacherName">
-                </el-table-column>
-                <el-table-column
-                    label="主教"
-                    prop="mainTeacherName">
-                </el-table-column>
-                <el-table-column
-                    label="创建时间"
-                    prop="createTime">
-                </el-table-column>
-                <el-table-column
-                    label="计划开班日期"
-                    prop="startDate">
-                </el-table-column>
-                </el-table>
-                <div class="pagination">
-                    <el-pagination
-                        @size-change="handleSizeChange"
-                        @current-change ="handleCurrentChange"
-                        :page-sizes="[20, 50, 100, 200]"
-                        :page-size="page_size"
-                        layout="total,prev, pager, next, jumper"
-                        :total="total">
-                    </el-pagination>
-                </div>
-                <div style=" overflow: hidden;">
-                    <div style="float: left;" v-if="selectedType==1">
-                    已选择：<el-input size="small" style="width:70%;"
-                                v-model="userInput" disabled>
-                            </el-input >
+            <el-button type="mini" icon="el-icon-search" @click="search('queryForm')">搜索</el-button>
+          </el-form>
+        </div>
+        <el-table :data="tableData" stripe v-loading="loading" border @row-click="handleRowClick" style="width: 100%">
+          <el-table-column label="名称" prop="name">
+          </el-table-column>
+          <el-table-column label="课程" prop="courseName">
+          </el-table-column>
+          <el-table-column label="教室" prop="roomName">
+          </el-table-column>
+          <el-table-column label="班主任" prop="teacherName">
+          </el-table-column>
+          <el-table-column label="主教" prop="mainTeacherName">
+          </el-table-column>
+          <el-table-column label="创建时间" prop="createTime">
+          </el-table-column>
+          <el-table-column label="计划开班日期" prop="startDate">
+          </el-table-column>
+        </el-table>
+        <div class="pagination">
+          <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[20, 50, 100, 200]" :page-size="page_size" layout="total,prev, pager, next, jumper" :total="total">
+          </el-pagination>
+        </div>
+        <div style=" overflow: hidden;">
+          <div style="float: left;" v-if="selectedType==1">
+            已选择：
+            <el-input size="small" style="width:70%;" v-model="userInput" disabled>
+            </el-input>
 
-                    </div>
-                    <div style="float: left;" v-else>
-                         已选择：<el-tag size="mini" style="margin-right:3px"
-                            v-for="tag in userId"
-                            :key="tag.id" @close="handleTagClose(tag)"
-                            closable>
-                            {{tag.name}}
-                            </el-tag>
-                        </div>
-                    <div style="float: right;">
-                        <el-button size="small" @click="userInput='';userId='';dialogTableVisible=false">取消</el-button>
-                        <el-button size="small" type="primary"  @click="handleOK">确定</el-button>
-                    </div>
-                </div>
-            </div>
-        </el-dialog>
-    </div>
+          </div>
+          <div style="float: left;" v-else>
+            已选择：
+            <el-tag size="mini" style="margin-right:3px" v-for="tag in userId" :key="tag.id" @close="handleTagClose(tag)" closable>
+              {{tag.name}}
+            </el-tag>
+          </div>
+          <div style="float: right;">
+            <el-button size="small" @click="userInput='';userId='';dialogTableVisible=false">取消</el-button>
+            <el-button size="small" type="primary" @click="handleOK">确定</el-button>
+          </div>
+        </div>
+      </div>
+    </el-dialog>
+  </div>
 </template>
 <style>
 .el-input.is-disabled .el-input__inner {
@@ -176,8 +147,8 @@ export default {
     getData() {
       let self = this;
       self.loading = true;
-      if(self.courseId){
-        self.queryForm.courseId=self.courseId;
+      if (self.courseId) {
+        self.queryForm.courseId = self.courseId;
       }
       getSchoolClassList(
         self.cur_page,
@@ -263,7 +234,7 @@ export default {
   },
   props: {
     value: "",
-    courseId:"",
+    courseId: "",
     title: {
       default: "选择班级"
     },
