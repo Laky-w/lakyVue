@@ -46,6 +46,14 @@
           </el-tag>
         </template>
       </el-table-column>
+      <el-table-column prop="theType" label="状态">
+        <template slot-scope="scope">
+          <!-- {{scope.row.theType}} -->
+          <el-tag :type="scope.row.theStatus === 2 ? 'info' : 'success'" close-transition>
+            {{scope.row.theStatus===1?"正常":""}}{{scope.row.theStatus===2?"封存":""}}
+          </el-tag>
+        </template>
+      </el-table-column>
 
       </el-table-column>
       <el-table-column label="操作">
@@ -55,6 +63,8 @@
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item v-if="scope.row.theType!==3" :command="{row:scope.row,type:'add'}">添加下级</el-dropdown-item>
               <el-dropdown-item v-if="scope.row.theType!==1" :command="{row:scope.row,type:'delete'}">删除</el-dropdown-item>
+              <el-dropdown-item v-if="scope.row.theType!==1 && scope.row.theStatus ==2" :command="{row:scope.row,type:'normal'}">启用</el-dropdown-item>
+              <el-dropdown-item v-if="scope.row.theType!==1 && scope.row.theStatus ==1" :command="{row:scope.row,type:'sealup'}">封存</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
           <!-- <el-dropdown trigger="click" @command="handleCommand">
@@ -140,7 +150,7 @@ table td {
 
 <script>
 import SchoolZoneView from "./SchoolZoneView.vue";
-import { findSchoolZoneAll, createSchoolZone, getSchoolZoneView, deleteSchoolZone } from "../../api/api";
+import { findSchoolZoneAll, createSchoolZone, getSchoolZoneView, deleteSchoolZone, sealUpSchoolZone, normalSchoolZone } from "../../api/api";
 export default {
   data() {
     return {
@@ -358,7 +368,12 @@ export default {
         case "delete":
           this.handleDelete(command.row);
           break;
-
+        case "normal":
+          this.handleNormal(command.row);
+          break;
+        case "sealup":
+          this.handleSealup(command.row);
+          break;
       }
     },
     handleAdd(row) {
@@ -378,12 +393,56 @@ export default {
     },
     handleDelete(row) {
       let self = this;
-      self.$confirm('该操作会把当前校区的部门，及所属下级校区的数据全部删除。请谨慎操作！ 是否继续?', '提示', {
+      self.$confirm('该操作会把当前校区的部门，及所属下级校区的数据会全部删除。请谨慎操作！ 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning', closeOnClickModal: false
       }).then(() => {
         deleteSchoolZone(row.id).then(data => {
+          if (data.code == 200) {
+            self.$message.success(data.message);
+            self.getSchool();
+          } else {
+            this.$message.error(data.message);
+          }
+        })
+      }).catch(() => {
+      });
+      // getSchoolZoneView(row.id).then(data => {
+      //   this.dialogFormVisible = true;
+      //   self.form = data.data;
+      // })
+    },
+    handleNormal(row) {
+      let self = this;
+      self.$confirm('确定启用该校区吗，启用后该校区的所属数据会恢复正常！是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning', closeOnClickModal: false
+      }).then(() => {
+        normalSchoolZone(row.id).then(data => {
+          if (data.code == 200) {
+            self.$message.success(data.message);
+            self.getSchool();
+          } else {
+            this.$message.error(data.message);
+          }
+        })
+      }).catch(() => {
+      });
+      // getSchoolZoneView(row.id).then(data => {
+      //   this.dialogFormVisible = true;
+      //   self.form = data.data;
+      // })
+    },
+    handleSealup(row) {
+      let self = this;
+      self.$confirm('该操作会把当前校区的部门，及所属下级校区的数据会全部封存。请谨慎操作！ 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning', closeOnClickModal: false
+      }).then(() => {
+        sealUpSchoolZone(row.id).then(data => {
           if (data.code == 200) {
             self.$message.success(data.message);
             self.getSchool();
