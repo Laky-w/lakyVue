@@ -18,7 +18,10 @@
       <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
     </div>
     <el-table :data="tableData" stripe v-loading="loading" border style="width: 100%">
-      <el-table-column label="名称" prop="name">
+      <el-table-column label="名称">
+        <template slot-scope="scope">
+          <a href="javascript:void(0)" @click="handleView(scope.row.id)">{{ scope.row.name }}</a>
+        </template>
       </el-table-column>
       <el-table-column label="校区" prop="schoolZoneName">
       </el-table-column>
@@ -38,19 +41,8 @@
       </el-table-column>
       <el-table-column sortable label="备注" prop="remarks">
       </el-table-column>
-
-      <!-- <el-table-column label="操作">
-            <template slot-scope="scope">
-                <el-button
-                size="mini"
-                @click="handleEdit(scope.$index, scope.row)">添加</el-button>
-                <el-button
-                size="mini"
-                type="danger"
-                @click="handleDelete(scope.$index, scope.row)">删除</el-button>
-            </template>
-            </el-table-column> -->
     </el-table>
+    <customer-view :view-id="viewId" :dialog-view-visible.sync="dialogViewVisible"></customer-view>
     <div class="pagination">
       <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[20, 50, 100, 200]" :page-size="page_size" layout="total, sizes, prev, pager, next, jumper" :total="total">
       </el-pagination>
@@ -62,6 +54,7 @@
 <script>
 import SchoolTree from "../../common/system/SchoolTree.vue";
 import CustomerForm from "./CustomerForm.vue";
+import CustomerView from "./CustomerView.vue";
 import {
   getCustomerList,
   findBranchParameterValueAll,
@@ -75,6 +68,8 @@ export default {
       total: 0,
       cur_page: 1,
       page_size: 20,
+      viewId: "",//详情id
+      dialogViewVisible: false,
       queryForm: {
         name: "",
         schoolZoneId2: []
@@ -143,6 +138,12 @@ export default {
       else row.tag = "女";
       return row.tag;
     },
+    handleView(id) {
+      let self = this;
+      self.viewId = id;
+      self.dialogViewVisible = true;
+      // self.$refs["view"].show();
+    },
     //控件方法
     handleEdit(index, row) {
       this.form.fatherId = row.id;
@@ -158,6 +159,6 @@ export default {
       }
     }
   },
-  components: { CustomerForm, SchoolTree } //注入组件
+  components: { CustomerForm, CustomerView, SchoolTree } //注入组件
 };
 </script>

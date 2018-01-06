@@ -31,9 +31,12 @@
       <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
     </div>
     <el-table :data="tableData" stripe v-loading="loading" border style="width: 100%">
-      <el-table-column label="校区" prop="schoolName">
+      <el-table-column label="课程">
+        <template slot-scope="scope">
+          <a href="javascript:void(0)" @click="handleView(scope.row.id)">{{scope.row.name}}</a>
+        </template>
       </el-table-column>
-      <el-table-column label="课程" prop="name">
+      <el-table-column label="校区" prop="schoolName">
       </el-table-column>
       <el-table-column label="科目" prop="clazzName">
       </el-table-column>
@@ -53,6 +56,7 @@
             </template>
             </el-table-column> -->
     </el-table>
+    <course-view :view-id="viewId" :dialog-view-visible.sync="dialogViewVisible"></course-view>
     <div class="pagination">
       <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[20, 50, 100, 200]" :page-size="page_size" layout="total, sizes, prev, pager, next, jumper" :total="total">
       </el-pagination>
@@ -185,6 +189,7 @@ table td {
 
 <script>
 import SchoolTree from "../../common/system/SchoolTree.vue";
+import CourseView from "./CourseView.vue";
 import { findChildSchoolZoneAll, createCourse, getCourseList, findBranchParameterValueAll } from "../../api/api";
 export default {
   data() {
@@ -194,6 +199,8 @@ export default {
       total: 0,
       cur_page: 1,
       page_size: 20,
+      viewId: "",
+      dialogViewVisible: false,
       queryForm: {
         name: "",
         theType: "",
@@ -379,6 +386,12 @@ export default {
         self.queryForm.schoolZoneId2.push(allNode[i].id);
       }
     },
+    handleView(id) {
+      let self = this;
+      self.viewId = id;
+      console.log(id);
+      self.dialogViewVisible = true;
+    },
     removeChargeStandard(item) {
       if (this.form.chargeStandard.length == 1) return;
       var index = this.form.chargeStandard.indexOf(item);
@@ -394,6 +407,6 @@ export default {
       });
     }
   },
-  components: { SchoolTree } //注入组件
+  components: { SchoolTree, CourseView } //注入组件
 };
 </script>

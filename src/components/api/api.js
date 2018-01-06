@@ -56,10 +56,13 @@ export const findOperateLogAll = (pageNumber, pageSize, params) => { return axio
 //招生=============
 //查询生源
 export const getCustomerList = (pageNumber, pageSize, params) => { return axios.post(`supply/getCustomerList/${pageNumber}/${pageSize}`, params).then(res => res.data); };
+// 生源详情
+export const getCustomerView = id => { return axios.get(`supply/getCustomerView/${id}`).then(res => res.data); };
 //创建生源
 export const createCustomer = params => { return axios.post(`supply/createCustomer`, params).then(res => res.data); };
 //查询联系记录
 export const getContactList = (pageNumber, pageSize, params) => { return axios.post(`supply/getContactList/${pageNumber}/${pageSize}`, params).then(res => res.data); };
+
 //创建联系记录
 export const createContact = params => { return axios.post(`supply/createContact`, params).then(res => res.data); };
 //查询邀约记录
@@ -68,6 +71,8 @@ export const getInviteList = (pageNumber, pageSize, params) => { return axios.po
 export const createInvite = params => { return axios.post(`supply/createInvite`, params).then(res => res.data); };
 //查询市场活动
 export const getActivityList = (pageNumber, pageSize, params) => { return axios.post(`supply/getActivityList/${pageNumber}/${pageSize}`, params).then(res => res.data); };
+// 市场活动详情
+export const getMarketActivityView = id => { return axios.get(`supply/getMarketActivityView/${id}`).then(res => res.data); };
 //创建市场活动
 export const createActivity = params => { return axios.post(`supply/createActivity`, params).then(res => res.data); };
 //招生=============
@@ -78,6 +83,8 @@ export const createActivity = params => { return axios.post(`supply/createActivi
 //前台==========
 //查询正式学员
 export const getStudentList = (pageNumber, pageSize, params) => { return axios.post(`reception/getStudentList/${pageNumber}/${pageSize}`, params).then(res => res.data); };
+// 查询学员详情
+export const getStudentView = id => { return axios.get(`reception/getStudentView/${id}`).then(res => res.data); };
 //创建学员
 export const createStudent = params => { return axios.post(`reception/createStudent`, params).then(res => res.data); };
 
@@ -92,6 +99,8 @@ export const getOrderDetailList = (orderId) => { return axios.get(`reception/get
 export const getRoomList = (pageNumber, pageSize, params) => { return axios.post(`teach/getRoomList/${pageNumber}/${pageSize}`, params).then(res => res.data); };
 // 创建教室
 export const createRoom = params => { return axios.post(`teach/createRoom`, params).then(res => res.data); };
+// 查询课程详情
+export const getCourseView = id => { return axios.get(`teach/getCourseView/${id}`).then(res => res.data); };
 //查询课程
 export const getCourseList = (pageNumber, pageSize, params) => { return axios.post(`teach/getCourseList/${pageNumber}/${pageSize}`, params).then(res => res.data); };
 //查询课程树

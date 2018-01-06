@@ -29,7 +29,10 @@
       <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
     </div>
     <el-table :data="tableData" stripe v-loading="loading" :row-class-name="tableRowClassName" border style="width: 100%">
-      <el-table-column label="名称" prop="name">
+      <el-table-column label="名称">
+        <template slot-scope="scope">
+          <a href="javascript:void(0)" @click="handleView(scope.row.id)">{{ scope.row.name }}</a>
+        </template>
       </el-table-column>
       <el-table-column label="校区" prop="schoolZoneName">
       </el-table-column>
@@ -62,6 +65,7 @@
         </template>
         </el-table-column> -->
     </el-table>
+    <student-view :view-id="viewId" :dialog-view-visible.sync="dialogViewVisible"></student-view>
     <div class="pagination">
       <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[20, 50, 100, 200]" :page-size="page_size" layout="total, sizes, prev, pager, next, jumper" :total="total">
       </el-pagination>
@@ -117,6 +121,7 @@
 <script>
 import SchoolTree from "../../common/system/SchoolTree.vue";
 import UserDialog from "../../common/system/UserDialog.vue";
+import StudentView from "./StudentView.vue";
 import MarketActivityDialog from "../../common/supply/MarketActivityDialog.vue";
 import CourseDialog from "../../common/teach/CourseDialog.vue";
 import {
@@ -137,6 +142,8 @@ export default {
         name: "",
         schoolZoneId2: []
       },
+      dialogViewVisible: false,
+      viewId: "",//详情id
       parameterValue: [],
       form: {
         //表单 v-modle绑定的值
@@ -265,6 +272,12 @@ export default {
       this.form.schoolZoneId = data.id;
       this.form.roles = [];
     },
+    handleView(id) {
+      let self = this;
+      self.viewId = id;
+      self.dialogViewVisible = true;
+      // self.$refs["view"].show();
+    },
     handleCheckChange(allNode) {
       let self = this;
       self.queryForm.schoolZoneId2 = [];
@@ -273,6 +286,6 @@ export default {
       }
     }
   },
-  components: { SchoolTree, UserDialog, MarketActivityDialog, CourseDialog } //注入组件
+  components: { SchoolTree, UserDialog, MarketActivityDialog, CourseDialog, StudentView } //注入组件
 };
 </script>

@@ -179,12 +179,6 @@ export default {
       this.cur_page = 1;
       this.getData();
     },
-    handleCheckChange(allNode) {
-      this.queryForm.schoolZoneId2 = [];
-      for (let i = 0; i < allNode.length; i++) {
-        this.queryForm.schoolZoneId2.push(allNode[i].id);
-      }
-    },
     handleDelete(index, row) { }
   },
   components: {
