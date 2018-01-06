@@ -28,7 +28,10 @@
       <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
     </div>
     <el-table :data="tableData" stripe v-loading="loading" border style="width: 100%">
-      <el-table-column label="市场活动" prop="name">
+      <el-table-column label="市场活动">
+        <template slot-scope="scope">
+          <a href="javascript:void(0)" @click="handleView(scope.row.id)">{{ scope.row.name }}</a>
+        </template>
       </el-table-column>
       <el-table-column label="校区" prop="schoolZoneName">
       </el-table-column>
@@ -63,6 +66,7 @@
             </template>
             </el-table-column> -->
     </el-table>
+    <market-activity-view :view-id="viewId" :dialog-view-visible.sync="dialogViewVisible"></market-activity-view>
     <div class="pagination">
       <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[20, 50, 100, 200]" :page-size="page_size" layout="total, sizes, prev, pager, next, jumper" :total="total">
       </el-pagination>
@@ -109,6 +113,7 @@
 <script>
 import SchoolTree from "../../common/system/SchoolTree.vue";
 import UserDialog from "../../common/system/UserDialog.vue";
+import MarketActivityView from "./MarketActivityView.vue";
 import { findBranchParameterValueAll, getActivityList, createActivity } from "../../api/api";
 export default {
   data() {
@@ -119,6 +124,8 @@ export default {
       cur_page: 1,
       page_size: 20,
       parameterValue: [],
+      viewId: "",
+      dialogViewVisible: false,
       queryForm: {
         name: "",
         schoolZoneId2: [],
@@ -267,6 +274,11 @@ export default {
         self.queryForm.schoolZoneId2.push(allNode[i].id);
       }
     },
+    handleView(id) {
+      let self = this;
+      self.viewId = id;
+      self.dialogViewVisible = true;
+    },
     filterType(value, row) {
       if (value.theType == 1) row.tag = "计划中";
       else if (value.theType == 2) row.tag = "进行中";
@@ -274,6 +286,6 @@ export default {
       return row.tag;
     }
   },
-  components: { SchoolTree, UserDialog } //注入组件
+  components: { SchoolTree, UserDialog, MarketActivityView } //注入组件
 };
 </script>
