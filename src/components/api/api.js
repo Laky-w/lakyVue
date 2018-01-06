@@ -33,6 +33,8 @@ export const getSchoolZoneView = id => { return axios.get(`organization/getSchoo
 export const findChildSchoolZoneAll = (type, pid, params) => { return axios.get(`organization/findChildSchoolZoneAll/${type}/${pid}`, params).then(res => res.data); };
 //创建校区或部门
 export const createSchoolZone = params => { return axios.post(`organization/createSchoolZone`, params).then(res => res.data); };
+//deleteSchoolZone
+export const deleteSchoolZone = id => { return axios.delete(`organization/deleteSchoolZone/${id}`).then(res => res.data); };
 //getRoleList
 export const getRoleList = (pageNumber, pageSize, params) => { return axios.post(`organization/getRoleList/${pageNumber}/${pageSize}`, params).then(res => res.data); };
 //查询校区职能

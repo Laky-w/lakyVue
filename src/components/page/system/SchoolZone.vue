@@ -50,18 +50,34 @@
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button v-if="scope.row.theType!==3" size="mini" @click="handleEdit(scope.$index, scope.row)">添加
+          <el-dropdown split-button type="primary" @click="handleEdit(scope.$index, scope.row)" @command="hadleCommand" size="small">
+            编辑
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item v-if="scope.row.theType!==3" :command="{row:scope.row,type:'add'}">添加下级</el-dropdown-item>
+              <el-dropdown-item v-if="scope.row.theType!==1" :command="{row:scope.row,type:'delete'}">删除</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+          <!-- <el-dropdown trigger="click" @command="handleCommand">
+            <el-dropdown-item command="loginout">编辑</el-dropdown-item>
+            <el-dropdown-item command="loginout">添加下级</el-dropdown-item>
+            <el-dropdown-item command="loginout">删除</el-dropdown-item>
+          </el-dropdown> -->
+          <!-- <el-button v-if="scope.row.theType!==3" size="mini" @click="handleAdd(scope.$index, scope.row)">添加下级
           </el-button>
+          <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">编辑
+          </el-button>
+          <el-button size="mini" @click="handleDelete(scope.$index, scope.row)">删除
+          </el-button> -->
         </template>
       </el-table-column>
     </el-table>
     <school-zone-view :view-id="viewId" :dialog-view-visible.sync="dialogViewVisible" ref="view"></school-zone-view>
-    <el-dialog title="添加校区/部门" :visible.sync="dialogFormVisible" :close-on-click-modal=false>
+    <el-dialog :title="form.id?('修改'+form.name):'添加校区/部门'" :visible.sync="dialogFormVisible" :close-on-click-modal=false>
       <el-form :model="form" ref="ruleForm">
         <el-form-item label="名称" :label-width="formLabelWidth" prop="name" :rules="[{ required: true, message: '名称必填'}]">
           <el-input v-model="form.name" autofocus placeholder="名称" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="类型" :label-width="formLabelWidth" required>
+        <el-form-item label="类型" v-if="form.id==''" :label-width="formLabelWidth" required>
           <el-radio-group v-model="form.theType">
             <el-radio :label="2">校区</el-radio>
             <el-radio :label="3">部门</el-radio>
@@ -79,10 +95,10 @@
         <el-form-item label="负责人" prop="owner" :label-width="formLabelWidth">
           <el-input v-model="form.owner" auto-complete="off" placeholder="负责人"></el-input>
         </el-form-item>
-        <el-form-item label="联系方式" prop="phone" :label-width="formLabelWidth">
+        <el-form-item label="电话" prop="phone" :label-width="formLabelWidth">
           <el-input v-model="form.phone" auto-complete="off" placeholder="联系方式"></el-input>
         </el-form-item>
-        <el-form-item label="上级部门" :label-width="formLabelWidth">
+        <el-form-item label="所属校区" :label-width="formLabelWidth">
           <el-input v-model="form.fatherName" disabled></el-input>
         </el-form-item>
       </el-form>
@@ -98,7 +114,9 @@
 .selectTr > td {
   background-color: rgba(235, 158, 5, 0.48) !important;
 }
-
+.top > td {
+  background-color: #ecf6ff !important;
+}
 .ms-tree-space {
   position: relative;
   top: 1px;
@@ -122,7 +140,7 @@ table td {
 
 <script>
 import SchoolZoneView from "./SchoolZoneView.vue";
-import { findSchoolZoneAll, createSchoolZone } from "../../api/api";
+import { findSchoolZoneAll, createSchoolZone, getSchoolZoneView, deleteSchoolZone } from "../../api/api";
 export default {
   data() {
     return {
@@ -131,10 +149,23 @@ export default {
       treeStructure: true,
       dialogFormVisible: false,
       dialogViewVisible: false,
+      visible2: false,
       queryForm: {
         schoolName: ""
       },
+      oldform: {
+        name: "",
+        theType: 2,
+        serial: "",
+        remarks: "",
+        owner: "",
+        phone: "",
+        fatherId: "",
+        fatherName: "",
+        address: ""
+      },
       form: {
+        id: "",
         name: "",
         theType: 2,
         serial: "",
@@ -154,6 +185,10 @@ export default {
     this.getSchool();
   },
   methods: {
+    parseStr(object) {
+      console.log(object);
+      return JSON.stringify(object);
+    },
     showTr: function (tr) {
       let row = tr.row;
       let show = row._parent ? this.getParentExpanded(row) : true;
@@ -162,6 +197,9 @@ export default {
     selectTr: function (row) {
       if (row.row.selected) {
         return "selectTr";
+      }
+      if (row.rowIndex == 0) {
+        return "top";
       }
     },
     getParentExpanded(row) {
@@ -182,7 +220,6 @@ export default {
         self.loading = false;
         if (data.code == 200) {
           let treeData = self.parseSchoolTree(data.data, null, null, true);
-          console.log(treeData);
           self.tableData = treeData;
         } else {
           self.$message.error(data.data);
@@ -312,12 +349,55 @@ export default {
       self.dialogViewVisible = true;
       // self.$refs["view"].show();
     },
-    handleEdit(index, row) {
-      this.form.fatherId = row.id;
+    hadleCommand(command) {
+      console.log(command);
+      switch (command.type) {
+        case "add":
+          this.handleAdd(command.row);
+          break;
+        case "delete":
+          this.handleDelete(command.row);
+          break;
+
+      }
+    },
+    handleAdd(row) {
+      this.form = this.oldform;
       this.form.fatherName = row.name;
+      this.form.fatherId = row.id;
       this.dialogFormVisible = true;
     },
-    handleDelete(index, row) { }
+    handleEdit(index, row) {
+      let self = this;
+      getSchoolZoneView(row.id).then(data => {
+        this.dialogFormVisible = true;
+        self.form = data.data;
+        self.form.fatherId = "";
+        self.form.fatherName = data.data.fatherName;
+      })
+    },
+    handleDelete(row) {
+      let self = this;
+      self.$confirm('该操作会把当前校区的部门，及所属下级校区的数据全部删除。请谨慎操作！ 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning', closeOnClickModal: false
+      }).then(() => {
+        deleteSchoolZone(row.id).then(data => {
+          if (data.code == 200) {
+            self.$message.success(data.message);
+            self.getSchool();
+          } else {
+            this.$message.error(data.message);
+          }
+        })
+      }).catch(() => {
+      });
+      // getSchoolZoneView(row.id).then(data => {
+      //   this.dialogFormVisible = true;
+      //   self.form = data.data;
+      // })
+    }
   },
   components: { SchoolZoneView } //注入组件
 };
