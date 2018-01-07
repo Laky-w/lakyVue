@@ -28,7 +28,7 @@
           <a href="javascript:void(0)" @click="handleView(scope.row.id)">{{ scope.row.name }}</a>
         </template>
       </el-table-column>
-      <el-table-column label="负责人" prop="owner">
+      <el-table-column label="校长/主管" prop="owner">
       </el-table-column>
       <el-table-column label="联系方式" prop="phone">
       </el-table-column>
@@ -59,7 +59,7 @@
       <el-table-column label="操作">
         <template slot-scope="scope">
           <el-dropdown split-button type="primary" @click="handleEdit(scope.$index, scope.row)" @command="hadleCommand" size="small">
-            编辑
+            修改
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item v-if="scope.row.theType!==3" :command="{row:scope.row,type:'add'}">添加下级</el-dropdown-item>
               <el-dropdown-item v-if="scope.row.theType!==1" :command="{row:scope.row,type:'delete'}">删除</el-dropdown-item>
@@ -67,17 +67,6 @@
               <el-dropdown-item v-if="scope.row.theType!==1 && scope.row.theStatus ==1" :command="{row:scope.row,type:'sealup'}">封存</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
-          <!-- <el-dropdown trigger="click" @command="handleCommand">
-            <el-dropdown-item command="loginout">编辑</el-dropdown-item>
-            <el-dropdown-item command="loginout">添加下级</el-dropdown-item>
-            <el-dropdown-item command="loginout">删除</el-dropdown-item>
-          </el-dropdown> -->
-          <!-- <el-button v-if="scope.row.theType!==3" size="mini" @click="handleAdd(scope.$index, scope.row)">添加下级
-          </el-button>
-          <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">编辑
-          </el-button>
-          <el-button size="mini" @click="handleDelete(scope.$index, scope.row)">删除
-          </el-button> -->
         </template>
       </el-table-column>
     </el-table>
@@ -102,8 +91,8 @@
         <el-form-item label="职能" prop="remarks" :label-width="formLabelWidth">
           <el-input v-model="form.remarks" placeholder="描述、职能" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="负责人" prop="owner" :label-width="formLabelWidth">
-          <el-input v-model="form.owner" auto-complete="off" placeholder="负责人"></el-input>
+        <el-form-item label="校长/主管" prop="owner" :label-width="formLabelWidth">
+          <el-input v-model="form.owner" auto-complete="off" placeholder="校长/主管"></el-input>
         </el-form-item>
         <el-form-item label="电话" prop="phone" :label-width="formLabelWidth">
           <el-input v-model="form.phone" auto-complete="off" placeholder="联系方式"></el-input>
@@ -357,10 +346,8 @@ export default {
       let self = this;
       self.viewId = id;
       self.dialogViewVisible = true;
-      // self.$refs["view"].show();
     },
     hadleCommand(command) {
-      console.log(command);
       switch (command.type) {
         case "add":
           this.handleAdd(command.row);

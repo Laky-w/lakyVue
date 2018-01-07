@@ -1,41 +1,35 @@
 <template>
   <el-dialog :title="view.name" :visible.sync="visible" :close-on-click-modal="false" @close="$emit('update:dialogViewVisible', false)">
     <el-form ref="queryForm" :inline="true" :model="view" label-width="120px" class="viewForm" v-loading="loadingView">
-      <el-form-item label="名称：">
+      <el-form-item label="姓名：">
         <el-tag type="info">{{view.name}}</el-tag>
       </el-form-item>
-      <el-form-item label="编号：">
-        <el-tag type="info">{{view.serial}}</el-tag>
+      <el-form-item label="用户名：">
+        <el-tag type="info">{{view.userName}}</el-tag>
       </el-form-item>
-      <el-form-item label="地址：">
-        <el-tag type="info">{{view.address}}</el-tag>
-      </el-form-item>
-      <el-form-item label="创建时间：">
-        <el-tag type="info">{{view.createTime}}</el-tag>
+      <el-form-item label="校区/部门：">
+        <el-tag type="info">{{view.schoolName}}</el-tag>
       </el-form-item>
       <el-form-item label="职能：">
-        <el-tag type="info">{{view.remarks}}</el-tag>
+        <el-tag type="info">{{filterIsSuper(view)}}</el-tag>
       </el-form-item>
-      <el-form-item label="校长/主管：">
-        <el-tag type="info">{{view.owner}}</el-tag>
+      <el-form-item label="性别：">
+        <el-tag type="info">{{view.sex ==1?'男':'女'}}</el-tag>
       </el-form-item>
       <el-form-item label="电话：">
         <el-tag type="info">{{view.phone}}</el-tag>
       </el-form-item>
-      <el-form-item label="所属校区" v-if="view.theType !=1">
-        <el-tag type="info">{{view.fatherName}}</el-tag>
+      <el-form-item label="邮箱：">
+        <el-tag type="info">{{view.email}}</el-tag>
       </el-form-item>
-      <el-form-item label="校区数量：" v-if="view.theType !=3">
-        <el-tag type="info">{{view.schoolNumber}}</el-tag>
+      <el-form-item label="生日：">
+        <el-tag type="info">{{view.birthday}}</el-tag>
       </el-form-item>
-      <el-form-item label="员工数量：" v-if="view.theType !=3">
-        <el-tag type="info">{{view.userNumber}}</el-tag>
+      <el-form-item label="身份证：">
+        <el-tag type="info">{{view.idCard}}</el-tag>
       </el-form-item>
-      <el-form-item label="学员数量：" v-if="view.theType !=3">
-        <el-tag type="info">{{view.studentNumber}}</el-tag>
-      </el-form-item>
-      <el-form-item label="生源数量：" v-if="view.theType !=3">
-        <el-tag type="info">{{view.customerNumber}}</el-tag>
+      <el-form-item label="创建时间：">
+        <el-tag type="info">{{view.createTime}}</el-tag>
       </el-form-item>
     </el-form>
   </el-dialog>
@@ -50,7 +44,7 @@
 </style>
 
 <script>
-import { getSchoolZoneView } from "../../api/api";
+import { getUserView } from "../../api/api";
 export default {
   data() {
     return {
@@ -79,7 +73,7 @@ export default {
       let self = this;
       self.loadingView = true;
       self.view = { name: "详情" };
-      getSchoolZoneView(self.viewId).then(data => {
+      getUserView(self.viewId).then(data => {
         self.loadingView = false;
         if (data.code == 200) {
           self.view = data.data;
@@ -87,7 +81,13 @@ export default {
           self.$message.error(data.message);
         }
       })
-    }
+    },
+    filterIsSuper(value) {
+      let tag = "";
+      if (value.isSuper == 1) tag = "超级管理员";
+      else tag = value.roleName;
+      return tag;
+    },
   },
   props: {
     viewId: "",

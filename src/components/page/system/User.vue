@@ -19,54 +19,58 @@
       </el-form>
     </div>
     <div style="margin:5px;">
-      <el-button type="primary" icon="el-icon-edit" size="mini" @click="dialogFormVisible=true;">添加员工</el-button>
+      <el-button type="primary" icon="el-icon-edit" size="mini" @click="handleAdd">添加员工</el-button>
       <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
     </div>
     <el-table :data="tableData" stripe v-loading="loading" border style="width: 100%">
-      <el-table-column label="校区/部门" prop="schoolZone.name">
-      </el-table-column>
       <el-table-column label="用户名" prop="userName">
+        <template slot-scope="scope">
+          <a href="javascript:void(0)" @click="handleView(scope.row.id)">{{ scope.row.userName }}</a>
+        </template>
+      </el-table-column>
+      <el-table-column label="校区/部门" prop="schoolName">
       </el-table-column>
       <el-table-column label="真实姓名" prop="name">
-      </el-table-column>
-      <el-table-column label="联系方式" prop="phone">
       </el-table-column>
       <el-table-column label="邮箱" prop="email">
       </el-table-column>
       <el-table-column label="性别" prop="sex" :formatter="filterSex">
       </el-table-column>
-      <el-table-column label="电话号" prop="phone">
+      <el-table-column label="电话" prop="phone">
       </el-table-column>
       <el-table-column label="出生日期" prop="birthday">
       </el-table-column>
       <el-table-column label="职能" prop="isSuper" :formatter="filterIsSuper">
       </el-table-column>
-      <!-- <el-table-column label="操作">
-            <template slot-scope="scope">
-                <el-button
-                size="mini"
-                @click="handleEdit(scope.$index, scope.row)">添加</el-button>
-                <el-button
-                size="mini"
-                type="danger"
-                @click="handleDelete(scope.$index, scope.row)">删除</el-button>
-            </template>
-            </el-table-column> -->
+      <el-table-column label="操作">
+        <template slot-scope="scope">
+          <el-dropdown split-button type="primary" @click="handleEdit(scope.$index, scope.row)" @command="hadleCommand" size="small">
+            修改
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item v-if="scope.row.isSuper!==1" :command="{row:scope.row,type:'add'}">离职</el-dropdown-item>
+              <el-dropdown-item :command="{row:scope.row,type:'delete'}">删除</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+          <!-- <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">修改</el-button>
+          <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button> -->
+        </template>
+      </el-table-column>
     </el-table>
     <div class="pagination">
       <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[20, 50, 100, 200]" :page-size="page_size" layout="total, sizes, prev, pager, next, jumper" :total="total">
       </el-pagination>
     </div>
+    <user-view :view-id="viewId" :dialog-view-visible.sync="dialogViewVisible"></user-view>
     <el-dialog title="添加员工" width="750px" :visible.sync="dialogFormVisible" :close-on-click-modal=false>
       <el-form :model="form" ref="ruleForm" :inline="true" size="small">
         <el-form-item label="姓名" :label-width="formLabelWidth" prop="name" :rules="[{ required: true, message: '名称必填'}]">
-          <el-input v-model="form.name" :autofocus="formFocus" placeholder="真实姓名" auto-complete="off"></el-input>
+          <el-input v-model="form.name" placeholder="真实姓名"></el-input>
         </el-form-item>
         <el-form-item label="用户名" :label-width="formLabelWidth" prop="userName" :rules="[{ required: true, message: '名称必填'}]">
-          <el-input v-model="form.userName" placeholder="登录用户名" auto-complete="off"></el-input>
+          <el-input v-model="form.userName" placeholder="登录用户名"></el-input>
         </el-form-item>
         <el-form-item label="部门" :label-width="formLabelWidth" prop="schoolName" :rules="[{ required: true, message: '部门必填'}]">
-          <school-tree @nodeClick="handleSchool" :name="form.schoolName" :default-value="schoolId"></school-tree>
+          <school-tree @nodeClick="handleSchool" :name="form.schoolName" :default-value="form.schoolZoneId"></school-tree>
         </el-form-item>
         <el-form-item label="性别" :label-width="formLabelWidth" prop="sex" :rules="[{ required: true, message: '必选项'}]">
           <el-radio-group v-model="form.sex">
@@ -87,13 +91,13 @@
           </el-select>
         </el-form-item>
         <el-form-item label="手机号" :label-width="formLabelWidth" prop="phone">
-          <el-input v-model="form.phone" placeholder="手机号" auto-complete="off"></el-input>
+          <el-input v-model="form.phone" placeholder="手机号"></el-input>
         </el-form-item>
         <el-form-item label="邮箱" :label-width="formLabelWidth" prop="email">
-          <el-input v-model="form.email" placeholder="邮箱" auto-complete="off"></el-input>
+          <el-input v-model="form.email" placeholder="邮箱"></el-input>
         </el-form-item>
         <el-form-item label="身份证" :label-width="formLabelWidth" prop="idCard">
-          <el-input v-model="form.idCard" placeholder="身份证" auto-complete="off"></el-input>
+          <el-input v-model="form.idCard" placeholder="身份证"></el-input>
         </el-form-item>
         <el-form-item label="出生日期" :label-width="formLabelWidth" prop="birthday">
           <el-date-picker v-model="form.birthday" type="date" value-format="yyyy-MM-dd" style="width: 200px;" placeholder="出生日期">
@@ -132,16 +136,21 @@ table td {
 
 <script>
 import SchoolTree from "../../common/system/SchoolTree.vue";
+import UserView from "./UserView.vue";
 import {
   getUserList,
   getRoleListBySchoolZoneId,
-  createUser
+  createUser,
+  getUserView,
+  deleteUser,
 } from "../../api/api";
 export default {
   data() {
     return {
       tableData: [],
+      viewId: "",
       dialogFormVisible: false,
+      dialogViewVisible: false,
       total: 0,
       cur_page: 1,
       page_size: 20,
@@ -153,6 +162,20 @@ export default {
       },
       authorityOptions: [],
       formFocus: false,
+      oldForm: { //用于编辑之后表单的初始化
+        //表单 v-modle绑定的值
+        name: "",
+        userName: "",
+        sex: 1,
+        phone: "",
+        email: "",
+        isSuper: 2,
+        birthday: "",
+        schoolZoneId: "",
+        schoolName: "",
+        idCard: "",
+        roles: []
+      },
       form: {
         //表单 v-modle绑定的值
         name: "",
@@ -178,11 +201,6 @@ export default {
     this.getSchoolId();
   },
   watch: {
-    dialogFormVisible() {
-      // console.log(this.dialogFormVisible);
-      this.formFocus = this.dialogFormVisible;
-      console.log(this.formFocus);
-    }
   },
   computed: {
     //实时计算
@@ -246,6 +264,7 @@ export default {
         if (valid) {
           self.loadingForm = true;
           createUser(self.form).then(data => {
+            self.loadingForm = false;
             if (data.code == 200) {
               self.$message.success(data.message);
               self.dialogFormVisible = false;
@@ -268,16 +287,73 @@ export default {
     },
     filterIsSuper(value, row) {
       if (value.isSuper == 1) row.tag = "超级管理员";
-      else row.tag = "普通用户";
+      else row.tag = value.roleName;
       return row.tag;
     },
     //控件方法
+    hadleCommand(command) {
+      switch (command.type) {
+        case "delete": //删除
+          this.handleDelete(command.row);
+          break;
+        case "quit": //离职
+          this.handleNormal(command.row);
+          break;
+        case "sealup":
+          this.handleSealup(command.row);
+          break;
+      }
+    },
+    //修改
     handleEdit(index, row) {
       this.form.fatherId = row.id;
       this.form.fatherName = row.name;
-      this.dialogFormVisible = true;
+      let self = this;
+      getUserView(row.id).then(data => {
+        if (data.code == 200) {
+
+          // self.form = data.data;
+          let obj = data.data;
+          let roles = [];
+          if (obj.roleId) {
+            obj.roleId.split(",").forEach(item => {
+              roles.push(Number(item));
+            })
+          }
+          obj.roles = roles;
+          self.form = obj;
+          this.dialogFormVisible = true;
+        }
+      })
     },
-    handleDelete(index, row) { },
+    handleAdd() {
+      let self = this;
+      self.dialogFormVisible = true;
+      self.form = self.oldForm;
+    },
+    handleView(id) {
+      let self = this;
+      self.viewId = id;
+      self.dialogViewVisible = true;
+    },
+    handleDelete(row) {
+      let self = this;
+      self.$confirm('确定删除该员工信息吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning', closeOnClickModal: false
+      }).then(() => {
+        deleteUser(row.id).then(data => {
+          if (data.code == 200) {
+            self.getUser();
+            self.$message.success(data.message);
+          } else {
+            self.$message.error(data.message);
+          }
+        })
+      }).catch(() => {
+      });
+    },
     handleSchool(data) {
       this.form.schoolName = data.name;
       this.form.schoolZoneId = data.id;
@@ -293,6 +369,6 @@ export default {
       }
     }
   },
-  components: { SchoolTree } //注入组件
+  components: { SchoolTree, UserView } //注入组件
 };
 </script>

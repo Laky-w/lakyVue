@@ -89,9 +89,13 @@ let routesList = [{
   ]
 },
 {
-  path: '/login',
+  path: '/login1',
   component: resolve => require(['../components/page/Login.vue'], resolve)
 },
+{
+  path: '/login',
+  component: resolve => require(['../components/page/Login1.vue'], resolve)
+}
 ]
 let $router = new Router({
   routes: routesList

@@ -48,8 +48,12 @@ export const createNewRole = params => { return axios.post(`organization/createN
 
 //校区查询用户
 export const getUserList = (pageNumber, pageSize, params) => { return axios.post(`organization/getUserList/${pageNumber}/${pageSize}`, params).then(res => res.data); };
+//查询用户详情
+export const getUserView = (id) => { return axios.post(`organization/getUserView/${id}`).then(res => res.data); };
 //创建用户
 export const createUser = params => { return axios.post(`organization/createUser`, params).then(res => res.data); };
+//删除用户
+export const deleteUser = id => { return axios.delete(`organization/deleteUser/${id}`).then(res => res.data); };
 //系统=============
 
 //日志=============
