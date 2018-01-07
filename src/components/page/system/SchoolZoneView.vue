@@ -35,7 +35,7 @@
         <el-tag type="info">{{view.studentNumber}}</el-tag>
       </el-form-item>
       <el-form-item label="生源数量：" v-if="view.theType !=3">
-        <el-tag type="info">{{view.userNumber}}</el-tag>
+        <el-tag type="info">{{view.customerNumber}}</el-tag>
       </el-form-item>
     </el-form>
   </el-dialog>
