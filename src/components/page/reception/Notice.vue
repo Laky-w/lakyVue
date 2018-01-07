@@ -3,7 +3,7 @@
     <div class="handle-box">
       <el-form ref="queryForm" :inline="true" :model="queryForm" label-width="80px" size="mini">
         <el-form-item>
-          <el-input v-model="queryForm.content" clearable placeholder="公告内容" class="handle-input mr10"></el-input>
+          <el-input v-model="queryForm.content" clearable placeholder="公告内容"></el-input>
         </el-form-item>
         <el-form-item>
           <el-select v-model="queryForm.theType" value=1 clearable placeholder="通知范围" class="handle-select mr10">

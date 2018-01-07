@@ -18,7 +18,10 @@
       <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
     </div>
     <el-table :data="tableData" stripe v-loading="loading" border style="width: 100%">
-      <el-table-column label="物品" prop="name">
+      <el-table-column label="物品">
+        <template slot-scope="scope">
+          <a href="javascript:void(0)" @click="handleView(scope.row.id)">{{scope.row.name}}</a>
+        </template>
       </el-table-column>
       <el-table-column label="成本价" sortable prop="price">
       </el-table-column>
@@ -44,6 +47,7 @@
             </template>
             </el-table-column> -->
     </el-table>
+    <goods-view :view-id="viewId" :dialog-view-visible.sync="dialogViewVisible"></goods-view>
     <div class="pagination">
       <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[20, 50, 100, 200]" :page-size="page_size" layout="total, sizes, prev, pager, next, jumper" :total="total">
       </el-pagination>
@@ -112,6 +116,7 @@ table td {
 import SchoolTree from "../../common/system/SchoolTree.vue";
 import UserDialog from "../../common/system/UserDialog.vue";
 import Course from "../../common/teach/Course.vue";
+import GoodsView from "./GoodsView.vue";
 import RoomDialog from "../../common/teach/RoomDialog.vue";
 import { getGoodsList, createGoods, findBranchParameterValueAll } from "../../api/api";
 export default {
@@ -122,6 +127,8 @@ export default {
       total: 0,
       cur_page: 1,
       page_size: 50,
+      viewId: "",
+      dialogViewVisible: false,
       queryForm: {
         name: "",
         clazzId: ""
@@ -236,9 +243,14 @@ export default {
       this.form.fatherName = row.name;
       this.dialogFormVisible = true;
     },
+    handleView(id) {
+      let self = this;
+      self.viewId = id;
+      self.dialogViewVisible = true;
+    },
     handleDelete(index, row) { }
   },
-  components: { SchoolTree, Course, UserDialog, RoomDialog } //注入组件
+  components: { SchoolTree, Course, UserDialog, RoomDialog, GoodsView } //注入组件
 };
 </script>
 
