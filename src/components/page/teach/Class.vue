@@ -16,9 +16,12 @@
       <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
     </div>
     <el-table :data="tableData" stripe v-loading="loading" border style="width: 100%">
-      <el-table-column label="校区" prop="schoolZoneName">
+      <el-table-column label="名称">
+        <template slot-scope="scope">
+          <a href="javascript:void(0)" @click="handleView(scope.row.id)">{{scope.row.name}}</a>
+        </template>
       </el-table-column>
-      <el-table-column label="名称" prop="name">
+      <el-table-column label="校区" prop="schoolZoneName">
       </el-table-column>
       <el-table-column label="课程" prop="courseName">
       </el-table-column>
@@ -52,6 +55,7 @@
         </template>
       </el-table-column>
     </el-table>
+    <class-view :view-id="viewId" :dialog-view-visible.sync="dialogViewVisible"></class-view>
     <div class="pagination">
       <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[20, 50, 100, 200]" :page-size="page_size" layout="total, sizes, prev, pager, next, jumper" :total="total">
       </el-pagination>
@@ -80,6 +84,7 @@ table td {
 </style>
 
 <script>
+import ClassView from "./ClassView.vue";
 import SchoolTree from "../../common/system/SchoolTree.vue";
 import ClassForm from "./ClassForm.vue";
 import ScheduleForm from "./ScheduleForm.vue";
@@ -93,6 +98,8 @@ export default {
       total: 0,
       cur_page: 1,
       page_size: 20,
+      viewId: "",
+      dialogViewVisible: false,
       queryForm: {
         name: "",
         theDate: "",
@@ -181,6 +188,11 @@ export default {
         self.queryForm.schoolZoneId2.push(allNode[i].id);
       }
     },
+    handleView(id) {
+      let self = this;
+      self.viewId = id;
+      self.dialogViewVisible = true;
+    },
     handleCommand(command) {
       // console.log(command);
       let self = this;
@@ -196,6 +208,6 @@ export default {
       }
     }
   },
-  components: { ClassForm, SchoolTree, ScheduleForm } //注入组件
+  components: { ClassForm, SchoolTree, ScheduleForm, ClassView } //注入组件
 };
 </script>

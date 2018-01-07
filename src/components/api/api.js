@@ -121,6 +121,8 @@ export const createCourse = params => { return axios.post(`teach/createCourse`, 
 export const getChargeStandard = (courseId) => { return axios.get(`teach/getChargeStandard/` + courseId).then(res => res.data); };
 // 查询班级
 export const getSchoolClassList = (pageNumber, pageSize, params) => { return axios.post(`teach/getSchoolClassList/${pageNumber}/${pageSize}`, params).then(res => res.data); };
+// 班级详情
+export const getSchoolClassView = id => { return axios.get(`teach/getSchoolClassView/${id}`).then(res => res.data); };
 // 创建班级
 export const createSchoolClass = params => { return axios.post(`teach/createSchoolClass`, params).then(res => res.data); };
 //查询待分班学员
@@ -152,6 +154,8 @@ export const getMoneyRecordAccountList = (recordId) => { return axios.get(`finan
 export const getGoodsList = (pageNumber, pageSize, params) => { return axios.post(`logistics/getGoodsList/${pageNumber}/${pageSize}`, params).then(res => res.data); };
 //创建物品
 export const createGoods = params => { return axios.post(`logistics/createGoods`, params).then(res => res.data); };
+// 查询物品详情
+export const getGoodsView = id => { return axios.get(`logistics/getGoodsView/${id}`).then(res => res.data); };
 //查询库存
 export const getRecordList = (pageNumber, pageSize, params) => { return axios.post(`logistics/getRecordList/${pageNumber}/${pageSize}`, params).then(res => res.data); };
 // 创建库存
