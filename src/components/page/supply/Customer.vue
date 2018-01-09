@@ -14,7 +14,7 @@
     </div>
     <div style="margin:5px;">
       <!-- <el-button type="primary" icon="el-icon-edit" size="mini" @click="dialogFormVisible=true">添加生源</el-button> -->
-      <customer-form @saveSuccess="saveSuccess"></customer-form>
+      <customer-form @saveSuccess="saveSuccess" ref="customerForm"></customer-form>
       <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
     </div>
     <el-table :data="tableData" stripe v-loading="loading" border style="width: 100%">
@@ -39,7 +39,19 @@
       </el-table-column>
       <el-table-column label="创建时间" sortable prop="createTime">
       </el-table-column>
-      <el-table-column sortable label="备注" prop="remarks">
+      <!-- <el-table-column sortable label="备注" prop="remarks" min-width="180px">
+      </el-table-column> -->
+      <el-table-column label="操作">
+        <template slot-scope="scope">
+          <el-dropdown split-button type="primary" @click="handleEdit(scope.$index, scope.row)" @command="hadleCommand" size="small">
+            修改
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item v-if="scope.row.isSuper!==1&&scope.row.quitStatus==1" :command="{row:scope.row,type:'quit'}">新建联系记录</el-dropdown-item>
+              <el-dropdown-item v-if="scope.row.isSuper!==1&&scope.row.quitStatus==2" :command="{row:scope.row,type:'sealup'}">邀约</el-dropdown-item>
+              <el-dropdown-item :command="{row:scope.row,type:'delete'}">删除</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+        </template>
       </el-table-column>
     </el-table>
     <customer-view :view-id="viewId" :dialog-view-visible.sync="dialogViewVisible"></customer-view>
@@ -57,8 +69,7 @@ import CustomerForm from "./CustomerForm.vue";
 import CustomerView from "./CustomerView.vue";
 import {
   getCustomerList,
-  findBranchParameterValueAll,
-  createCustomer
+  findBranchParameterValueAll
 } from "../../api/api";
 
 export default {
@@ -144,11 +155,23 @@ export default {
       self.dialogViewVisible = true;
       // self.$refs["view"].show();
     },
+    hadleCommand(command) {
+      switch (command.type) {
+        case "delete": //删除
+          this.handleDelete(command.row);
+          break;
+        case "quit": //离职
+          this.handleQuit(command.row);
+          break;
+        case "sealup":
+          this.handleSealup(command.row);
+          break;
+      }
+    },
     //控件方法
     handleEdit(index, row) {
-      this.form.fatherId = row.id;
-      this.form.fatherName = row.name;
-      this.dialogFormVisible = true;
+      let self = this;
+      self.$refs["customerForm"].handleEditOpenDialog(row.id);
     },
     handleDelete(index, row) { },
     handleCheckChange(allNode) {

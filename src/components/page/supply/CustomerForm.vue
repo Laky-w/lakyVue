@@ -1,7 +1,7 @@
 <template>
   <div style="display: inline-block;">
     <el-button :type="type" :icon="icon" :size="size" @click="handleOpenDialog">{{text}}</el-button>
-    <el-dialog title="添加生源" :visible.sync="dialogFormVisible" width="750px" custom-class="dialog-form" :close-on-click-modal=false>
+    <el-dialog :title="titleDialog" :visible.sync="dialogFormVisible" width="750px" custom-class="dialog-form" :close-on-click-modal=false>
       <el-form :model="form" ref="ruleForm" inline size="small">
         <el-form-item label="姓名" :label-width="formLabelWidth" prop="name" :rules="[{ required: true, message: '名称必填'},{ min: 2, max: 20, message: '长度在 2 到 20 个字符', trigger: 'blur' }]">
           <el-input v-model="form.name" placeholder="学员名称"></el-input>
@@ -12,25 +12,25 @@
             <el-radio :label="2">女</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="联系电话" :label-width="formLabelWidth" prop="phone" :rules="[{ required: true, message: '该项必填'}]">
+        <el-form-item label="手机" :label-width="formLabelWidth" prop="phone" :rules="[{ required: true, message: '该项必填'}]">
           <el-input v-model="form.phone" placeholder="联系电话"></el-input>
         </el-form-item>
         <el-form-item label="联系人" :label-width="formLabelWidth" prop="contactId" :rules="[{ required: true, message: '该项必填'}]">
-          <el-select v-model="form.contactId" style="width:100%" placeholder="科目">
+          <el-select v-model="form.contactId" style="width:100%" placeholder="联系人">
             <el-option v-for="(item,index) in parameterValue" :key="item.id" :label="item.name" :value="item.id"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="校区" :label-width="formLabelWidth" prop="schoolName" :rules="[{ required: true, message: '部门必填'}]">
-          <school-tree @nodeClick="handleSchool" the-type="2" :name="form.schoolName" :default-value="schoolId"></school-tree>
+        <el-form-item label="校区" :label-width="formLabelWidth" prop="schoolZoneName" :rules="[{ required: true, message: '部门必填'}]">
+          <school-tree @nodeClick="handleSchool" the-type="2" :name="form.schoolZoneName" :default-value="form.schoolZoneId"></school-tree>
         </el-form-item>
         <el-form-item label="负责人" :label-width="formLabelWidth" prop="ownerId">
-          <user-dialog v-model="form.ownerId" title="选择负责人" :the-type="3" :parent-school-id="form.schoolZoneId" placeholder-text="负责人"></user-dialog>
+          <user-dialog v-model="form.ownerId" :default-text="form.ownerName" title="选择负责人" :the-type="3" :parent-school-id="form.schoolZoneId" placeholder-text="负责人"></user-dialog>
         </el-form-item>
-        <el-form-item label="来源活动" :label-width="formLabelWidth" prop="sourceId">
-          <market-activity-dialog v-model="form.sourceId"></market-activity-dialog>
+        <el-form-item label="来源" :label-width="formLabelWidth" prop="sourceId">
+          <market-activity-dialog v-model="form.sourceId" :default-text="form.sourceName"></market-activity-dialog>
         </el-form-item>
         <el-form-item label="意向课程" :label-width="formLabelWidth" prop="intentionId">
-          <course-dialog v-model="form.intentionId" title="意向课程" selected-type="2" placeholder-text="意向课程"></course-dialog>
+          <course-dialog v-model="form.intentionId" title="意向课程" selected-type="2" :default-text="form.intentionCourseName" placeholder-text="意向课程"></course-dialog>
         </el-form-item>
         <el-form-item label="备注" :label-width="formLabelWidth" prop="remarks">
           <el-input v-model="form.remarks" style="width:535px" :rows=3 type="textarea" placeholder="备注"></el-input>
@@ -50,9 +50,9 @@ import UserDialog from "../../common/system/UserDialog.vue";
 import MarketActivityDialog from "../../common/supply/MarketActivityDialog.vue";
 import CourseDialog from "../../common/teach/CourseDialog.vue";
 import {
-  getCustomerList,
   findBranchParameterValueAll,
-  createCustomer
+  createCustomer,
+  getCustomerView
 } from "../../api/api";
 
 export default {
@@ -60,8 +60,7 @@ export default {
     return {
       dialogFormVisible: false,
       parameterValue: [],
-      form: {
-        //表单 v-modle绑定的值
+      oldForm: {
         name: "",
         sex: 1,
         contactId: "",
@@ -70,9 +69,11 @@ export default {
         phone: "",
         remarks: "",
         schoolZoneId: "",
-        schoolName: "",
+        schoolZoneName: "",
         intentionId: []
       },
+      form: {},//
+      titleDialog: "添加生源",
       formLabelWidth: "120px",
       loadingForm: false,
       schoolId: "" //添加用户默认学校id
@@ -89,8 +90,8 @@ export default {
     getSchoolId() {
       let self = this;
       let user = self.$user();
-      self.form.schoolZoneId = user.schoolZoneId;
-      self.form.schoolName = user.schoolZone.name;
+      self.oldForm.schoolZoneId = user.schoolZoneId;
+      self.oldForm.schoolZoneName = user.schoolZone.name;
       self.schoolId = user.schoolZoneId;
     },
     getParameterValue(id) {
@@ -124,15 +125,37 @@ export default {
         }
       });
     },
+    handleEditOpenDialog(id) {
+      getCustomerView(id).then(data => {
+        this.dialogFormVisible = true;
+        if (this.parameterValue.length == 0) {
+          this.getParameterValue(3);
+        }
+        let obj = data.data;
+        let intentionId = [];
+        this.titleDialog = "修改-" + obj.name;
+        if (obj.intentionCourseId) {
+          obj.intentionCourseId.split(",").forEach(item => {
+            intentionId.push(Number(item));
+          });
+        }
+        obj.intentionId = intentionId;
+        this.form = obj;
+        console.log(this.form);
+      })
+
+    },
     handleOpenDialog() {
       this.dialogFormVisible = true;
+      this.form = this.oldForm;
+      this.titleDialog = "添加生源";
       if (this.parameterValue.length == 0) {
         this.getSchoolId();
         this.getParameterValue(3);
       }
     },
     handleSchool(data) {
-      this.form.schoolName = data.name;
+      this.form.schoolZoneName = data.name;
       this.form.schoolZoneId = data.id;
       this.form.roles = [];
     },

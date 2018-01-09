@@ -75,7 +75,7 @@ import { getCourseList, findBranchParameterValueAll } from "../../api/api";
 export default {
   data() {
     return {
-      userInput: "",
+      userInput: this.defaultText,
       userId: "",
       dialogTableVisible: false,
       tableData: [],
@@ -111,6 +111,9 @@ export default {
         this.userInput = userInput.substring(0, userInput.length - 1);
       }
       this.$emit("input", val);
+    },
+    defaultText(val) {
+      this.userInput = val;
     }
   },
   methods: {
@@ -235,6 +238,7 @@ export default {
     placeholderText: {
       default: "课程"
     },
+    defaultText: "",//默认文本
     theType: {
       default: 0
     },

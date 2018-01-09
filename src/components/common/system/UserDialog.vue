@@ -18,7 +18,7 @@
           </el-form>
         </div>
         <el-table :data="tableData" stripe v-loading="loading" border @row-click="handleRowClick" style="width: 100%">
-          <el-table-column label="校区/部门" prop="schoolZone.name" v-if="isAll">
+          <el-table-column label="校区/部门" prop="schoolName" v-if="isAll">
           </el-table-column>
           <el-table-column label="姓名" prop="name">
           </el-table-column>
@@ -84,7 +84,7 @@ export default {
   data() {
     return {
       userInput: this.defaultText,
-      userId: "",
+      userId: this.value,
       dialogTableVisible: false,
       tableData: [],
       total: 0,
@@ -173,7 +173,7 @@ export default {
     },
     filterIsSuper(value, row) {
       if (value.isSuper == 1) row.tag = "超级管理员";
-      else row.tag = "普通用户";
+      else row.tag = value.roleName;
       return row.tag;
     },
     handleCheckChange(allNode) {

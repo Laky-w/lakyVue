@@ -327,7 +327,6 @@ export default {
       let self = this;
       getUserView(row.id).then(data => {
         if (data.code == 200) {
-
           // self.form = data.data;
           let obj = data.data;
           let roles = [];

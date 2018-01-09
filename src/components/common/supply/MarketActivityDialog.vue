@@ -89,7 +89,7 @@ import { findBranchParameterValueAll, getActivityList } from "../../api/api";
 export default {
   data() {
     return {
-      userInput: "",
+      userInput: this.defaultText,
       userId: "",
       dialogTableVisible: false,
       tableData: [],
@@ -117,6 +117,9 @@ export default {
     },
     userId(val) {
       this.$emit("input", val);
+    },
+    defaultText(val) {
+      this.userInput = val;
     }
   },
   methods: {
@@ -207,6 +210,7 @@ export default {
     title: {
       default: "选择市场活动"
     },
+    defaultText: "",//默认文本
     placeholderText: {
       default: "活动"
     },
