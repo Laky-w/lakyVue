@@ -94,6 +94,10 @@ let routesList = [{
 },
 {
   path: '/login',
+  component: resolve => require(['../components/page/Login2.vue'], resolve)
+},
+{
+  path: '/login2',
   component: resolve => require(['../components/page/Login1.vue'], resolve)
 }
 ]

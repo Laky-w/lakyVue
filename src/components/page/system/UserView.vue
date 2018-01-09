@@ -13,6 +13,15 @@
       <el-form-item label="职能：">
         <el-tag type="info">{{filterIsSuper(view)}}</el-tag>
       </el-form-item>
+      <el-form-item label="状态：">
+        <el-tag type="info">{{filterQuitStatus(view)}}</el-tag>
+      </el-form-item>
+      <el-form-item label="离职日期：" v-if="view.quitStatus==2">
+        <el-tag type="info">{{view.quitDate}}</el-tag>
+      </el-form-item>
+      <el-form-item label="离职原因：" v-if="view.quitStatus==2">
+        <el-tag type="info">{{view.quitRemarks}}</el-tag>
+      </el-form-item>
       <el-form-item label="性别：">
         <el-tag type="info">{{view.sex ==1?'男':'女'}}</el-tag>
       </el-form-item>
@@ -88,6 +97,12 @@ export default {
       else tag = value.roleName;
       return tag;
     },
+    filterQuitStatus(value) {
+      let tag = "";
+      if (value.quitStatus == 1) tag = "在职";
+      else tag = "离职";
+      return tag;
+    }
   },
   props: {
     viewId: "",

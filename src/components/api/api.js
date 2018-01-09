@@ -54,6 +54,8 @@ export const getUserView = (id) => { return axios.post(`organization/getUserView
 export const createUser = params => { return axios.post(`organization/createUser`, params).then(res => res.data); };
 //删除用户
 export const deleteUser = id => { return axios.delete(`organization/deleteUser/${id}`).then(res => res.data); };
+//更新用户在职离职状态
+export const updateUserQuitStatus = params => { return axios.put(`organization/updateUserQuitStatus`, params).then(res => res.data); };
 //系统=============
 
 //日志=============

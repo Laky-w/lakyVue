@@ -5,12 +5,12 @@
         <el-form-item>
           <el-input v-model="queryForm.userName" placeholder="用户名" clearable class="handle-input mr10"></el-input>
         </el-form-item>
-        <!-- <el-form-item >
-                    <el-select v-model="queryForm.theType"   value=1 clearable placeholder="登录类型" class="handle-select mr10" >
-                        <el-option key="1" label="登录" value="1"></el-option>
-                        <el-option key="2" label="退出" value="2"></el-option>
-                    </el-select>
-                </el-form-item> -->
+        <el-form-item>
+          <el-select v-model="queryForm.quitStatus" clearable placeholder="在职状态" class="handle-select mr10">
+            <el-option key="1" label="在职" value="1"></el-option>
+            <el-option key="2" label="离职" value="2"></el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item>
           <school-tree :is-show-checkbox=true @handleCheckChange="handleCheckChange"></school-tree>
         </el-form-item>
@@ -36,6 +36,14 @@
       </el-table-column>
       <el-table-column label="性别" prop="sex" :formatter="filterSex">
       </el-table-column>
+      <el-table-column label="状态" prop="quitStatus">
+        <template slot-scope="scope">
+          <!-- {{scope.row.theType}} -->
+          <el-tag :type="scope.row.quitStatus === 2 ? 'info' : 'success'" close-transition>
+            {{scope.row.quitStatus===1?"在职":""}}{{scope.row.quitStatus===2?"离职":""}}
+          </el-tag>
+        </template>
+      </el-table-column>
       <el-table-column label="电话" prop="phone">
       </el-table-column>
       <el-table-column label="出生日期" prop="birthday">
@@ -47,7 +55,8 @@
           <el-dropdown split-button type="primary" @click="handleEdit(scope.$index, scope.row)" @command="hadleCommand" size="small">
             修改
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item v-if="scope.row.isSuper!==1" :command="{row:scope.row,type:'add'}">离职</el-dropdown-item>
+              <el-dropdown-item v-if="scope.row.isSuper!==1&&scope.row.quitStatus==1" :command="{row:scope.row,type:'quit'}">离职</el-dropdown-item>
+              <el-dropdown-item v-if="scope.row.isSuper!==1&&scope.row.quitStatus==2" :command="{row:scope.row,type:'sealup'}">恢复入职</el-dropdown-item>
               <el-dropdown-item :command="{row:scope.row,type:'delete'}">删除</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
@@ -143,6 +152,7 @@ import {
   createUser,
   getUserView,
   deleteUser,
+  updateUserQuitStatus
 } from "../../api/api";
 export default {
   data() {
@@ -158,6 +168,7 @@ export default {
         userName: "",
         theDate: "",
         theType: "",
+        quitStatus: "1",
         schoolZoneId2: []
       },
       authorityOptions: [],
@@ -210,15 +221,15 @@ export default {
     getSchoolId() {
       let self = this;
       let user = self.$user();
-      self.form.schoolZoneId = user.schoolZoneId;
-      self.form.schoolName = user.schoolZone.name;
+      self.oldForm.schoolZoneId = user.schoolZoneId;
+      self.oldForm.schoolName = user.schoolZone.name;
       self.getAuthorityOptions();
       self.schoolId = user.schoolZoneId;
     },
     getAuthorityOptions() {
       let self = this;
       console.log(self.authorityOptions);
-      getRoleListBySchoolZoneId(self.form.schoolZoneId).then(data => {
+      getRoleListBySchoolZoneId(self.oldForm.schoolZoneId).then(data => {
         if (data.code == 200) {
           self.authorityOptions = data.data;
         } else {
@@ -285,6 +296,11 @@ export default {
       else row.tag = "女";
       return row.tag;
     },
+    filterQuitStatus(value, row) {
+      if (value.quitStatus == 1) row.tag = "在职";
+      else row.tag = "离职";
+      return row.tag;
+    },
     filterIsSuper(value, row) {
       if (value.isSuper == 1) row.tag = "超级管理员";
       else row.tag = value.roleName;
@@ -297,7 +313,7 @@ export default {
           this.handleDelete(command.row);
           break;
         case "quit": //离职
-          this.handleNormal(command.row);
+          this.handleQuit(command.row);
           break;
         case "sealup":
           this.handleSealup(command.row);
@@ -351,6 +367,46 @@ export default {
             self.$message.error(data.message);
           }
         })
+      }).catch(() => {
+      });
+    },
+    handleQuit(row) {
+      let self = this;
+      self.$prompt('请输入离职原因', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        inputPlaceholder: '离职原因'
+      }).then(({ value }) => {
+        let obj = { id: row.id, quitStatus: 2, name: row.name, quitRemarks: value };
+        updateUserQuitStatus(obj).then(data => {
+          self.loadingForm = false;
+          if (data.code == 200) {
+            self.$message.success(data.message);
+            self.getUser();
+          } else {
+            self.$message.error(data.message);
+          }
+        });
+      }).catch(() => {
+      });
+    },
+    handleSealup(row) {
+      let self = this;
+      self.$confirm('确定恢复该员工为在职状态吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning', closeOnClickModal: false
+      }).then(() => {
+        let obj = { id: row.id, quitStatus: 1, name: row.name };
+        updateUserQuitStatus(obj).then(data => {
+          self.loadingForm = false;
+          if (data.code == 200) {
+            self.$message.success(data.message);
+            self.getUser();
+          } else {
+            self.$message.error(data.message);
+          }
+        });
       }).catch(() => {
       });
     },

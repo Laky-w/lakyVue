@@ -25,11 +25,11 @@
       <el-form-item label="所属校区" v-if="view.theType !=1">
         <el-tag type="info">{{view.fatherName}}</el-tag>
       </el-form-item>
+      <el-form-item label="员工数量：">
+        <el-tag type="info">{{view.userNumber}}</el-tag>
+      </el-form-item>
       <el-form-item label="校区数量：" v-if="view.theType !=3">
         <el-tag type="info">{{view.schoolNumber}}</el-tag>
-      </el-form-item>
-      <el-form-item label="员工数量：" v-if="view.theType !=3">
-        <el-tag type="info">{{view.userNumber}}</el-tag>
       </el-form-item>
       <el-form-item label="学员数量：" v-if="view.theType !=3">
         <el-tag type="info">{{view.studentNumber}}</el-tag>
