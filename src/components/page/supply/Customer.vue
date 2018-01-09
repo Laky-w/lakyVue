@@ -18,7 +18,7 @@
       <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
     </div>
     <el-table :data="tableData" stripe v-loading="loading" border style="width: 100%">
-      <el-table-column label="名称">
+      <el-table-column label="名称" fixed>
         <template slot-scope="scope">
           <a href="javascript:void(0)" @click="handleView(scope.row.id)">{{ scope.row.name }}</a>
         </template>
@@ -35,9 +35,15 @@
       </el-table-column>
       <el-table-column label="来源活动" prop="sourceId">
       </el-table-column>
+      <el-table-column label="分配状态" prop="allotStatus" :formatter="filterAllotStatus">
+      </el-table-column>
+      <el-table-column label="邀约状态" prop="inviteStatus" :formatter="filterInviteStatus">
+      </el-table-column>
+      <el-table-column label="跟进状态" prop="contactStatus" :formatter="filterContactStatus">
+      </el-table-column>
       <el-table-column label="意向课程" prop="intentionCourseName">
       </el-table-column>
-      <el-table-column label="创建时间" sortable prop="createTime">
+      <el-table-column label="最后修改时间" sortable prop="createTime">
       </el-table-column>
       <!-- <el-table-column sortable label="备注" prop="remarks" min-width="180px">
       </el-table-column> -->
@@ -69,7 +75,8 @@ import CustomerForm from "./CustomerForm.vue";
 import CustomerView from "./CustomerView.vue";
 import {
   getCustomerList,
-  findBranchParameterValueAll
+  findBranchParameterValueAll,
+  deleteCustomer
 } from "../../api/api";
 
 export default {
@@ -149,6 +156,21 @@ export default {
       else row.tag = "女";
       return row.tag;
     },
+    filterAllotStatus(value, row) {
+      if (value.allotStatus == 1) row.tag = "未分配";
+      else row.tag = "已分配";
+      return row.tag;
+    },
+    filterInviteStatus(value, row) {
+      if (value.inviteStatus == 1) row.tag = "未邀约";
+      else row.tag = "已邀约";
+      return row.tag;
+    },
+    filterContactStatus(value, row) {
+      if (value.contactStatus == 1) row.tag = "未跟进";
+      else row.tag = "已跟进";
+      return row.tag;
+    },
     handleView(id) {
       let self = this;
       self.viewId = id;
@@ -173,7 +195,25 @@ export default {
       let self = this;
       self.$refs["customerForm"].handleEditOpenDialog(row.id);
     },
-    handleDelete(index, row) { },
+    handleDelete(row) {
+      let self = this;
+      self.$confirm('确定删除该员工信息吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning', closeOnClickModal: false
+      }).then(() => {
+        console.log(row);
+        deleteCustomer(row.id, { name: row.name }).then(data => {
+          if (data.code == 200) {
+            self.getData();
+            self.$message.success(data.message);
+          } else {
+            self.$message.error(data.message);
+          }
+        })
+      }).catch(() => {
+      });
+    },
     handleCheckChange(allNode) {
       let self = this;
       self.queryForm.schoolZoneId2 = [];
