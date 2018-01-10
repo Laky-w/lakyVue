@@ -53,13 +53,13 @@
       </el-table-column>
       <el-table-column label="意向级别" min-width="160px">
         <template slot-scope="scope">
-          <el-rate v-model="scope.row.intentionLevelInt" disabled :colors="['#99A9BF', '#F7BA2A', '#FF9900']">
+          <el-rate v-model="intentionLevel" disabled :texts="['没意向', '观望', '一般', '考虑', '极高']" show-text :colors="['#99A9BF', '#F7BA2A', '#FF9900']">
           </el-rate>
         </template>
       </el-table-column>
       <el-table-column label="意向课程" prop="intentionCourseName">
       </el-table-column>
-      <el-table-column label="创建时间" sortable prop="createTime" min-width="120px">
+      <el-table-column label="最后修改时间" sortable prop="createTime" min-width="120px">
       </el-table-column>
       <!-- <el-table-column sortable label="备注" prop="remarks" min-width="180px">
       </el-table-column> -->
@@ -77,7 +77,7 @@
       </el-table-column>
     </el-table>
     <customer-view :view-id="viewId" :dialog-view-visible.sync="dialogViewVisible"></customer-view>
-    <contact-form :student-add-id="studentId" @saveSuccess="getData" :studnet-name="studentName" :the-type="2" :dialog-form-visible.sync="dialogContactVisible"></contact-form>
+    <contact-form :student-id="studentId" :dialog-form-visible.sync="dialogContactVisible"></contact-form>
     <div class="pagination">
       <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[20, 50, 100, 200]" :page-size="page_size" layout="total, sizes, prev, pager, next, jumper" :total="total">
       </el-pagination>
@@ -107,7 +107,6 @@ export default {
       page_size: 20,
       viewId: "",//详情id
       studentId: "",
-      studentName: "",
       dialogViewVisible: false,
       dialogContactVisible: false,
       queryForm: {
@@ -164,9 +163,6 @@ export default {
         self.loading = false;
         if (data.code == 200) {
           self.tableData = data.data.list;
-          self.tableData.forEach(item => {
-            item.intentionLevelInt = Number(item.intentionLevel);
-          })
           self.total = data.data.total;
         } else {
           self.$message.error(data.data);
@@ -206,7 +202,6 @@ export default {
     handleContact(row) {
       let self = this;
       self.studentId = row.id;
-      self.studentName = row.name;
       self.dialogContactVisible = true;
     },
     hadleCommand(command) {

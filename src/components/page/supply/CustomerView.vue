@@ -32,7 +32,7 @@
         <el-tag type="info"> {{view.createTime}}</el-tag>
       </el-form-item>
       <el-form-item label="备注:" style="width:100%">
-        <el-input type="textarea" style="width:585px" :rows="3" placeholder="请输入内容" disabled v-model="view.remarks" resize="none">
+        <el-input type="textarea" style="width:585px" :rows="3" disabled v-model="view.remarks" resize="none">
         </el-input>
       </el-form-item>
     </el-form>

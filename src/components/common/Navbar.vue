@@ -10,7 +10,7 @@
     </div>
     <div class="sidebar">
       <router-link style="margin-left: 5px;cursor: pointer;" tag="span" v-for="item in visitedViews" :to="item.path" :key="item.id">
-        <el-tag size="mini" disable-transitions :style="visitedViewsCurrent.path==item.path?'color:#f5f7fa':'color:#2d2f33'" :key="item.id" :color="visitedViewsCurrent.path==item.path?'#67c23a':''" @close.stop="closeTag(item.path,$event)" closable>{{item.name}}
+        <el-tag size="mini" disable-transitions :style="visitedViewsCurrent.path==item.path?'color:#f5f7fa':'color:#2d2f33'" :key="item.id" :color="visitedViewsCurrent.path==item.path?'#67c23a':''" @close.stop="closeTag(item.path,$event)" :closable="closable">{{item.name}}
         </el-tag>
       </router-link>
     </div>
@@ -29,11 +29,18 @@ export default {
       visitedViewsCurrent: {}
     };
   },
+  computed: {
+    //实时计算
+    closable() {
+      return !(this.visitedViews.length == 1 && this.visitedViewsCurrent.path == "/main");
+    }
+  },
   watch: {
     $route() {
       this.getBreadcrumb();
     }
   },
+
   methods: {
     reload(index) {
       // console.log(this.levelList[index].components.default.created());

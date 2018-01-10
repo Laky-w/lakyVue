@@ -112,7 +112,6 @@ export default {
         studentName: "",
         contactStyleId: ""
       },
-      parameterValue: [],
       form: {
         //表单 v-modle绑定的值
         userId: "",

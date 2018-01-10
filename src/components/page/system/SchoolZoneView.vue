@@ -62,7 +62,6 @@ export default {
   },
   watch: {
     dialogViewVisible(val) {
-      // alert(val);
       this.visible = val;
       if (val === true) {
         this.getData();
