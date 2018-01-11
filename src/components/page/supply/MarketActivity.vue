@@ -24,7 +24,7 @@
       </el-form>
     </div>
     <div style="margin:5px;">
-      <el-button type="primary" icon="el-icon-edit" size="mini" @click="dialogFormVisible=true">添加活动</el-button>
+      <el-button type="primary" icon="el-icon-edit" size="mini" @click="handleAdd">添加活动</el-button>
       <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
     </div>
     <el-table :data="tableData" stripe v-loading="loading" border style="width: 100%">
@@ -41,37 +41,27 @@
       </el-table-column>
       <el-table-column sortable label="预算支出" prop="cost">
       </el-table-column>
-      <el-table-column sortable label="计划招生人数" prop="targetNumber">
+      <el-table-column sortable label="计划招生人数" prop="targetNumber" min-width="120">
       </el-table-column>
-      <el-table-column sortable label="活动分类" prop="cateGoryName">
+      <el-table-column sortable label="活动分类" prop="cateGoryName" min-width="120">
       </el-table-column>
-      <el-table-column sortable label="计划开始日期" prop="startDate">
+      <el-table-column sortable label="计划开始日期" prop="startDate" min-width="120">
       </el-table-column>
-      <el-table-column sortable label="计划结束日期" prop="endDate">
+      <el-table-column sortable label="计划结束日期" prop="endDate" min-width="120">
       </el-table-column>
-      <!-- <el-table-column
-            label="排序" sortable
-            prop="sort">
-            </el-table-column> -->
-
-      <!-- <el-table-column label="操作">
-            <template slot-scope="scope">
-                <el-button
-                size="mini"
-                @click="handleEdit(scope.$index, scope.row)">添加</el-button>
-                <el-button
-                size="mini"
-                type="danger"
-                @click="handleDelete(scope.$index, scope.row)">删除</el-button>
-            </template>
-            </el-table-column> -->
+      <el-table-column label="操作" min-width="130">
+        <template slot-scope="scope">
+          <el-button type="primary" plain size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+          <el-button type="primary" plain size="mini" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+        </template>
+      </el-table-column>
     </el-table>
     <market-activity-view :view-id="viewId" :dialog-view-visible.sync="dialogViewVisible"></market-activity-view>
     <div class="pagination">
       <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[20, 50, 100, 200]" :page-size="page_size" layout="total, sizes, prev, pager, next, jumper" :total="total">
       </el-pagination>
     </div>
-    <el-dialog title="添加活动" :visible.sync="dialogFormVisible" :close-on-click-modal=false>
+    <el-dialog :title="titleDialog" :visible.sync="dialogFormVisible" :close-on-click-modal=false>
       <el-form :model="form" ref="ruleForm">
         <el-form-item label="名称" :label-width="formLabelWidth" prop="name" :rules="[{ required: true, message: '班级名称必填'}]">
           <el-input v-model="form.name" placeholder="活动名称"></el-input>
@@ -81,13 +71,13 @@
             <el-option v-for="(item,index) in parameterValue" :key="item.id" :label="item.name" :value="item.id"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="校区" :label-width="formLabelWidth" prop="schoolName" :rules="[{ required: true, message: '校区必填'}]">
-          <school-tree @nodeClick="handleSchool" :name="form.schoolName" :the-type="2" place-text="校区" :default-value="schoolId"></school-tree>
+        <el-form-item label="校区" :label-width="formLabelWidth" prop="schoolZoneName" :rules="[{ required: true, message: '校区必填'}]">
+          <school-tree @nodeClick="handleSchool" :name="form.schoolZoneName" :default-value="form.schoolZoneId" :the-type="2" place-text="校区"></school-tree>
         </el-form-item>
         <el-form-item label="负责人" :label-width="formLabelWidth" prop="userId">
-          <user-dialog v-model="form.userId" title="选择负责人" :the-type="3" :parent-school-id="form.schoolZoneId" placeholder-text="负责人"></user-dialog>
+          <user-dialog v-model="form.userId" :default-text="form.userName" title="选择负责人" :the-type="3" :parent-school-id="form.schoolZoneId" placeholder-text="负责人"></user-dialog>
         </el-form-item>
-        <el-form-item label="活动日期" :label-width="formLabelWidth" prop="startDate">
+        <el-form-item label="活动日期" :label-width="formLabelWidth" prop="startDate" :rules="[{ required: true, message: '该项必填'}]">
           <el-date-picker style="width:48%" v-model="form.startDate" type="date" value-format="yyyy-MM-dd" placeholder="活动开始日期" :picker-options="pickerOptions1">
           </el-date-picker>
           - -
@@ -114,18 +104,18 @@
 import SchoolTree from "../../common/system/SchoolTree.vue";
 import UserDialog from "../../common/system/UserDialog.vue";
 import MarketActivityView from "./MarketActivityView.vue";
-import { findBranchParameterValueAll, getActivityList, createActivity } from "../../api/api";
+import { findBranchParameterValueAll, getActivityList, createActivity, getMarketActivityView, deleteActivity } from "../../api/api";
 export default {
   data() {
     return {
       tableData: [],
+      viewId: "",
+      dialogViewVisible: false,
       dialogFormVisible: false,
       total: 0,
       cur_page: 1,
       page_size: 20,
       parameterValue: [],
-      viewId: "",
-      dialogViewVisible: false,
       queryForm: {
         name: "",
         schoolZoneId2: [],
@@ -146,18 +136,21 @@ export default {
           }
         }
       },
-      form: {
+      oldForm: {
         //表单 v-modle绑定的值
         name: "",
         userId: "",
         schoolZoneId: "",
-        schoolName: "",
+        schoolZoneName: "",
         categoryId: "",
         startDate: new Date().Format("yyyy-MM-dd"),
         endDate: "",
         targetNumber: 0,
         cost: 0
       },
+      form: {
+      },
+      titleDialog: "添加市场活动",
       formLabelWidth: "120px",
       loading: false,
       loadingForm: false,
@@ -185,8 +178,9 @@ export default {
     getSchoolId() {
       let self = this;
       let user = self.$user();
-      self.form.schoolZoneId = user.schoolZoneId;
-      self.form.schoolName = user.schoolZone.name;
+      console.log(user);
+      self.oldForm.schoolZoneId = user.schoolZoneId;
+      self.oldForm.schoolZoneName = user.schoolZone.name;
       self.schoolId = user.schoolZoneId;
     },
     getParameterValue(id) {
@@ -259,11 +253,39 @@ export default {
     handleEdit(index, row) {
       this.form.fatherId = row.id;
       this.form.fatherName = row.name;
-      this.dialogFormVisible = true;
+      let self = this;
+      getMarketActivityView(row.id).then(data => {
+        if (data.code == 200) {
+          let obj = data.data;
+          self.titleDialog = "修改-" + obj.name;
+          self.form = obj;
+          this.dialogFormVisible = true;
+        }
+      })
     },
-    handleDelete(index, row) { },
+
+    handleDelete(index, row) {
+      let self = this;
+      self.$confirm('确定删除该市场活动吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning', closeOnClickModal: false
+      }).then(data => {
+        deleteActivity(row.id).then(data => {
+          if (data.code == 200) {
+            self.getData();
+            self.$message.success(data.message);
+          } else {
+            self.$message.error(data.message);
+          }
+        })
+      }).catch(() => {
+
+      });
+
+    },
     handleSchool(data) {
-      this.form.schoolName = data.name;
+      this.form.schoolZoneName = data.name;
       this.form.schoolZoneId = data.id;
       this.form.roles = [];
     },
@@ -273,6 +295,12 @@ export default {
       for (let i = 0; i < allNode.length; i++) {
         self.queryForm.schoolZoneId2.push(allNode[i].id);
       }
+    },
+    handleAdd() {
+      let self = this;
+      self.dialogFormVisible = true;
+      self.titleDialog = "添加市场活动";
+      self.form = self.oldForm;
     },
     handleView(id) {
       let self = this;
@@ -286,6 +314,6 @@ export default {
       return row.tag;
     }
   },
-  components: { SchoolTree, UserDialog, MarketActivityView } //注入组件
+  components: { SchoolTree, UserDialog, MarketActivityView, getMarketActivityView, deleteActivity } //注入组件
 };
 </script>

@@ -70,7 +70,7 @@
       </el-pagination>
     </div>
     <user-view :view-id="viewId" :dialog-view-visible.sync="dialogViewVisible"></user-view>
-    <el-dialog title="添加员工" width="750px" :visible.sync="dialogFormVisible" :close-on-click-modal=false>
+    <el-dialog :title="titleDialog" width="750px" :visible.sync="dialogFormVisible" :close-on-click-modal=false>
       <el-form :model="form" ref="ruleForm" :inline="true" size="small">
         <el-form-item label="姓名" :label-width="formLabelWidth" prop="name" :rules="[{ required: true, message: '名称必填'}]">
           <el-input v-model="form.name" placeholder="真实姓名"></el-input>
@@ -171,6 +171,7 @@ export default {
         quitStatus: "1",
         schoolZoneId2: []
       },
+      titleDialog: "添加员工",
       authorityOptions: [],
       formFocus: false,
       oldForm: { //用于编辑之后表单的初始化
@@ -327,8 +328,10 @@ export default {
       let self = this;
       getUserView(row.id).then(data => {
         if (data.code == 200) {
+
           // self.form = data.data;
           let obj = data.data;
+          self.titleDialog = "修改-" + obj.name;
           let roles = [];
           if (obj.roleId) {
             obj.roleId.split(",").forEach(item => {
@@ -344,6 +347,7 @@ export default {
     handleAdd() {
       let self = this;
       self.dialogFormVisible = true;
+      self.titleDialog = "添加员工";
       self.form = self.oldForm;
     },
     handleView(id) {
