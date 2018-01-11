@@ -169,6 +169,8 @@ export const getMoneyRecordAccountList = (recordId) => { return axios.get(`finan
 export const getGoodsList = (pageNumber, pageSize, params) => { return axios.post(`logistics/getGoodsList/${pageNumber}/${pageSize}`, params).then(res => res.data); };
 //创建物品
 export const createGoods = params => { return axios.post(`logistics/createGoods`, params).then(res => res.data); };
+//  删除物品
+export const deleteGoods = id => { return axios.delete(`logistics/deleteGoods/${id}`).then(res => res.data); };
 // 查询物品详情
 export const getGoodsView = id => { return axios.get(`logistics/getGoodsView/${id}`).then(res => res.data); };
 //查询库存

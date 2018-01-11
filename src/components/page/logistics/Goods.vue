@@ -14,7 +14,7 @@
       </el-form>
     </div>
     <div style="margin:5px;">
-      <el-button type="primary" icon="el-icon-edit" size="mini" @click="dialogFormVisible=true">添加物品</el-button>
+      <el-button type="primary" icon="el-icon-edit" size="mini" @click="handleAdd">添加物品</el-button>
       <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
     </div>
     <el-table :data="tableData" stripe v-loading="loading" border style="width: 100%">
@@ -27,7 +27,7 @@
       </el-table-column>
       <el-table-column label="售价" sortable prop="sellPrice">
       </el-table-column>
-      <el-table-column label="类别" prop="clazzId">
+      <el-table-column label="类别" prop="clazzName">
       </el-table-column>
       <el-table-column label="库存" prop="lastAmount">
       </el-table-column>
@@ -35,24 +35,19 @@
       </el-table-column>
       <el-table-column label="状态" :formatter="filterType" prop="theType">
       </el-table-column>
-      <!-- <el-table-column label="操作">
-            <template slot-scope="scope">
-                <el-button
-                size="mini"
-                @click="handleEdit(scope.$index, scope.row)">添加</el-button>
-                <el-button
-                size="mini"
-                type="danger"
-                @click="handleDelete(scope.$index, scope.row)">删除</el-button>
-            </template>
-            </el-table-column> -->
+      <el-table-column label="操作" min-width="130">
+        <template slot-scope="scope">
+          <el-button type="primary" plain size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+          <el-button type="primary" plain size="mini" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+        </template>
+      </el-table-column>
     </el-table>
     <goods-view :view-id="viewId" :dialog-view-visible.sync="dialogViewVisible"></goods-view>
     <div class="pagination">
       <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[20, 50, 100, 200]" :page-size="page_size" layout="total, sizes, prev, pager, next, jumper" :total="total">
       </el-pagination>
     </div>
-    <el-dialog title="添加物品" :visible.sync="dialogFormVisible" width="550px" :close-on-click-modal=false>
+    <el-dialog :title="titleDialog" :visible.sync="dialogFormVisible" width="550px" :close-on-click-modal=false>
       <el-form :model="form" ref="ruleForm">
         <el-form-item label="物品" :label-width="formLabelWidth" prop="name" :rules="[{ required: true, message: '物品必填'}]">
           <el-input v-model="form.name" placeholder="物品"></el-input>
@@ -118,17 +113,17 @@ import UserDialog from "../../common/system/UserDialog.vue";
 import Course from "../../common/teach/Course.vue";
 import GoodsView from "./GoodsView.vue";
 import RoomDialog from "../../common/teach/RoomDialog.vue";
-import { getGoodsList, createGoods, findBranchParameterValueAll } from "../../api/api";
+import { getGoodsList, createGoods, findBranchParameterValueAll, deleteGoods, getGoodsView } from "../../api/api";
 export default {
   data() {
     return {
       tableData: [],
+      viewId: "",
+      dialogViewVisible: false,
       dialogFormVisible: false,
       total: 0,
       cur_page: 1,
       page_size: 50,
-      viewId: "",
-      dialogViewVisible: false,
       queryForm: {
         name: "",
         clazzId: ""
@@ -139,13 +134,16 @@ export default {
         }
       },
       parameterValue: [],
-      form: {
+      oldForm: {
         //表单 v-modle绑定的值
         name: "",
         theType: 1,
         clazzId: "",
         price: "",
         lastAmount: 1
+      },
+      form: {
+
       },
       pickerOptions2: {
         disabledDate: time => {
@@ -156,6 +154,7 @@ export default {
           }
         }
       },
+      titleDialog: "添加物品",
       formLabelWidth: "120px",
       loading: false,
       loadingForm: false,
@@ -241,14 +240,46 @@ export default {
     handleEdit(index, row) {
       this.form.fatherId = row.id;
       this.form.fatherName = row.name;
-      this.dialogFormVisible = true;
+      let self = this;
+      getGoodsView(row.id).then(data => {
+        if (data.code == 200) {
+          let obj = data.data;
+          self.titleDialog = "修改-" + obj.name;
+          self.form = obj;
+          this.dialogFormVisible = true;
+        }
+      })
+    },
+    handleAdd() {
+      let self = this;
+      self.dialogFormVisible = true;
+      self.titleDialog = "添加市场活动";
+      self.form = self.oldForm;
     },
     handleView(id) {
       let self = this;
       self.viewId = id;
       self.dialogViewVisible = true;
     },
-    handleDelete(index, row) { }
+    handleDelete(index, row) {
+      let self = this;
+      self.$confirm('确定删除该市场活动吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning', closeOnClickModal: false
+      }).then(data => {
+        deleteGoods(row.id).then(data => {
+          if (data.code == 200) {
+            self.getData();
+            self.$message.success(data.message);
+          } else {
+            self.$message.error(data.message);
+          }
+        })
+      }).catch(() => {
+
+      });
+    }
   },
   components: { SchoolTree, Course, UserDialog, RoomDialog, GoodsView } //注入组件
 };

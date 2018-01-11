@@ -11,7 +11,7 @@
         <el-tag type="info">{{view.sellPrice}}</el-tag>
       </el-form-item>
       <el-form-item label="类别:">
-        <el-tag type="info"> {{view.clazzId}}</el-tag>
+        <el-tag type="info"> {{view.clazzName}}</el-tag>
       </el-form-item>
       <el-form-item label="库存:">
         <el-tag type="info">{{view.lastAmount}}</el-tag>

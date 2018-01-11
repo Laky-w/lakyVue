@@ -30,7 +30,7 @@
           </el-table-column>
           <el-table-column label="售价" sortable prop="sellPrice">
           </el-table-column>
-          <el-table-column label="类别" prop="clazzId">
+          <el-table-column label="类别" prop="clazzName">
           </el-table-column>
           <el-table-column label="库存" prop="lastAmount">
           </el-table-column>
@@ -89,7 +89,7 @@ import { getGoodsList, findBranchParameterValueAll } from "../../api/api";
 export default {
   data() {
     return {
-      userInput: "",
+      userInput: this.defaultText,
       userId: "",
       dialogTableVisible: false,
       tableData: [],
@@ -114,6 +114,9 @@ export default {
         this.userInput = "";
         this.userId = "";
       }
+    },
+    defaultText(val) {
+      this.userInput = val;
     },
     userId(val) {
       if (this.selectedType != 1) {
@@ -245,6 +248,7 @@ export default {
     title: {
       default: "选择物品"
     },
+    defaultText: "",//默认文本
     placeholderText: {
       default: "物品"
     },
