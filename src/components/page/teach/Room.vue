@@ -13,11 +13,14 @@
       </el-form>
     </div>
     <div style="margin:5px;">
-      <el-button type="primary" icon="el-icon-edit" size="mini" @click="dialogFormVisible=true">添加教室</el-button>
+      <el-button type="primary" icon="el-icon-edit" size="mini" @click="handleAdd">添加教室</el-button>
       <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
     </div>
     <el-table :data="tableData" stripe v-loading="loading" border style="width: 100%">
-      <el-table-column label="教室名称" prop="name">
+      <el-table-column label="教室名称">
+        <template slot-scope="scope">
+          <a href="javascript:void(0)" @click="handleView(scope.row.id)">{{scope.row.name}}</a>
+        </template>
       </el-table-column>
       <el-table-column label="校区" prop="schoolZoneName">
       </el-table-column>
@@ -25,24 +28,19 @@
       </el-table-column>
       <el-table-column label="排序" sortable prop="sort">
       </el-table-column>
-
-      <!-- <el-table-column label="操作">
-            <template slot-scope="scope">
-                <el-button
-                size="mini"
-                @click="handleEdit(scope.$index, scope.row)">添加</el-button>
-                <el-button
-                size="mini"
-                type="danger"
-                @click="handleDelete(scope.$index, scope.row)">删除</el-button>
-            </template>
-            </el-table-column> -->
+      <el-table-column label="操作" min-width="130">
+        <template slot-scope="scope">
+          <el-button type="primary" plain size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+          <el-button type="primary" plain size="mini" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+        </template>
+      </el-table-column>
     </el-table>
+    <room-view :view-id="viewId" :dialog-view-visible.sync="dialogViewVisible"></room-view>
     <div class="pagination">
       <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[20, 50, 100, 200]" :page-size="page_size" layout="total, sizes, prev, pager, next, jumper" :total="total">
       </el-pagination>
     </div>
-    <el-dialog title="新增教室" :visible.sync="dialogFormVisible" :close-on-click-modal=false>
+    <el-dialog :title="titleDialog" :visible.sync="dialogFormVisible" :close-on-click-modal=false>
       <el-form :model="form" ref="ruleForm">
         <el-form-item label="教室" :label-width="formLabelWidth" prop="name" :rules="[{ required: true, message: '名称必填'},{ min: 5, max: 20, message: '长度在 5 到 20 个字符', trigger: 'blur' }]">
           <el-input v-model="form.name" placeholder="教室名称" auto-complete="off"></el-input>
@@ -50,8 +48,8 @@
         <el-form-item label="容纳人数" :label-width="formLabelWidth" prop="maxCount">
           <el-input v-model="form.maxCount" placeholder="容纳人数" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="校区" :label-width="formLabelWidth" prop="schoolName" :rules="[{ required: true, message: '部门必填'}]">
-          <school-tree @nodeClick="handleSchool" :name="form.schoolName" :the-type="2" place-text="校区" :default-value="schoolId"></school-tree>
+        <el-form-item label="校区" :label-width="formLabelWidth" prop="schoolZoneName" :rules="[{ required: true, message: '部门必填'}]">
+          <school-tree @nodeClick="handleSchool" :name="form.schoolZoneName" :the-type="2" place-text="校区" :default-value="form.schoolZoneId"></school-tree>
         </el-form-item>
         <el-form-item label="排序" :label-width="formLabelWidth" prop="sort">
           <el-input v-model="form.sort" placeholder="排序"></el-input>
@@ -68,12 +66,16 @@
 
 <script>
 import SchoolTree from "../../common/system/SchoolTree.vue";
-import { getRoomList, createRoom } from "../../api/api";
+import RoomView from "./RoomView.vue";
+import { getRoomList, createRoom, deleteRoom, getRoomView } from "../../api/api";
 export default {
   data() {
     return {
       tableData: [],
+      viewId: "",
+      dialogViewVisible: false,
       dialogFormVisible: false,
+      titleDialog: "添加教室",
       total: 0,
       cur_page: 1,
       page_size: 20,
@@ -81,14 +83,15 @@ export default {
         name: "",
         schoolZoneId2: []
       },
-      form: {
+      oldFrom: {
         //表单 v-modle绑定的值
         name: "",
         maxCount: "",
         schoolZoneId: "",
-        schoolName: "",
+        schoolZoneName: "",
         sort: ""
       },
+      form: {},
       formLabelWidth: "120px",
       loading: false,
       loadingForm: false,
@@ -107,8 +110,8 @@ export default {
     getSchoolId() {
       let self = this;
       let user = self.$user();
-      self.form.schoolZoneId = user.schoolZoneId;
-      self.form.schoolName = user.schoolZone.name;
+      self.oldFrom.schoolZoneId = user.schoolZoneId;
+      self.oldFrom.schoolZoneName = user.schoolZone.name;
       self.schoolId = user.schoolZoneId;
     },
     //初始化属性end
@@ -168,11 +171,49 @@ export default {
     handleEdit(index, row) {
       this.form.fatherId = row.id;
       this.form.fatherName = row.name;
-      this.dialogFormVisible = true;
+      let self = this;
+      getRoomView(row.id).then(data => {
+        if (data.code == 200) {
+          let obj = data.data;
+          self.titleDialog = "修改-" + obj.name;
+          self.form = obj;
+          console.log(self.form);
+          this.dialogFormVisible = true;
+        }
+      })
     },
-    handleDelete(index, row) { },
+    handleDelete(index, row) {
+      let self = this;
+      self.$confirm('确定删除该教室吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning', closeOnClickModal: false
+      }).then(data => {
+        deleteRoom(row.id).then(data => {
+          if (data = code == 200) {
+            self.getData();
+            self.$message.success(data.message);
+          } else {
+            self.$message.error(data.message)
+          }
+        })
+      }).catch(() => {
+
+      });
+    },
+    handleAdd() {
+      let self = this;
+      self.dialogFormVisible = true;
+      self.titleDialog = "添加教室";
+      self.form = self.oldFrom;
+    },
+    handleView(id) {
+      let self = this;
+      self.viewId = id;
+      self.dialogViewVisible = true;
+    },
     handleSchool(data) {
-      this.form.schoolName = data.name;
+      this.form.schoolZoneName = data.name;
       this.form.schoolZoneId = data.id;
       this.form.roles = [];
     },
@@ -184,6 +225,6 @@ export default {
       }
     }
   },
-  components: { SchoolTree } //注入组件
+  components: { SchoolTree, getRoomList, deleteRoom, createRoom, RoomView, getRoomView } //注入组件
 };
 </script>

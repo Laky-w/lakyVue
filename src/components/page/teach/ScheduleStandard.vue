@@ -13,12 +13,15 @@
       </el-form>
     </div>
     <div style="margin:5px;">
-      <el-button type="primary" icon="el-icon-edit" size="mini" @click="dialogFormVisible=true">添加时间段</el-button>
+      <el-button type="primary" icon="el-icon-edit" size="mini" @click="handleAdd">添加时间段</el-button>
     </div>
     <el-table :data="tableData" stripe v-loading="loading" border style="width: 100%">
-      <el-table-column label="名称" prop="name">
+      <el-table-column label="名称">
+        <template slot-scope="scope">
+          <a href="javascript:void(0)" @click="handleView(scope.row.id)">{{scope.row.name}}</a>
+        </template>
       </el-table-column>
-      <el-table-column label="校区" prop="schoolName">
+      <el-table-column label="校区" prop="schoolZoneName">
       </el-table-column>
       <el-table-column sortable label="开始时间" prop="startTime">
       </el-table-column>
@@ -26,30 +29,25 @@
       </el-table-column>
       <el-table-column label="学时" sortable prop="courseHour">
       </el-table-column>
-
-      <!-- <el-table-column label="操作">
-            <template slot-scope="scope">
-                <el-button
-                size="mini"
-                @click="handleEdit(scope.$index, scope.row)">添加</el-button>
-                <el-button
-                size="mini"
-                type="danger"
-                @click="handleDelete(scope.$index, scope.row)">删除</el-button>
-            </template>
-            </el-table-column> -->
+      <el-table-column label="操作" min-width="130">
+        <template slot-scope="scope">
+          <el-button type="primary" plain size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+          <el-button type="primary" plain size="mini" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+        </template>
+      </el-table-column>
     </el-table>
+    <schedule-standard-view :view-id="viewId" :dialog-view-visible.sync="dialogViewVisible"></schedule-standard-view>
     <div class="pagination">
       <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[20, 50, 100, 200]" :page-size="page_size" layout="total, sizes, prev, pager, next, jumper" :total="total">
       </el-pagination>
     </div>
-    <el-dialog title="新增上课时间段" :visible.sync="dialogFormVisible" :close-on-click-modal="false">
+    <el-dialog :title="titleDialog" :visible.sync="dialogFormVisible" :close-on-click-modal=false>
       <el-form :model="form" ref="ruleForm">
         <el-form-item label="名称" :label-width="formLabelWidth" prop="name" :rules="[{ required: true, message: '名称必填'},{ min: 1, max: 20, message: '长度在 1 到 20 个字符', trigger: 'blur' }]">
           <el-input v-model="form.name" placeholder="名称" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="校区" :label-width="formLabelWidth" prop="schoolName" :rules="[{ required: true, message: '部门必填'}]">
-          <school-tree @nodeClick="handleSchool" :name="form.schoolName" :the-type="2" place-text="校区" :default-value="schoolId"></school-tree>
+        <el-form-item label="校区" :label-width="formLabelWidth" prop="schoolZoneName" :rules="[{ required: true, message: '部门必填'}]">
+          <school-tree @nodeClick="handleSchool" :name="form.schoolZoneName" :the-type="2" place-text="校区" :default-value="form.schoolZoneId"></school-tree>
         </el-form-item>
         <el-form-item label="时间" :label-width="formLabelWidth" prop="time" :rules="[{ required: true, message: '上课时间段必填'}]">
           <el-time-picker is-range v-model="form.time" value-format="HH:mm" range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间" placeholder="选择上课时间段">
@@ -70,11 +68,14 @@
 
 <script>
 import SchoolTree from "../../common/system/SchoolTree.vue";
-import { getScheduleStandard, createScheduleStandard } from "../../api/api";
+import ScheduleStandardView from "./ScheduleStandardView.vue";
+import { getScheduleStandard, createScheduleStandard, getScheduleStandardView, deleteScheduleStandard } from "../../api/api";
 export default {
   data() {
     return {
       tableData: [],
+      viewId: "",
+      dialogViewVisible: false,
       dialogFormVisible: false,
       total: 0,
       cur_page: 1,
@@ -83,15 +84,17 @@ export default {
         name: "",
         schoolZoneId2: []
       },
-      form: {
+      oldFrom: {
         //表单 v-modle绑定的值
         name: "",
         maxCount: "",
         time: "",
         schoolZoneId: "",
-        schoolName: "",
+        schoolZoneName: "",
         courseHour: 1
       },
+      form: {},
+      titleDialog: "新增上课时间段",
       formLabelWidth: "120px",
       loading: false,
       loadingForm: false,
@@ -110,8 +113,8 @@ export default {
     getSchoolId() {
       let self = this;
       let user = self.$user();
-      self.form.schoolZoneId = user.schoolZoneId;
-      self.form.schoolName = user.schoolZone.name;
+      self.oldFrom.schoolZoneId = user.schoolZoneId;
+      self.oldFrom.schoolZoneName = user.schoolZone.name;
       self.schoolId = user.schoolZoneId;
     },
     //初始化属性end
@@ -167,17 +170,62 @@ export default {
         }
       });
     },
+
+    handleDelete(index, row) {
+      let self = this;
+      self.$confirm('确定删除排课时间吗', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning', closeOnClickModal: false
+      }).then(data => {
+        deleteScheduleStandard(row.id).then(data => {
+          if (data.code == 200) {
+            self.getData();
+            self.$message.success(data.message);
+          } else {
+            self.$message.error(data.message);
+          }
+        })
+      }).catch(() => {
+
+      })
+    },
+    handleSchool(data) {
+      this.form.schoolZoneName = data.name;
+      this.form.schoolZoneId = data.id;
+      this.form.roles = [];
+    },
+    handleView(id) {
+      let self = this;
+      self.viewId = id;
+      self.dialogViewVisible = true;
+    },
     //控件方法
     handleEdit(index, row) {
       this.form.fatherId = row.id;
       this.form.fatherName = row.name;
-      this.dialogFormVisible = true;
+      let self = this;
+      getScheduleStandardView(row.id).then(data => {
+        if (data.code == 200) {
+          let obj = data.data;
+          self.titleDialog = "修改-" + obj.name;
+          let startDate = obj.startTime.split(":");
+          let endDate = obj.endTime.split(":");
+          let date = new Date();
+          obj.startTime = new Date(date.getFullYear(), date.getMonth(), date.getDate(), startDate[0], startDate[1], 0);
+          obj.endTime = new Date(date.getFullYear(), date.getMonth(), date.getDate(), endDate[0], endDate[1], 0);
+          obj.time = [obj.startTime, obj.endTime];
+          self.form = obj;
+          console.log(self.form);
+          this.dialogFormVisible = true;
+        }
+      })
     },
-    handleDelete(index, row) { },
-    handleSchool(data) {
-      this.form.schoolName = data.name;
-      this.form.schoolZoneId = data.id;
-      this.form.roles = [];
+    handleAdd() {
+      let self = this;
+      self.dialogFormVisible = true;
+      self.titleDialog = "添加上课时间";
+      self.form = self.oldFrom;
     },
     handleCheckChange(allNode) {
       let self = this;
@@ -187,6 +235,6 @@ export default {
       }
     }
   },
-  components: { SchoolTree } //注入组件
+  components: { SchoolTree, ScheduleStandardView, getScheduleStandardView, deleteScheduleStandard } //注入组件
 };
 </script>

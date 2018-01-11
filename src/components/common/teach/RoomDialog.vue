@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-input :placeholder="placeholderText" v-model="userInput" readonly="">
-      <i slot="suffix" style="cursor: pointer;" class="el-input__icon el-icon-more" @click="dialogTableVisible=true"></i>
+      <i slot="suffix" style="cursor: pointer;" class="el-input__icon el-icon-more" @click="handleOpenDialog"></i>
     </el-input>
     <el-dialog :title="title" :visible.sync="dialogTableVisible" :modal-append-to-body=false append-to-body :close-on-click-modal=false>
       <div class="handle-box">
@@ -142,7 +142,14 @@ export default {
     handleRowClick(row, event, column) {
       this.userInput = row.name;
       this.userId = row.id;
+    },
+    handleOpenDialog() {
+      this.dialogTableVisible = true;
+      if (this.tableData.length == 0) {
+        this.getData();
+      }
     }
+
   },
   props: {
     value: "",

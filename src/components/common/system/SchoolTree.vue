@@ -40,7 +40,7 @@ export default {
   // },
   data() {
     return {
-      filterText: name,
+      filterText: this.name,
       checkedNodes: {},
       isShow: true,
       pid: 0,
@@ -71,6 +71,9 @@ export default {
       if (!val) {
         this.$refs.tree2.setCheckedKeys([]);
       }
+    },
+    defaultText(val) {
+      this.userInput = val;
     },
     parentId() {
       this.getSchool();

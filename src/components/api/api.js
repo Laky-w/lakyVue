@@ -89,6 +89,9 @@ export const getActivityList = (pageNumber, pageSize, params) => { return axios.
 export const getMarketActivityView = id => { return axios.get(`supply/getMarketActivityView/${id}`).then(res => res.data); };
 //创建市场活动
 export const createActivity = params => { return axios.post(`supply/createActivity`, params).then(res => res.data); };
+// 删除市场活动
+export const deleteActivity = id => { return axios.delete(`supply/deleteActivity/${id}`).then(res => res.data); };
+
 //招生=============
 
 //前台==========
@@ -113,6 +116,10 @@ export const getOrderDetailList = (orderId) => { return axios.get(`reception/get
 export const getRoomList = (pageNumber, pageSize, params) => { return axios.post(`teach/getRoomList/${pageNumber}/${pageSize}`, params).then(res => res.data); };
 // 创建教室
 export const createRoom = params => { return axios.post(`teach/createRoom`, params).then(res => res.data); };
+// 删除教室  deleteRoom
+export const deleteRoom = id => { return axios.delete(`teach/deleteRoom/${id}`).then(res => res.data); };
+// 教室详情
+export const getRoomView = id => { return axios.get(`teach/getRoomView/${id}`).then(res => res.data); };
 // 查询课程详情
 export const getCourseView = id => { return axios.get(`teach/getCourseView/${id}`).then(res => res.data); };
 //查询课程
@@ -135,6 +142,10 @@ export const getWaitStudentList = (pageNumber, pageSize, params) => { return axi
 export const createScheduleStandard = params => { return axios.post(`teach/createScheduleStandard`, params).then(res => res.data); };
 //查询排课时间段
 export const getScheduleStandard = (pageNumber, pageSize, params) => { return axios.post(`teach/getScheduleStandard/${pageNumber}/${pageSize}`, params).then(res => res.data); };
+// 查询排课详情页
+export const getScheduleStandardView = id => { return axios.get(`teach/getScheduleStandardView/${id}`).then(res => res.data); };
+// 删除排课
+export const deleteScheduleStandard = id => { return axios.delete(`teach/deleteScheduleStandard/${id}`).then(res => res.data); };
 //班级排课
 export const createClassSchedule = params => { return axios.post(`teach/createClassSchedule`, params).then(res => res.data); };
 //查询班级排课
