@@ -30,7 +30,7 @@
       </el-table-column>
       <el-table-column prop="title" sortable label="标题">
       </el-table-column>
-      <el-table-column prop="content" label="内容" width="150">
+      <el-table-column prop="content" label="内容" min-width="150">
       </el-table-column>
       <el-table-column prop="createTime" sortable label="操作时间">
       </el-table-column>

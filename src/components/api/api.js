@@ -72,6 +72,8 @@ export const getCustomerList = (pageNumber, pageSize, params) => { return axios.
 export const getCustomerView = id => { return axios.get(`supply/getCustomerView/${id}`).then(res => res.data); };
 //创建生源
 export const createCustomer = params => { return axios.post(`supply/createCustomer`, params).then(res => res.data); };
+//删除生源
+export const deleteCustomer = (id, params) => { return axios.delete(`supply/deleteCustomer/${id}`, params).then(res => res.data); };
 //查询联系记录
 export const getContactList = (pageNumber, pageSize, params) => { return axios.post(`supply/getContactList/${pageNumber}/${pageSize}`, params).then(res => res.data); };
 
