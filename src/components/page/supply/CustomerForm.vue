@@ -12,7 +12,8 @@
             <el-radio :label="2">女</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="手机" :label-width="formLabelWidth" prop="phone" :rules="[{ required: true, message: '该项必填'}]">
+        <el-form-item label="手机" :label-width="formLabelWidth" prop="phone" :rules="[{ required: true, message: '该项必填'},
+        { validator:$validate.validateStudent, trigger: 'blur'},{ min:11, max: 11, message: '请输入正确的手机号', trigger: 'change' }]">
           <el-input v-model="form.phone" placeholder="联系电话"></el-input>
         </el-form-item>
         <el-form-item label="联系人" :label-width="formLabelWidth" prop="contactId" :rules="[{ required: true, message: '该项必填'}]">
