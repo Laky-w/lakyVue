@@ -146,6 +146,9 @@ a:active {
 .el-table .success-row {
   background: #f0f9eb;
 }
+.el-table .caret-wrapper {
+  width: 10px;
+}
 
 
 /*dialog*/
