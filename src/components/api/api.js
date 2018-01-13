@@ -136,6 +136,8 @@ export const getSchoolClassList = (pageNumber, pageSize, params) => { return axi
 export const getSchoolClassView = id => { return axios.get(`teach/getSchoolClassView/${id}`).then(res => res.data); };
 // 创建班级
 export const createSchoolClass = params => { return axios.post(`teach/createSchoolClass`, params).then(res => res.data); };
+//   删除班级
+export const deleteSchoolClass = id => { return axios.delete(`teach/deleteSchoolClass/${id}`).then(res => res.data); };
 //查询待分班学员
 export const getWaitStudentList = (pageNumber, pageSize, params) => { return axios.post(`teach/getWaitStudentList/${pageNumber}/${pageSize}`, params).then(res => res.data); };
 //创建上课时间段
@@ -155,9 +157,13 @@ export const getClassSchedule = (pageNumber, pageSize, params) => { return axios
 
 //财务=============>>>
 //查询财务账户
-export const getFinanceAccount = (pageNumber, pageSize, params) => { return axios.post(`finance/getFinanceAccountList/${pageNumber}/${pageSize}`, params).then(res => res.data); };
+export const getFinanceAccountList = (pageNumber, pageSize, params) => { return axios.post(`finance/getFinanceAccountList/${pageNumber}/${pageSize}`, params).then(res => res.data); };
+//   查询账户详情
+export const getFinanceAccountView = id => { return axios.get(`finance/getFinanceAccountView/${id}`).then(res => res.data); };
 //创建财务账户
 export const createFinanceAccount = params => { return axios.post(`finance/createFinanceAccount`, params).then(res => res.data); };
+//   删除财务账户
+export const deleteFinanceAccount = id => { return axios.delete(`finance/deleteFinanceAccount/${id}`).then(res => res.data); };
 //查询收支记录
 export const getMoneyRecord = (pageNumber, pageSize, params) => { return axios.post(`finance/getMoneyRecordList/${pageNumber}/${pageSize}`, params).then(res => res.data); };
 //查询收支记录账户明细

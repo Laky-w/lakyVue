@@ -49,7 +49,7 @@
           <el-input v-model="form.maxCount" placeholder="容纳人数" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="校区" :label-width="formLabelWidth" prop="schoolZoneName" :rules="[{ required: true, message: '部门必填'}]">
-          <school-tree @nodeClick="handleSchool" :name="form.schoolZoneName" :the-type="2" place-text="校区" :default-value="form.schoolZoneId"></school-tree>
+          <school-tree @nodeClick="handleSchool" :default-text="form.schoolZoneName" :the-type="2" place-text="校区" :default-value="form.schoolZoneId"></school-tree>
         </el-form-item>
         <el-form-item label="排序" :label-width="formLabelWidth" prop="sort">
           <el-input v-model="form.sort" placeholder="排序"></el-input>

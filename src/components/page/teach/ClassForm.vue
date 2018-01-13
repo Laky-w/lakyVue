@@ -7,8 +7,8 @@
       <el-form-item label="课程" :label-width="formLabelWidth" prop="courseId" :rules="[{ required: true, message: '课程必填'}]">
         <course v-model="form.courseId"></course>
       </el-form-item>
-      <el-form-item label="校区" :label-width="formLabelWidth" prop="schoolName" :rules="[{ required: true, message: '校区必填'}]">
-        <school-tree @nodeClick="handleSchool" :name="form.schoolName" :the-type="2" place-text="校区" :default-value="form.schoolZoneId"></school-tree>
+      <el-form-item label="校区" :label-width="formLabelWidth" prop="schoolZoneName" :rules="[{ required: true, message: '校区必填'}]">
+        <school-tree @nodeClick="handleSchool" :name="form.schoolZoneName" :the-type="2" place-text="校区" :default-value="form.schoolZoneId"></school-tree>
       </el-form-item>
       <el-form-item label="主教" :label-width="formLabelWidth" prop="mainTeacherId">
         <user-dialog v-model="form.mainTeacherId" title="选择主教" :the-type="3" :parent-school-id="form.schoolZoneId" placeholder-text="主教"></user-dialog>
@@ -38,7 +38,7 @@ import SchoolTree from "../../common/system/SchoolTree.vue";
 import UserDialog from "../../common/system/UserDialog.vue";
 import Course from "../../common/teach/Course.vue";
 import RoomDialog from "../../common/teach/RoomDialog.vue";
-import { createSchoolClass } from "../../api/api";
+import { createSchoolClass, getSchoolClassView } from "../../api/api";
 export default {
   data() {
     return {
@@ -56,7 +56,7 @@ export default {
           }
         }
       },
-      form: {
+      oldForm: {
         //表单 v-modle绑定的值
         name: "",
         courseId: "",
@@ -65,8 +65,10 @@ export default {
         startDate: "",
         endDate: "",
         schoolZoneId: "",
-        schoolName: ""
+        schoolZoneName: ""
       },
+      form: {},
+      dialogFormVisible: false,
       formLabelWidth: "120px",
       loadingForm: false,
     };
@@ -90,18 +92,21 @@ export default {
     getSchoolId() {
       let self = this;
       let user = self.$user();
-      self.form.schoolZoneId = user.schoolZoneId;
-      self.form.schoolName = user.schoolZone.name;
+      self.oldForm.schoolZoneId = user.schoolZoneId;
+      self.oldForm.schoolZoneName = user.schoolZone.name;
     },
     //保存表单
     submitForm(callback) {
       let self = this;
       self.$refs["ruleForm"].validate(valid => {
         if (valid) {
+          self.loadingForm = true;
           createSchoolClass(self.form).then(data => {
+            self.loadingForm = false;
             if (data.code == 200) {
               self.$message.success(data.message);
               self.$refs[formName].resetFields();
+              self.dialogFormVisible = false;
             } else {
               this.$message.error(data.data);
             }
@@ -117,8 +122,15 @@ export default {
         }
       });
     },
+    handleEditOpenDialog(id) {
+      getSchoolClassView(id).then(data => {
+        this.dialogFormVisible = true;
+        let obj = data.data;
+        this.form = obj;
+      })
+    },
     handleSchool(data) {
-      this.form.schoolName = data.name;
+      this.form.schoolZoneName = data.name;
       this.form.schoolZoneId = data.id;
     }
   },
