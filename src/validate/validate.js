@@ -10,8 +10,7 @@ export const validateMoney = (rule, value, callback) => { //金钱验证
   }
 }
 
-export const validateStudent = (rule, value, callback) => { //金钱验证
-  console.log(value);
+export const validateStudent = (rule, value, callback) => {
   if (value.length != 11) {
     callback(new Error("请输入正确的手机号"));
   } else {
@@ -34,12 +33,5 @@ export const validateStudent = (rule, value, callback) => { //金钱验证
         callback(new Error("网络错误，请尝试刷新操作！"));
       }
     })
-
   }
-  // if (value !== "" && !reg.test(value)) {
-  //   callback(new Error("格式错误,正确格式[0.00]"));
-  // } else {
-  //   callback();
-  // }
-
 }

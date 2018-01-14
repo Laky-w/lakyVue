@@ -1,49 +1,45 @@
 <template>
-  <div style="display: inline-block;">
-    <el-button :type="type" :icon="icon" :size="size" @click="handleOpenDialog">{{text}}</el-button>
-    <el-dialog :title="titleDialog" :visible.sync="dialogFormVisible" width="750px" custom-class="dialog-form" :close-on-click-modal=false>
-      <el-form :model="form" ref="ruleForm" inline size="small">
-        <el-form-item label="姓名" :label-width="formLabelWidth" prop="name" :rules="[{ required: true, message: '名称必填'},{ min: 2, max: 20, message: '长度在 2 到 20 个字符', trigger: 'blur' }]">
-          <el-input v-model="form.name" placeholder="学员名称"></el-input>
-        </el-form-item>
-        <el-form-item label="性别" :label-width="formLabelWidth" prop="sex">
-          <el-radio-group v-model="form.sex">
-            <el-radio :label="1">男</el-radio>
-            <el-radio :label="2">女</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="手机" :label-width="formLabelWidth" prop="phone" :rules="[{ required: true, message: '该项必填'},
-        { validator:$validate.validateStudent, trigger: 'blur'},{ min:11, max: 11, message: '请输入正确的手机号', trigger: 'change' }]">
-          <el-input v-model="form.phone" placeholder="联系电话"></el-input>
-        </el-form-item>
-        <el-form-item label="联系人" :label-width="formLabelWidth" prop="contactId" :rules="[{ required: true, message: '该项必填'}]">
-          <el-select v-model="form.contactId" style="width:100%" placeholder="联系人">
-            <el-option v-for="(item,index) in parameterValue" :key="item.id" :label="item.name" :value="item.id"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="校区" :label-width="formLabelWidth" prop="schoolZoneName" :rules="[{ required: true, message: '部门必填'}]">
-          <school-tree @nodeClick="handleSchool" the-type="2" :name="form.schoolZoneName" :default-value="form.schoolZoneId"></school-tree>
-        </el-form-item>
-        <el-form-item label="负责人" :label-width="formLabelWidth" prop="ownerId">
-          <user-dialog v-model="form.ownerId" :default-text="form.ownerName" title="选择负责人" :the-type="3" :parent-school-id="form.schoolZoneId" placeholder-text="负责人"></user-dialog>
-        </el-form-item>
-        <el-form-item label="来源" :label-width="formLabelWidth" prop="sourceId">
-          <market-activity-dialog v-model="form.sourceId" :default-text="form.sourceName"></market-activity-dialog>
-        </el-form-item>
-        <el-form-item label="意向课程" :label-width="formLabelWidth" prop="intentionId">
-          <course-dialog v-model="form.intentionId" title="意向课程" selected-type="2" :default-text="form.intentionCourseName" placeholder-text="意向课程"></course-dialog>
-        </el-form-item>
-        <el-form-item label="备注" :label-width="formLabelWidth" prop="remarks">
-          <el-input v-model="form.remarks" style="width:535px" :rows=3 type="textarea" placeholder="备注"></el-input>
-        </el-form-item>
-
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button :loading="loadingForm" type="primary" @click="submitForm('ruleForm')">保 存</el-button>
-      </div>
-    </el-dialog>
-  </div>
+  <el-dialog :title="titleDialog" :visible.sync="visible" width="750px" :close-on-click-modal=false @close="$emit('update:dialogFormVisible', false)" custom-class="dialog-form">
+    <el-form :model="form" ref="ruleForm" inline size="small">
+      <el-form-item label="姓名" :label-width="formLabelWidth" prop="name" :rules="[{ required: true, message: '名称必填'},{ min: 2, max: 20, message: '长度在 2 到 20 个字符', trigger: 'blur' }]">
+        <el-input v-model="form.name" placeholder="学员名称"></el-input>
+      </el-form-item>
+      <el-form-item label="性别" :label-width="formLabelWidth" prop="sex">
+        <el-radio-group v-model="form.sex">
+          <el-radio :label="1">男</el-radio>
+          <el-radio :label="2">女</el-radio>
+        </el-radio-group>
+      </el-form-item>
+      <el-form-item label="手机" :label-width="formLabelWidth" prop="phone" :rules="[{ required: true, message: '该项必填'},
+        { validator:validateStudent, trigger: 'blur'},{ min:11, max: 11, message: '请输入正确的手机号', trigger: 'change' }]">
+        <el-input v-model="form.phone" placeholder="联系电话"></el-input>
+      </el-form-item>
+      <el-form-item label="联系人" :label-width="formLabelWidth" prop="contactId" :rules="[{ required: true, message: '该项必填'}]">
+        <el-select v-model="form.contactId" style="width:100%" placeholder="联系人">
+          <el-option v-for="(item,index) in parameterValue" :key="item.id" :label="item.name" :value="item.id"></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="校区" :label-width="formLabelWidth" prop="schoolZoneName" :rules="[{ required: true, message: '部门必填'}]">
+        <school-tree @nodeClick="handleSchool" the-type="2" :name="form.schoolZoneName" :default-value="form.schoolZoneId"></school-tree>
+      </el-form-item>
+      <el-form-item label="负责人" :label-width="formLabelWidth" prop="ownerId">
+        <user-dialog v-model="form.ownerId" :default-text="form.ownerName" title="选择负责人" :the-type="3" :parent-school-id="form.schoolZoneId" placeholder-text="负责人"></user-dialog>
+      </el-form-item>
+      <el-form-item label="来源" :label-width="formLabelWidth" prop="sourceId">
+        <market-activity-dialog v-model="form.sourceId" :default-text="form.sourceName"></market-activity-dialog>
+      </el-form-item>
+      <el-form-item label="意向课程" :label-width="formLabelWidth" prop="intentionId">
+        <course-dialog v-model="form.intentionId" title="意向课程" selected-type="2" :default-text="form.intentionCourseName" placeholder-text="意向课程"></course-dialog>
+      </el-form-item>
+      <el-form-item label="备注" :label-width="formLabelWidth" prop="remarks">
+        <el-input v-model="form.remarks" style="width:535px" :rows=3 type="textarea" placeholder="备注"></el-input>
+      </el-form-item>
+    </el-form>
+    <div slot="footer" class="dialog-footer">
+      <el-button @click="visible = false">取 消</el-button>
+      <el-button :loading="loadingForm" type="primary" @click="submitForm('ruleForm')">保 存</el-button>
+    </div>
+  </el-dialog>
 </template>
 <script>
 import SchoolTree from "../../common/system/SchoolTree.vue";
@@ -53,13 +49,13 @@ import CourseDialog from "../../common/teach/CourseDialog.vue";
 import {
   findBranchParameterValueAll,
   createCustomer,
-  getCustomerView
+  getCustomerView,
+  getCustomerList
 } from "../../api/api";
-
 export default {
   data() {
     return {
-      dialogFormVisible: false,
+      visible: this.dialogFormVisible,
       parameterValue: [],
       oldForm: {
         name: "",
@@ -80,11 +76,10 @@ export default {
       schoolId: "" //添加用户默认学校id
     };
   },
-  created() {
-
-  },
-  computed: {
-    //实时计算
+  watch: {
+    dialogFormVisible(val) {
+      this.visible = val;
+    }
   },
   methods: {
     //初始化属性start
@@ -104,6 +99,34 @@ export default {
         }
       });
     },
+    validateStudent(rule, value, callback) {//手机验证
+      if (value.length != 11) {
+        callback(new Error("请输入正确的手机号"));
+      } else {
+        getCustomerList(1, 20, { "phone": value }).then(data => {
+          if (data.code == 200) {
+            if (data.data.total > 0) {
+              let message = "";
+              data.data.list.forEach(item => {
+                if (item.id != this.form.id) {
+                  message += item.name + "，所属校区:" + item.schoolZoneName + ";"
+                }
+              })
+              if (message) {
+                this.$message.warning(message);
+                callback(new Error("该电话信息已存在！"));
+              } else {
+                callback();
+              }
+            } else {
+              callback();
+            }
+          } else {
+            callback(new Error("网络错误，请尝试刷新操作！"));
+          }
+        })
+      }
+    },
     //保存表单
     submitForm(formName) {
       let self = this;
@@ -115,7 +138,7 @@ export default {
             if (data.code == 200) {
               self.$message.success(data.message);
               self.$refs[formName].resetFields();
-              self.dialogFormVisible = false;
+              self.visible = false;
               this.$emit("saveSuccess", data.data);
             } else {
               self.$message.error(data.message);
@@ -128,7 +151,7 @@ export default {
     },
     handleEditOpenDialog(id) {
       getCustomerView(id).then(data => {
-        this.dialogFormVisible = true;
+        this.visible = true;
         if (this.parameterValue.length == 0) {
           this.getParameterValue(3);
         }
@@ -147,7 +170,7 @@ export default {
 
     },
     handleOpenDialog() {
-      this.dialogFormVisible = true;
+      this.visible = true;
       this.form = this.oldForm;
       this.titleDialog = "添加生源";
       if (this.parameterValue.length == 0) {
@@ -162,21 +185,13 @@ export default {
     },
   },
   props: {
-    type: {
-      default: "primary"
-    },
-    icon: {
-      default: "el-icon-edit"
-    },
-    size: {
-      default: "mini"
+    dialogFormVisible: {
+      default: false
     },
     text: {
       default: "添加生源"
-    }
+    },
   },
   components: { SchoolTree, UserDialog, MarketActivityDialog, CourseDialog } //注入组件
-};
+}
 </script>
-
-

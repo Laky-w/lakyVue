@@ -33,6 +33,10 @@ export default {
   computed: {
     userHeadLogo() {
       let user = this.$user();
+      if (user == "null") {
+        this.$router.push("/login");
+        return;
+      }
       let userHeadLogo = user.headLogo;
       return userHeadLogo ? userHeadLogo : this.defaultHeadLogo;
     },
