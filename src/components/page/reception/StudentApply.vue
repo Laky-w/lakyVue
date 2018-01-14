@@ -227,7 +227,7 @@ import CustomerDialog from "../../common/supply/CustomerDialog.vue";
 import CustomerForm from "../supply/CustomerForm.vue";
 import CourseDialog from "../../common/teach/CourseDialog.vue";
 import ClassDialog from "../../common/teach/ClassDialog.vue";
-import { getChargeStandard, getFinanceAccount, createStudentApply } from "../../api/api";
+import { getChargeStandard, getFinanceAccountList, createStudentApply } from "../../api/api";
 
 export default {
   data() {
@@ -353,7 +353,7 @@ export default {
     loadFinanceAccount() {
       let self = this;
       let schoolZoneId = self.$user().schoolZoneId;
-      getFinanceAccount(1, 20, { schoolZoneId2: schoolZoneId, theOpen: 1 }).then(data => {
+      getFinanceAccountList(1, 20, { schoolZoneId2: schoolZoneId, theOpen: 1 }).then(data => {
         if (data.data) {
           self.financeAccount = data.data.list;
           self.financeAccount.forEach(item => {

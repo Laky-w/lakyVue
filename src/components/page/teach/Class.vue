@@ -39,17 +39,11 @@
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-dropdown @command="handleCommand">
-            <el-button type="primary" size="mini">
-              操作
-              <i class="el-icon-arrow-down el-icon--right"></i>
-            </el-button>
+          <el-dropdown split-button type="primary" @click="handleEdit(scope.$index, scope.row)" @command="handleCommand" size="small">
+            编辑
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item :command="{item:'a',class:scope.row}">排课</el-dropdown-item>
-              <!-- <el-dropdown-item>狮子头</el-dropdown-item>
-                  <el-dropdown-item>螺蛳粉</el-dropdown-item>
-                  <el-dropdown-item>双皮奶</el-dropdown-item>
-                  <el-dropdown-item>蚵仔煎</el-dropdown-item> -->
+              <el-dropdown-item :command="{item:'course',row:scope.row}">排课</el-dropdown-item>
+              <el-dropdown-item :command="{item:'delete',row:scope.row}">删除</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </template>
@@ -88,7 +82,7 @@ import ClassView from "./ClassView.vue";
 import SchoolTree from "../../common/system/SchoolTree.vue";
 import ClassForm from "./ClassForm.vue";
 import ScheduleForm from "./ScheduleForm.vue";
-import { getSchoolClassList } from "../../api/api";
+import { getSchoolClassList, deleteSchoolClass, getSchoolClassView } from "../../api/api";
 export default {
   data() {
     return {
@@ -176,11 +170,28 @@ export default {
     },
     //控件方法
     handleEdit(index, row) {
-      this.form.fatherId = row.id;
-      this.form.fatherName = row.name;
-      this.dialogFormVisible = true;
+      let self = this;
+      self.$refs["form"].handleEditOpenDialog(row.id);
     },
-    handleDelete(index, row) { },
+    handleDelete(row) {
+      let self = this;
+      self.$confirm('确定删除开班信息吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning', closeOnClickModal: false
+      }).then(() => {
+        console.log(row);
+        deleteSchoolClass(row.id).then(data => {
+          if (data.code == 200) {
+            self.getData();
+            self.$message.success(data.message);
+          } else {
+            self.$message.error(data.message);
+          }
+        })
+      }).catch(() => {
+      });
+    },
     handleCheckChange(allNode) {
       let self = this;
       self.queryForm.schoolZoneId2 = [];
@@ -197,13 +208,13 @@ export default {
       // console.log(command);
       let self = this;
       switch (command.item) {
-        case "a":
-          self.currentClass = command.class;
+        case "course":
+          self.currentClass = command.row;
           console.log(self.currentClass);
           self.dialogScheduleFormVisible = true;
           break;
-
-        default:
+        case "delete":
+          self.handleDelete(command.row);
           break;
       }
     }

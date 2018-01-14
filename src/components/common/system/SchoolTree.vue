@@ -40,7 +40,7 @@ export default {
   // },
   data() {
     return {
-      filterText: this.name,
+      filterText: this.defaultText,
       checkedNodes: {},
       isShow: true,
       pid: 0,
@@ -73,7 +73,8 @@ export default {
       }
     },
     defaultText(val) {
-      this.userInput = val;
+      console.log(val);
+      this.filterText = val;
     },
     parentId() {
       this.getSchool();
@@ -148,7 +149,7 @@ export default {
 
   props: {
     value: "",
-    name: "",
+    defaultText: "",
     isShowCheckbox: {
       default: false
     },

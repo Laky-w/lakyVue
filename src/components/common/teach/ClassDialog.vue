@@ -13,7 +13,6 @@
             <el-form-item>
               <school-tree :default-value="schoolId" :is-show-checkbox=true :the-type="2" place-text="校区" @handleCheckChange="handleCheckChange"></school-tree>
             </el-form-item>
-
             <el-button type="mini" icon="el-icon-search" @click="search('queryForm')">搜索</el-button>
           </el-form>
         </div>
@@ -72,7 +71,7 @@ import { getSchoolClassList, findBranchParameterValueAll } from "../../api/api";
 export default {
   data() {
     return {
-      userInput: "",
+      userInput: this.defaultText,
       userId: "",
       dialogTableVisible: false,
       tableData: [],
@@ -97,6 +96,9 @@ export default {
         this.userInput = "";
         this.userId = "";
       }
+    },
+    defaultText(val) {
+      this.userInput = val;
     },
     userId(val) {
       if (this.selectedType != 1) {
@@ -238,6 +240,7 @@ export default {
     title: {
       default: "选择班级"
     },
+    defaultText: "",
     placeholderText: {
       default: "班级"
     },
