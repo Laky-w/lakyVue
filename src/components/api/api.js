@@ -116,6 +116,8 @@ export const createContact = params => { return axios.post(`supply/createContact
 export const deleteContent = id => { return axios.delete(`supply/deleteContent/${id}`).then(res => res.data); };
 //查询邀约记录
 export const getInviteList = (pageNumber, pageSize, params) => { return axios.post(`supply/getInviteList/${pageNumber}/${pageSize}`, params).then(res => res.data); };
+//查询邀约记录详情 
+export const getInviteView = id => { return axios.get(`supply/getInviteView/${id}`).then(res => res.data); };
 //创建邀约记录
 export const createInvite = params => { return axios.post(`supply/createInvite`, params).then(res => res.data); };
 //删除邀约记录

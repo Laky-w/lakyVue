@@ -1,16 +1,22 @@
 <template>
   <el-dialog title="添加邀约参观" :visible.sync="visible" width="750px" :close-on-click-modal=false @close="$emit('update:dialogFormVisible', false)" custom-class="dialog-form">
     <el-form :model="form" ref="ruleForm" size="small">
-      <el-form-item v-if="theType==1" label="参观人" :label-width="formLabelWidth" prop="studentId" :rules="[{ required: true, message: '名称必填'}]">
+      <el-form-item v-if="theType==1 && !form.id" label="参观人" :label-width="formLabelWidth" prop="studentId" :rules="[{ required: true, message: '名称必填'}]">
         <customer-dialog v-model="form.studentId" title="参观人" placeholder-text="参观人">
         </customer-dialog>
       </el-form-item>
-      <el-form-item v-if="theType==2" label="参观人" :label-width="formLabelWidth">
-        {{studnetName}}
+      <el-form-item v-if="theType==2 || form.id" label="参观人" :label-width="formLabelWidth">
+        {{studnetName}}{{form.studentName}}
       </el-form-item>
       <el-form-item label="参观时间" :label-width="formLabelWidth" prop="inviteTime" :rules="[{ required: true, message: '必选项'}]">
-        <el-date-picker v-model="form.inviteTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="参观时间">
+        <el-date-picker v-model="form.inviteTime" type="datetime" :picker-options="pickerOptions1" value-format="yyyy-MM-dd HH:mm:ss" placeholder="参观时间">
         </el-date-picker>
+      </el-form-item>
+      <el-form-item v-if="form.id" label="是否参观" :label-width="formLabelWidth" prop="inviteStatus">
+        <el-radio-group v-model="form.inviteStatus">
+          <el-radio :label="1">未到</el-radio>
+          <el-radio :label="2">到</el-radio>
+        </el-radio-group>
       </el-form-item>
       <el-form-item label="备注" :label-width="formLabelWidth" prop="remarks">
         <el-input v-model="form.remarks" :rows=3 type="textarea" placeholder="备注"></el-input>
@@ -39,17 +45,24 @@
 import UserDialog from "../../common/system/UserDialog.vue";
 import CustomerDialog from "../../common/supply/CustomerDialog";
 import {
-  createInvite
+  createInvite, getInviteView
 } from "../../api/api";
 export default {
   data() {
     return {
       visible: this.dialogFormVisible,
       parameterValue: [],
-      form: {
+      pickerOptions1: {
+        disabledDate(time) {
+          return time.getTime() < Date.now() - 24 * 60 * 60 * 1000;
+        }
+      },
+      oldForm: {
         remarks: "",
         inviteTime: "",
-        studentId: self.studentAddId,
+        studentId: self.studentAddId
+      },
+      form: {
       },
       formLabelWidth: "120px",
       loadingForm: false
@@ -57,15 +70,26 @@ export default {
   },
   watch: {
     dialogFormVisible(val) {
+      if (val) { this.form = this.oldForm };
       this.visible = val;
     },
     studentAddId(val) {
-      this.form.studentId = val;
+      this.oldForm.studentId = val;
     }
   },
   created() {
   },
   methods: {
+    editForm(id) {
+      let self = this;
+      getInviteView(id).then(data => {
+        if (data.code == 200) {
+          self.visible = true;
+          let obj = data.data;
+          self.form = obj;
+        }
+      })
+    },
     submitForm(formName) {
       let self = this;
       self.$refs[formName].validate(valid => {

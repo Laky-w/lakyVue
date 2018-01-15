@@ -112,7 +112,7 @@ export default {
           let obj = data.data;
           obj.intentionLevel = Number(obj.intentionLevel);
           obj.theStatus = obj.contactStatus + "";
-          self.form = data.data;
+          self.form = obj;
         }
       })
     },
