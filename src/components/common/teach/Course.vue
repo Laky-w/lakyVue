@@ -15,13 +15,17 @@ export default {
   },
   watch: {
     value(val) {
-      if (!val) this.selectedOptions = [];
+      if (!val) {
+        this.selectedOptions = [];
+      } else {
+        this.selectedOptions = this.defaultValue;
+      }
     },
     selectedOptions(val) {
-      console.log(val);
       if (val.length > 0) this.$emit("input", val[2]);
     }
   },
+
   created() {
     this.getData();
   },
@@ -35,7 +39,8 @@ export default {
     }
   },
   props: {
-    value: ""
+    value: "",
+    defaultValue: []
   }
 };
 </script>

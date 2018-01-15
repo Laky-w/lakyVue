@@ -14,16 +14,16 @@
     <div style="margin:5px;">
       <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
     </div>
-    <el-table :data="tableData" stripe v-loading="loading" border show-summary style="width: 100%">
-      <el-table-column label="校区" prop="schoolZoneId">
+    <el-table :data="tableData" stripe v-loading="loading" border show-summary @sort-change="handSortChange" style="width: 100%">
+      <el-table-column label="校区" sortable="custom" prop="schoolZoneId">
       </el-table-column>
-      <el-table-column label="物品" prop="goodsName">
+      <el-table-column label="物品" sortable="custom" prop="goodsName">
       </el-table-column>
-      <el-table-column label="类别" prop="clazzName">
+      <el-table-column label="类别" sortable="custom" prop="clazzName">
       </el-table-column>
-      <el-table-column label="剩余数量" prop="lastAmount">
+      <el-table-column label="剩余数量" sortable="custom" prop="lastAmount">
       </el-table-column>
-      <el-table-column label="消耗数量" prop="consumeAmount">
+      <el-table-column label="消耗数量" sortable="custom" prop="consumeAmount">
       </el-table-column>
     </el-table>
     <div class="pagination">
@@ -130,6 +130,16 @@ export default {
       this.form.schoolName = data.name;
       this.form.schoolZoneId = data.id;
       this.form.roles = [];
+    },
+    handSortChange(column, prop, order) {
+      console.log(column);
+      let self = this;
+      if (column.column) {
+        self.queryForm.sort = JSON.stringify({ prop: column.prop, order: column.order });
+      } else {
+        self.queryForm.sort = "";
+      }
+      self.getData();
     },
     handleCheckChange(allNode) {
       let self = this;

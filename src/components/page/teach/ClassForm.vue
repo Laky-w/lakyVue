@@ -5,19 +5,19 @@
         <el-input v-model="form.name" placeholder="班级名称"></el-input>
       </el-form-item>
       <el-form-item label="课程" :label-width="formLabelWidth" prop="courseId" :rules="[{ required: true, message: '课程必填'}]">
-        <course v-model="form.courseId"></course>
+        <course v-model="form.courseId" :default-value="form.courseInfo"></course>
       </el-form-item>
       <el-form-item label="校区" :label-width="formLabelWidth" prop="schoolZoneName" :rules="[{ required: true, message: '校区必填'}]">
         <school-tree @nodeClick="handleSchool" :name="form.schoolZoneName" :the-type="2" place-text="校区" :default-value="form.schoolZoneId"></school-tree>
       </el-form-item>
       <el-form-item label="主教" :label-width="formLabelWidth" prop="mainTeacherId">
-        <user-dialog v-model="form.mainTeacherId" title="选择主教" :the-type="3" :parent-school-id="form.schoolZoneId" placeholder-text="主教"></user-dialog>
+        <user-dialog v-model="form.mainTeacherId" title="选择主教" :the-type="3" :parent-school-id="form.schoolZoneId" placeholder-text="主教" :default-text="form.mainTeacherName"></user-dialog>
       </el-form-item>
       <el-form-item label="班主任" :label-width="formLabelWidth" prop="teacherId">
-        <user-dialog v-model="form.teacherId" title="选择班主任" :the-type="3" :parent-school-id="form.schoolZoneId" placeholder-text="班主任"></user-dialog>
+        <user-dialog v-model="form.teacherId" title="选择班主任" :the-type="3" :parent-school-id="form.schoolZoneId" placeholder-text="班主任" :default-text="form.teacherName"></user-dialog>
       </el-form-item>
       <el-form-item label="默认教室" :label-width="formLabelWidth" prop="roomId">
-        <room-dialog v-model="form.roomId" :parent-school-id="form.schoolZoneId" :is-all="false"></room-dialog>
+        <room-dialog v-model="form.roomId" :parent-school-id="form.schoolZoneId" :is-all="false" :default-text="form.roomName"></room-dialog>
       </el-form-item>
       <el-form-item label="计划开班日期" :label-width="formLabelWidth" prop="startDate">
         <el-date-picker v-model="form.startDate" type="date" value-format="yyyy-MM-dd" placeholder="计划开班日期" :picker-options="pickerOptions1">
@@ -60,6 +60,7 @@ export default {
         //表单 v-modle绑定的值
         name: "",
         courseId: "",
+        courseInfo: [],
         mainTeacherId: "",
         teacherId: "",
         startDate: "",
@@ -75,6 +76,11 @@ export default {
   },
   created() {
     this.getSchoolId();
+    if (this.editClass) {
+      let obj = this.editClass;
+      obj.courseInfo = [obj.clazzId, obj.theType, obj.courseId];
+      this.form = obj;
+    }
   },
   computed: {
     //实时计算
@@ -84,7 +90,12 @@ export default {
   },
   watch: {
     startDate(val) {
+
       this.form.endDate = "";
+    },
+    editClass(val) {
+      val.courseInfo = [val.clazzId, val.theType, val.courseId];
+      this.form = val;
     }
   },
   methods: {
@@ -126,6 +137,7 @@ export default {
       getSchoolClassView(id).then(data => {
         this.dialogFormVisible = true;
         let obj = data.data;
+        obj.courseInfo = [obj.clazzId, obj.theType, obj.courseId]
         this.form = obj;
       })
     },
@@ -135,6 +147,7 @@ export default {
     }
   },
   props: {
+    editClass: "",//选择班级
   },
   components: { SchoolTree, Course, UserDialog, RoomDialog } //注入组件
 }

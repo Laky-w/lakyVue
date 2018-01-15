@@ -25,18 +25,18 @@
       <el-button type="primary" icon="el-icon-edit" size="mini" @click="dialogFormVisible=true">添加公告</el-button>
       <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
     </div>
-    <el-table :data="tableData" stripe v-loading="loading" style="width: 100%">
-      <el-table-column label="校区" prop="schoolZone.name">
+    <el-table :data="tableData" stripe v-loading="loading" @sort-change="handSortChange" style="width: 100%">
+      <el-table-column label="校区" sortable="custom" prop="schoolZoneName">
       </el-table-column>
-      <el-table-column label="用户名" prop="user.name">
+      <el-table-column label="用户名" sortable="custom" prop="userName">
       </el-table-column>
-      <el-table-column label="发布时间" prop="createDatetime">
+      <el-table-column label="发布时间" sortable="custom" prop="createDatetime">
       </el-table-column>
-      <el-table-column label="公告内容" prop="content">
+      <el-table-column label="公告内容" sortable="custom" prop="content">
       </el-table-column>
-      <el-table-column label="有效时间" prop="lastDatetime">
+      <el-table-column label="有效时间" sortable="custom" prop="lastDatetime">
       </el-table-column>
-      <el-table-column label="通知范围" prop="theType" :formatter="filterType">
+      <el-table-column label="通知范围" sortable="custom" prop="theType" :formatter="filterType">
       </el-table-column>
       <!-- <el-table-column label="操作">
             <template slot-scope="scope">
@@ -174,6 +174,16 @@ export default {
       for (let i = 0; i < allNode.length; i++) {
         this.queryForm.schoolZoneId2.push(allNode[i].id);
       }
+    },
+    handSortChange(column, prop, order) {
+      console.log(column);
+      let self = this;
+      if (column.column) {
+        self.queryForm.sort = JSON.stringify({ prop: column.prop, order: column.order });
+      } else {
+        self.queryForm.sort = "";
+      }
+      self.getData();
     },
     search(form) {
       this.cur_page = 1;

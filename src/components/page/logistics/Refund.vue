@@ -16,25 +16,25 @@
       <el-button type="primary" icon="el-icon-edit" size="mini" @click="dialogFormVisible=true">添加退货</el-button>
       <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
     </div>
-    <el-table :data="tableData" stripe v-loading="loading" border show-summary style="width: 100%">
-      <el-table-column label="物品" prop="goodsName">
+    <el-table :data="tableData" stripe v-loading="loading" border show-summary @sort-change="handSortChange" style="width: 100%">
+      <el-table-column label="物品" sortable="custom" prop="goodsName">
       </el-table-column>
-      <el-table-column label="校区" prop="schoolZoneName">
+      <el-table-column label="校区" sortable="custom" prop="schoolZoneName">
       </el-table-column>
       <!-- <el-table-column
               label="类别" prop="clazzName">
           </el-table-column> -->
-      <el-table-column label="退货数量" sortable prop="amount">
+      <el-table-column label="退货数量" sortable="custom" prop="amount">
       </el-table-column>
-      <el-table-column label="单价" prop="price" sortable>
+      <el-table-column label="单价" sortable="custom" prop="price">
       </el-table-column>
-      <el-table-column label="总额" prop="totalPrice" :formatter="filterTotalPrice" sortable>
+      <el-table-column label="总额" sortable="custom" prop="totalPrice" :formatter="filterTotalPrice">
       </el-table-column>
-      <el-table-column label="供货商" prop="supplierName">
+      <el-table-column label="供货商" sortable="custom" prop="supplierName">
       </el-table-column>
-      <el-table-column label="经手人" prop="userName">
+      <el-table-column label="经手人" sortable="custom" prop="userName">
       </el-table-column>
-      <el-table-column label="退货日期" sortable prop="createTime">
+      <el-table-column label="退货日期" sortable="custom" prop="createTime">
       </el-table-column>
       <!-- <el-table-column label="操作">
           <template slot-scope="scope">
@@ -275,6 +275,16 @@ export default {
       for (let i = 0; i < allNode.length; i++) {
         self.queryForm.schoolZoneId2.push(allNode[i].id);
       }
+    },
+    handSortChange(column, prop, order) {
+      console.log(column);
+      let self = this;
+      if (column.column) {
+        self.queryForm.sort = JSON.stringify({ prop: column.prop, order: column.order });
+      } else {
+        self.queryForm.sort = "";
+      }
+      self.getData();
     },
     removeGoods(item) {
       var index = this.form.goodsList.indexOf(item);

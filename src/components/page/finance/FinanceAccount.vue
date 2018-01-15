@@ -22,21 +22,21 @@
       <el-button type="primary" icon="el-icon-edit" size="mini" @click="handleAdd">添加账户</el-button>
       <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
     </div>
-    <el-table :data="tableData" stripe v-loading="loading" border style="width: 100%">
-      <el-table-column label="账户名称" prop="name">
+    <el-table :data="tableData" stripe v-loading="loading" border @sort-change="handSortChange" style="width: 100%">
+      <el-table-column label="账户名称" sortable="custom" prop="name">
         <template slot-scope="scope">
           <a href="javascript:void(0)" @click="handleView(scope.row.id)">{{scope.row.name}}</a>
         </template>
       </el-table-column>
-      <el-table-column label="校区" prop="schoolZoneName" :formatter="filterSchoolZoneName">
+      <el-table-column label="校区" sortable="custom" prop="schoolZoneName" :formatter="filterSchoolZoneName">
       </el-table-column>
-      <el-table-column label="账户类型" sortable prop="theType" :formatter="filterType">
+      <el-table-column label="账户类型" sortable="custom" prop="theType" :formatter="filterType">
       </el-table-column>
-      <el-table-column label="前台账户" prop="theOpen" :formatter="filterOpen">
+      <el-table-column label="前台账户" sortable="custom" prop="theOpen" :formatter="filterOpen">
       </el-table-column>
-      <el-table-column sortable label="余额" prop="money">
+      <el-table-column label="余额" sortable="custom" prop="money">
       </el-table-column>
-      <el-table-column label="描述" prop="remarks">
+      <el-table-column label="描述" sortable="custom" prop="remarks">
       </el-table-column>
       <el-table-column>
         <template slot-scope="scope">
@@ -253,6 +253,16 @@ export default {
       }).catch(() => {
 
       });
+    },
+    handSortChange(column, prop, order) {
+      console.log(column);
+      let self = this;
+      if (column.column) {
+        self.queryForm.sort = JSON.stringify({ prop: column.prop, order: column.order });
+      } else {
+        self.queryForm.sort = "";
+      }
+      self.getData();
     },
     handleSchool(data) {
       this.form.schoolZoneName = data.name;

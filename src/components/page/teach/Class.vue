@@ -15,27 +15,27 @@
       <el-button type="primary" icon="el-icon-edit" size="mini" @click="dialogFormVisible=true">开班</el-button>
       <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
     </div>
-    <el-table :data="tableData" stripe v-loading="loading" border style="width: 100%">
-      <el-table-column label="名称">
+    <el-table :data="tableData" stripe v-loading="loading" border @sort-change="handSortChange" style="width: 100%">
+      <el-table-column label="名称" sortable="custom" prop="name">
         <template slot-scope="scope">
           <a href="javascript:void(0)" @click="handleView(scope.row.id)">{{scope.row.name}}</a>
         </template>
       </el-table-column>
-      <el-table-column label="校区" prop="schoolZoneName">
+      <el-table-column label="校区" sortable="custom" prop="schoolZoneName">
       </el-table-column>
-      <el-table-column label="课程" prop="courseName">
+      <el-table-column label="课程" sortable="custom" prop="courseName">
       </el-table-column>
-      <el-table-column label="教室" prop="roomName">
+      <el-table-column label="教室" sortable="custom" prop="roomName">
       </el-table-column>
-      <el-table-column label="班主任" prop="teacherName">
+      <el-table-column label="班主任" sortable="custom" prop="teacherName">
       </el-table-column>
-      <el-table-column label="主教" prop="mainTeacherName">
+      <el-table-column label="主教" sortable="custom" prop="mainTeacherName">
       </el-table-column>
-      <el-table-column label="创建时间" prop="createTime">
+      <el-table-column label="创建时间" sortable="custom" prop="createTime">
       </el-table-column>
-      <el-table-column label="计划开班日期" prop="startDate">
+      <el-table-column label="计划开班日期" sortable="custom" prop="startDate">
       </el-table-column>
-      <el-table-column label="计划结课日期" prop="endDate">
+      <el-table-column label="计划结课日期" sortable="custom" prop="endDate">
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
@@ -54,15 +54,15 @@
       <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[20, 50, 100, 200]" :page-size="page_size" layout="total, sizes, prev, pager, next, jumper" :total="total">
       </el-pagination>
     </div>
-    <el-dialog title="开班" :visible.sync="dialogFormVisible" :close-on-click-modal=false>
-      <class-form ref="classForm"></class-form>
+    <el-dialog title="开班" :visible.sync="dialogFormVisible" :close-on-click-modal="false">
+      <class-form ref="classForm" :edit-class="currentClass"></class-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible=false;">取 消</el-button>
         <el-button :loading="loadingForm" type="primary" @click="submitForm('classForm')">确 定</el-button>
       </div>
     </el-dialog>
     <el-dialog title="排课" :visible.sync="dialogScheduleFormVisible" :close-on-click-modal=false>
-      <schedule-form ref="scheduleForm" :currentClass="currentClass"></schedule-form>
+      <schedule-form ref="scheduleForm" :current-class="currentClass"></schedule-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogScheduleFormVisible=false;">取 消</el-button>
         <el-button :loading="loadingForm" type="primary" @click="submitForm('scheduleForm')">确 定</el-button>
@@ -171,7 +171,11 @@ export default {
     //控件方法
     handleEdit(index, row) {
       let self = this;
-      self.$refs["form"].handleEditOpenDialog(row.id);
+      getSchoolClassView(row.id).then(data => {
+        self.dialogFormVisible = true;
+        let obj = data.data;
+        self.currentClass = obj;
+      })
     },
     handleDelete(row) {
       let self = this;
@@ -203,6 +207,16 @@ export default {
       let self = this;
       self.viewId = id;
       self.dialogViewVisible = true;
+    },
+    handSortChange(column, prop, order) {
+      console.log(column);
+      let self = this;
+      if (column.column) {
+        self.queryForm.sort = JSON.stringify({ prop: column.prop, order: column.order });
+      } else {
+        self.queryForm.sort = "";
+      }
+      self.getData();
     },
     handleCommand(command) {
       // console.log(command);

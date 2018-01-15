@@ -27,7 +27,7 @@
       <el-button type="primary" icon="el-icon-edit" size="mini" @click="dialogFormVisible=true">添加流水</el-button>
       <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
     </div>
-    <el-table :data="tableData" stripe v-loading="loading" border @expand-change="handleExpandChange" style="width: 100%">
+    <el-table :data="tableData" stripe v-loading="loading" border @expand-change="handleExpandChange" @sort-change="handSortChange" style="width: 100%">
       <el-table-column type="expand">
         <template slot-scope="props">
           <el-form label-position="left" inline class="demo-table-expand" :loading="loadingAccount">
@@ -38,17 +38,17 @@
           </el-form>
         </template>
       </el-table-column>
-      <el-table-column label="校区" prop="schoolName">
+      <el-table-column label="校区" sortable="custom" prop="schoolZoneName">
       </el-table-column>
-      <el-table-column label="收费类型" sortable prop="theType" :formatter="filterType">
+      <el-table-column label="收费类型" sortable="custom" prop="theType" :formatter="filterType">
       </el-table-column>
-      <el-table-column label="审核状态" sortable prop="checkStatus" :formatter="filterCheckStatus">
+      <el-table-column label="审核状态" sortable="custom" prop="checkStatus" :formatter="filterCheckStatus">
       </el-table-column>
-      <el-table-column sortable label="金额" prop="money">
+      <el-table-column label="金额" sortable="custom" prop="money">
       </el-table-column>
-      <el-table-column sortable label="缴费时间" prop="createTime">
+      <el-table-column label="缴费时间" sortable="custom" prop="createTime">
       </el-table-column>
-      <el-table-column label="收费人" prop="salesmanName">
+      <el-table-column label="收费人" sortable="custom" prop="salesmanName">
       </el-table-column>
     </el-table>
     <div class="pagination">
@@ -154,6 +154,16 @@ export default {
         })
 
       }
+    },
+    handSortChange(column, prop, order) {
+      console.log(column);
+      let self = this;
+      if (column.column) {
+        self.queryForm.sort = JSON.stringify({ prop: column.prop, order: column.order });
+      } else {
+        self.queryForm.sort = "";
+      }
+      self.getData();
     },
     filterType(value, row) {
       if (value.theType == 1) {

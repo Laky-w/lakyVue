@@ -20,7 +20,7 @@
     <div style="margin:5px;">
       <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
     </div>
-    <el-table :summary-method="getSummaries" show-summary :data="tableData" stripe v-loading="loading" border @expand-change="handleExpandChange" style="width: 100%">
+    <el-table :summary-method="getSummaries" show-summary :data="tableData" stripe v-loading="loading" border @expand-change="handleExpandChange" @sort-change="handSortChange" style="width: 100%">
       <el-table-column type="expand">
         <template slot-scope="props">
           <el-form label-position="left" inline class="demo-table-expand" :loading="loadingAccount">
@@ -39,23 +39,23 @@
           </el-form>
         </template>
       </el-table-column>
-      <el-table-column label="学生" prop="studentName">
+      <el-table-column label="学生" sortable="custom" prop="studentName">
       </el-table-column>
-      <el-table-column sortable label="总额" prop="total">
+      <el-table-column label="总额" sortable="custom" prop="total">
       </el-table-column>
-      <el-table-column sortable label="抹零" prop="subtractMoney">
+      <el-table-column label="抹零" sortable="custom" prop="subtractMoney">
       </el-table-column>
-      <el-table-column sortable label="已退" prop="receivable">
+      <el-table-column label="已退" sortable="custom" prop="receivable">
       </el-table-column>
-      <el-table-column sortable label="未退" prop="total">
+      <el-table-column label="未退" sortable="custom" prop="total">
       </el-table-column>
-      <el-table-column label="下单人" prop="userName">
+      <el-table-column label="下单人" sortable="custom" prop="userName">
       </el-table-column>
-      <el-table-column label="下单时间" sortable prop="createTime">
+      <el-table-column label="下单时间" sortable="custom" prop="createTime">
       </el-table-column>
-      <el-table-column label="状态" prop="costStatus" :formatter="filterCostStatus">
+      <el-table-column label="状态" sortable="custom" prop="costStatus" :formatter="filterCostStatus">
       </el-table-column>
-      <el-table-column label="校区" prop="schoolZoneName">
+      <el-table-column label="校区" sortable="custom" prop="schoolZoneName">
       </el-table-column>
     </el-table>
     <div class="pagination">
@@ -187,6 +187,16 @@ export default {
       for (let i = 0; i < allNode.length; i++) {
         self.queryForm.schoolZoneId2.push(allNode[i].id);
       }
+    },
+    handSortChange(column, prop, order) {
+      console.log(column);
+      let self = this;
+      if (column.column) {
+        self.queryForm.sort = JSON.stringify({ prop: column.prop, order: column.order });
+      } else {
+        self.queryForm.sort = "";
+      }
+      self.getData();
     },
     handleExpandChange(row, expandedRows) {
       if (!row.detailList) {
