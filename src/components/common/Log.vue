@@ -24,7 +24,7 @@
     </div>
     <div style="width:300px; float: left;">
       <p class="title">项目第二阶段————功能细化</p>
-      <el-steps direction="vertical" :active="7" align-center style="width:300px; float: left;">
+      <el-steps direction="vertical" :active="8" align-center style="width:300px; float: left;">
         <el-step title="2018/1/5" description="项目第二阶段开始————by laky-w"></el-step>
         <el-step title="2018/1/6" description="系统细化————by laky-w"></el-step>
         <el-step title="2018/1/6" description="页面详情搭建————by hreo"></el-step>
@@ -32,7 +32,8 @@
         <el-step title="2018/1/13" description="页面详情搭建end————by hreo"></el-step>
         <el-step title="2018/1/14" description="页面排序搭建start————by hreo"></el-step>
         <el-step title="2018/01/09" description="前台细化start————by laky-w"></el-step>
-        <el-step title="???" description="前台细化end————by laky-w"></el-step>
+        <el-step title="2018/01/15" description="前台细化end————by laky-w"></el-step>
+        <el-step title="2018/01/16" description="教务细化end————by laky-w"></el-step>
       </el-steps>
     </div>
   </div>

@@ -73,21 +73,21 @@
       </el-table-column>
       <el-table-column label="性别" sortable="custom" prop="sex" :formatter="filterSex">
       </el-table-column>
-      <el-table-column label="联系电话" sortable="custom" prop="phone">
+      <el-table-column label="联系电话" sortable="custom" prop="phone" min-width="110px">
       </el-table-column>
       <el-table-column label="联系人" sortable="custom" prop="contactName">
       </el-table-column>
       <el-table-column label="负责人" sortable="custom" prop="ownerName" v-if="$isAuthority('show-all-customer')">
       </el-table-column>
-      <el-table-column label="来源活动" sortable="custom" prop="sourceName">
+      <el-table-column label="来源活动" sortable="custom" prop="sourceName" min-width="110px">
       </el-table-column>
-      <el-table-column label="沟通次数" sortable="custom" prop="contactNumber">
+      <el-table-column label="沟通次数" sortable="custom" prop="contactNumber" min-width="110px">
         <template slot-scope="scope">
           <a v-if="$isAuthority('contant-customer')" href="javascript:void(0)" @click="handleContact(scope.row)">{{scope.row.contactNumber}}</a>
           <span v-if="!$isAuthority('contant-customer')">{{scope.row.contactNumber}}</span>
         </template>
       </el-table-column>
-      <el-table-column label="转换状态" sortable="custom" prop="theType" :formatter="filterTheType">
+      <el-table-column label="转换状态" sortable="custom" prop="theType" :formatter="filterTheType" min-width="110px">
       </el-table-column>
       <!-- <el-table-column label="分配状态" prop="allotStatus" :formatter="filterAllotStatus">
       </el-table-column> -->
@@ -101,9 +101,9 @@
           </el-rate>
         </template>
       </el-table-column>
-      <el-table-column label="意向课程" sortable="custom" prop="intentionCourseName">
+      <el-table-column label="意向课程" sortable="custom" prop="intentionCourseName" min-width="150px">
       </el-table-column>
-      <el-table-column label="创建时间" sortable="custom" prop="createTime" min-width="120px">
+      <el-table-column label="创建时间" sortable="custom" prop="createTime" min-width="160px">
       </el-table-column>
       <!-- <el-table-column sortable label="备注" prop="remarks" min-width="180px">
       </el-table-column> -->

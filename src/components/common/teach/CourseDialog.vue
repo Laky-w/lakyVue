@@ -28,7 +28,7 @@
           </el-form>
         </div>
         <el-table :data="tableData" stripe v-loading="loading" border @row-click="handleRowClick" style="width: 100%">
-          <el-table-column label="校区" prop="schoolName">
+          <el-table-column label="校区" prop="schoolZoneName">
           </el-table-column>
           <el-table-column label="课程" prop="name">
           </el-table-column>

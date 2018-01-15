@@ -32,9 +32,9 @@
           </el-table-column>
           <el-table-column label="联系电话" prop="phone">
           </el-table-column>
-          <el-table-column label="负责人" prop="ownerId">
+          <el-table-column label="负责人" prop="ownerName">
           </el-table-column>
-          <el-table-column label="来源活动" prop="sourceId">
+          <el-table-column label="来源活动" prop="sourceName">
           </el-table-column>
           <el-table-column label="意向课程" prop="intentionCourseName">
           </el-table-column>
@@ -159,6 +159,9 @@ export default {
     getData() {
       let self = this;
       self.loading = true;
+      if (self.studentTypeNo) {
+        self.queryForm.theType2 = self.studentTypeNo;
+      }
       getCustomerList(
         self.cur_page,
         self.page_size,
@@ -212,7 +215,11 @@ export default {
     },
     querySearchAsync(queryString, cb) {
       if (queryString) {
-        getCustomerList(1, 20, { name: queryString }).then(data => {
+        let queryObj = { name: queryString }
+        if (this.studentTypeNo) {
+          queryObj.theType2 = this.studentTypeNo;
+        }
+        getCustomerList(1, 20, queryObj).then(data => {
           if (data.code == 200) {
             cb(data.data.list);
           }
@@ -234,6 +241,7 @@ export default {
   },
   props: {
     value: "",
+    studentTypeNo: "",
     defaulUser: "",
     title: {
       default: "选择学员"
