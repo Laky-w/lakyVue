@@ -16,25 +16,25 @@
       <el-button type="primary" icon="el-icon-edit" size="mini" @click="dialogFormVisible=true">添加借阅</el-button>
       <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
     </div>
-    <el-table :data="tableData" stripe v-loading="loading" border show-summary :summary-method="getSummaries" style="width: 100%">
-      <el-table-column label="物品" prop="goodsName">
+    <el-table :data="tableData" stripe v-loading="loading" border show-summary :summary-method="getSummaries" @sort-change="handSortChange" style="width: 100%">
+      <el-table-column label="物品" sortable="custom" prop="goodsName">
       </el-table-column>
-      <el-table-column label="校区" prop="schoolZoneName">
+      <el-table-column label="校区" sortable="custom" prop="schoolZoneName">
       </el-table-column>
       <!-- <el-table-column
               label="类别" prop="clazzName">
           </el-table-column> -->
-      <el-table-column label="借阅数量" prop="amount" sortable>
+      <el-table-column label="借阅数量" sortable="custom" prop="amount">
       </el-table-column>
-      <el-table-column label="借阅人" prop="otherName">
+      <el-table-column label="借阅人" sortable="custom" prop="otherName">
       </el-table-column>
-      <el-table-column label="归还日期" prop="returnDate" sortable>
+      <el-table-column label="归还日期" sortable="custom" prop="returnDate">
       </el-table-column>
-      <el-table-column label="归还状态" prop="returnStatus" sortable :formatter="filterStatus">
+      <el-table-column label="归还状态" sortable="custom" prop="returnStatus" :formatter="filterStatus">
       </el-table-column>
-      <el-table-column label="经手人" prop="userName">
+      <el-table-column label="经手人" sortable="custom" prop="userName">
       </el-table-column>
-      <el-table-column label="借阅日期" sortable prop="createTime">
+      <el-table-column label="借阅日期" sortable="custom" prop="createTime">
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
@@ -281,6 +281,16 @@ export default {
       if (index !== -1) {
         this.form.goodsList.splice(index, 1);
       }
+    },
+    handSortChange(column, prop, order) {
+      console.log(column);
+      let self = this;
+      if (column.column) {
+        self.queryForm.sort = JSON.stringify({ prop: column.prop, order: column.order });
+      } else {
+        self.queryForm.sort = "";
+      }
+      self.getData();
     },
     addGoods(data) {
       let self = this;

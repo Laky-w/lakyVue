@@ -19,17 +19,17 @@
       <el-button type="primary" icon="el-icon-edit" size="mini" @click="dialogFormVisible=true">分班</el-button>
       <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
     </div>
-    <el-table :data="tableData" stripe v-loading="loading" :row-class-name="tableRowClassName" border style="width: 100%">
-      <el-table-column label="姓名">
+    <el-table :data="tableData" stripe v-loading="loading" :row-class-name="tableRowClassName" border @sort-change="handSortChange" style="width: 100%">
+      <el-table-column label="姓名" sortable="custom" prop="studentName">
         <template slot-scope="scope">
           <a href="javascript:void(0)" @click="handleView(scope.row.studentId)">{{scope.row.studentName}}</a>
         </template>
       </el-table-column>
-      <el-table-column label="校区" prop="schoolName">
+      <el-table-column label="校区" sortable="custom" prop="schoolZoneName">
       </el-table-column>
-      <el-table-column label="课程" prop="courseName">
+      <el-table-column label="课程" sortable="custom" prop="courseName">
       </el-table-column>
-      <el-table-column label="报名时间" sortable prop="createTime">
+      <el-table-column label="报名时间" sortable="custom" prop="createTime">
       </el-table-column>
 
       <!-- <el-table-column label="操作">
@@ -93,7 +93,7 @@ export default {
         phone: "",
         remarks: "",
         schoolZoneId: "",
-        schoolName: "",
+        schoolZoneName: "",
         intentionId: []
       },
       formLabelWidth: "120px",
@@ -116,7 +116,7 @@ export default {
       let self = this;
       let user = self.$user();
       self.form.schoolZoneId = user.schoolZoneId;
-      self.form.schoolName = user.schoolZone.name;
+      self.form.schoolZoneName = user.schoolZone.name;
       self.schoolId = user.schoolZoneId;
     },
     getParameterValue(id) {
@@ -206,7 +206,7 @@ export default {
     },
     handleDelete(index, row) { },
     handleSchool(data) {
-      this.form.schoolName = data.name;
+      this.form.schoolZoneName = data.name;
       this.form.schoolZoneId = data.id;
       this.form.roles = [];
     },
@@ -214,6 +214,16 @@ export default {
       let self = this;
       self.viewId = id;
       self.dialogViewVisible = true;
+    },
+    handSortChange(column, prop, order) {
+      console.log(column);
+      let self = this;
+      if (column.column) {
+        self.queryForm.sort = JSON.stringify({ prop: column.prop, order: column.order });
+      } else {
+        self.queryForm.sort = "";
+      }
+      self.getData();
     },
     handleCheckChange(allNode) {
       let self = this;

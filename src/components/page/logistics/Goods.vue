@@ -17,23 +17,23 @@
       <el-button type="primary" icon="el-icon-edit" size="mini" @click="handleAdd">添加物品</el-button>
       <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
     </div>
-    <el-table :data="tableData" stripe v-loading="loading" border style="width: 100%">
-      <el-table-column label="物品">
+    <el-table :data="tableData" stripe v-loading="loading" border @sort-change="handSortChange" style="width: 100%">
+      <el-table-column label="物品" sortable="custom" prop="name">
         <template slot-scope="scope">
           <a href="javascript:void(0)" @click="handleView(scope.row.id)">{{scope.row.name}}</a>
         </template>
       </el-table-column>
-      <el-table-column label="成本价" sortable prop="price">
+      <el-table-column label="成本价" sortable="custom" prop="price">
       </el-table-column>
-      <el-table-column label="售价" sortable prop="sellPrice">
+      <el-table-column label="售价" sortable="custom" prop="sellPrice">
       </el-table-column>
-      <el-table-column label="类别" prop="clazzName">
+      <el-table-column label="类别" sortable="custom" prop="clazzName">
       </el-table-column>
-      <el-table-column label="库存" prop="lastAmount">
+      <el-table-column label="库存" sortable="custom" prop="lastAmount">
       </el-table-column>
-      <el-table-column label="创建时间" sortable prop="createTime">
+      <el-table-column label="创建时间" sortable="custom" prop="createTime">
       </el-table-column>
-      <el-table-column label="状态" :formatter="filterType" prop="theType">
+      <el-table-column label="状态" sortable="custom" :formatter="filterType" prop="theType">
       </el-table-column>
       <el-table-column label="操作" min-width="130">
         <template slot-scope="scope">
@@ -260,6 +260,16 @@ export default {
       let self = this;
       self.viewId = id;
       self.dialogViewVisible = true;
+    },
+    handSortChange(column, prop, order) {
+      console.log(column);
+      let self = this;
+      if (column.column) {
+        self.queryForm.sort = JSON.stringify({ prop: column.prop, order: column.order });
+      } else {
+        self.queryForm.sort = "";
+      }
+      self.getData();
     },
     handleDelete(index, row) {
       let self = this;

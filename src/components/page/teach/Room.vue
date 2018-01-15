@@ -16,17 +16,17 @@
       <el-button type="primary" icon="el-icon-edit" size="mini" @click="handleAdd">添加教室</el-button>
       <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
     </div>
-    <el-table :data="tableData" stripe v-loading="loading" border style="width: 100%">
-      <el-table-column label="教室名称">
+    <el-table :data="tableData" stripe v-loading="loading" border @sort-change="handSortChange" style="width: 100%">
+      <el-table-column label="教室名称" sortable="custom" prop="name">
         <template slot-scope="scope">
           <a href="javascript:void(0)" @click="handleView(scope.row.id)">{{scope.row.name}}</a>
         </template>
       </el-table-column>
-      <el-table-column label="校区" prop="schoolZoneName">
+      <el-table-column label="校区" sortable="custom" prop="schoolZoneName">
       </el-table-column>
-      <el-table-column sortable label="容纳人数" prop="maxCount">
+      <el-table-column label="容纳人数" sortable="custom" prop="maxCount">
       </el-table-column>
-      <el-table-column label="排序" sortable prop="sort">
+      <el-table-column label="排序" sortable="custom" prop="sort">
       </el-table-column>
       <el-table-column label="操作" min-width="130">
         <template slot-scope="scope">
@@ -200,6 +200,16 @@ export default {
       }).catch(() => {
 
       });
+    },
+    handSortChange(column, prop, order) {
+      console.log(column);
+      let self = this;
+      if (column.column) {
+        self.queryForm.sort = JSON.stringify({ prop: column.prop, order: column.order });
+      } else {
+        self.queryForm.sort = "";
+      }
+      self.getData();
     },
     handleAdd() {
       let self = this;

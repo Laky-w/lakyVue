@@ -17,23 +17,23 @@
     <div style="margin:5px;">
       <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
     </div>
-    <el-table :data="tableData" stripe v-loading="loading" border style="width: 100%">
-      <el-table-column label="校区" prop="schoolZoneName">
+    <el-table :data="tableData" stripe v-loading="loading" border @sort-change="handSortChange" style="width: 100%">
+      <el-table-column label="校区" sortable="custom" prop="schoolZoneName">
       </el-table-column>
-      <el-table-column label="班级" prop="schoolClassName">
+      <el-table-column label="班级" sortable="custom" prop="schoolClassName">
       </el-table-column>
-      <el-table-column label="上课时间" min-width="220px" prop="startTime" :formatter="filterScheduleTime">
+      <el-table-column label="上课时间" sortable="custom" min-width="220px" prop="startTime" :formatter="filterScheduleTime">
       </el-table-column>
-      <el-table-column label="课时" prop="hour">
+      <el-table-column label="课时" sortable="custom" prop="hour">
       </el-table-column>
-      <el-table-column label="教室" prop="roomName">
+      <el-table-column label="教室" sortable="custom" prop="roomName">
       </el-table-column>
 
-      <el-table-column label="主教" prop="teachName">
+      <el-table-column label="主教" sortable="custom" prop="teachName">
       </el-table-column>
-      <el-table-column label="助教" prop="headTeachName">
+      <el-table-column label="助教" sortable="custom" prop="headTeachName">
       </el-table-column>
-      <el-table-column label="考勤状态" prop="attendanceStatus" :formatter="filterAttendanceStatus">
+      <el-table-column label="考勤状态" sortable="custom" prop="attendanceStatus" :formatter="filterAttendanceStatus">
       </el-table-column>
       <!-- <el-table-column label="操作">
             <template slot-scope="scope">
@@ -174,6 +174,16 @@ export default {
       for (let i = 0; i < allNode.length; i++) {
         self.queryForm.schoolZoneId2.push(allNode[i].id);
       }
+    },
+    handSortChange(column, prop, order) {
+      console.log(column);
+      let self = this;
+      if (column.column) {
+        self.queryForm.sort = JSON.stringify({ prop: column.prop, order: column.order });
+      } else {
+        self.queryForm.sort = "";
+      }
+      self.getData();
     },
     handleCommand(command) {
       // console.log(command);

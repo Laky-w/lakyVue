@@ -16,15 +16,15 @@
       <el-button type="primary" icon="el-icon-edit" size="mini" @click="dialogFormVisible=true">添加领用</el-button>
       <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
     </div>
-    <el-table :data="tableData" stripe v-loading="loading" border show-summary style="width: 100%">
-      <el-table-column label="物品" prop="goodsName">
+    <el-table :data="tableData" stripe v-loading="loading" border show-summary @sort-change="handSortChange" style="width: 100%">
+      <el-table-column label="物品" sortable="custom" prop="goodsName">
       </el-table-column>
-      <el-table-column label="校区" prop="schoolZoneName">
+      <el-table-column label="校区" sortable="custom" prop="schoolZoneName">
       </el-table-column>
       <!-- <el-table-column
               label="类别" prop="clazzName">
           </el-table-column> -->
-      <el-table-column label="领用数量" prop="amount" sortable>
+      <el-table-column label="领用数量" sortable="custom" prop="amount">
       </el-table-column>
       <!-- <el-table-column
               label="单价" prop="price">
@@ -32,11 +32,11 @@
           <el-table-column
               label="总额" prop="totalPrice" :formatter="filterTotalPrice">
           </el-table-column> -->
-      <el-table-column label="领用人" prop="otherName">
+      <el-table-column label="领用人" sortable="custom" prop="otherName">
       </el-table-column>
-      <el-table-column label="经手人" prop="userName">
+      <el-table-column label="经手人" sortable="custom" prop="userName">
       </el-table-column>
-      <el-table-column label="领用日期" sortable prop="createTime">
+      <el-table-column label="领用日期" sortable="custom" prop="createTime">
       </el-table-column>
       <!-- <el-table-column label="操作">
           <template slot-scope="scope">
@@ -271,6 +271,16 @@ export default {
       this.form.fatherId = row.id;
       this.form.fatherName = row.name;
       this.dialogFormVisible = true;
+    },
+    handSortChange(column, prop, order) {
+      console.log(column);
+      let self = this;
+      if (column.column) {
+        self.queryForm.sort = JSON.stringify({ prop: column.prop, order: column.order });
+      } else {
+        self.queryForm.sort = "";
+      }
+      self.getData();
     },
     handleDelete(index, row) { },
     handleCheckChange(allNode) {

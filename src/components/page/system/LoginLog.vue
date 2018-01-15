@@ -20,16 +20,16 @@
         <el-button type="mini" icon="el-icon-search" @click="search('queryForm')">搜索</el-button>
       </el-form>
     </div>
-    <el-table :data="tableData" v-loading="loading" :row-class-name="tableRowClassName" border stripe style="width: 100%">
-      <el-table-column prop="user.name" label="用户名" sortable width="150">
+    <el-table :data="tableData" v-loading="loading" @sort-change="handSortChange" :row-class-name="tableRowClassName" border stripe style="width: 100%">
+      <el-table-column prop="userName" label="用户名" sortable="custom" width="150">
       </el-table-column>
-      <el-table-column prop="ip" label="登录IP" width="120">
+      <el-table-column prop="ip" label="登录IP" sortable="custom" width="120">
       </el-table-column>
-      <el-table-column prop="schoolZone.name" label="校区">
+      <el-table-column prop="schoolZoneName" sortable="custom" label="校区">
       </el-table-column>
-      <el-table-column prop="theType" label="操作" :formatter="filterType">
+      <el-table-column prop="theType" label="操作" sortable="custom" :formatter="filterType">
       </el-table-column>
-      <el-table-column prop="theDatetime" sortable label="登录时间">
+      <el-table-column prop="theDatetime" sortable="custom" abel="登录时间">
       </el-table-column>
     </el-table>
     <div class="pagination">
@@ -109,6 +109,16 @@ export default {
     },
     handleSelectionChange(val) {
       this.multipleSelection = val;
+    },
+    handSortChange(column, prop, order) {
+      console.log(column);
+      let self = this;
+      if (column.column) {
+        self.queryForm.sort = JSON.stringify({ prop: column.prop, order: column.order });
+      } else {
+        self.queryForm.sort = "";
+      }
+      self.getData();
     },
     handleCheckChange(allNode) {
       this.queryForm.schoolZoneId2 = [];

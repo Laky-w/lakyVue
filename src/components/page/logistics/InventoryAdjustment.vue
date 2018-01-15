@@ -16,15 +16,15 @@
       <el-button type="primary" icon="el-icon-edit" size="mini" @click="dialogFormVisible=true">添加调整</el-button>
       <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
     </div>
-    <el-table :data="tableData" stripe v-loading="loading" border style="width: 100%">
-      <el-table-column label="物品" prop="goodsName">
+    <el-table :data="tableData" stripe v-loading="loading" border @sort-change="handSortChange" style="width: 100%">
+      <el-table-column label="物品" sortable="custom" prop="goodsName">
       </el-table-column>
-      <el-table-column label="校区" prop="schoolZoneName">
+      <el-table-column label="校区" sortable="custom" prop="schoolZoneName">
       </el-table-column>
       <!-- <el-table-column
               label="类别" prop="clazzName">
           </el-table-column> -->
-      <el-table-column label="数量" prop="amount" sortable>
+      <el-table-column label="数量" sortable="custom" prop="amount">
       </el-table-column>
       <!-- <el-table-column
               label="单价" prop="price">
@@ -36,9 +36,9 @@
               label="领用人"
               prop="otherName">
           </el-table-column> -->
-      <el-table-column label="经手人" prop="userName">
+      <el-table-column label="经手人" sortable="custom" prop="userName">
       </el-table-column>
-      <el-table-column label="登记日期" sortable prop="createTime">
+      <el-table-column label="登记日期" sortable="custom" prop="createTime">
       </el-table-column>
       <!-- <el-table-column label="操作">
           <template slot-scope="scope">
@@ -275,6 +275,16 @@ export default {
       if (index !== -1) {
         this.form.goodsList.splice(index, 1);
       }
+    },
+    handSortChange(column, prop, order) {
+      console.log(column);
+      let self = this;
+      if (column.column) {
+        self.queryForm.sort = JSON.stringify({ prop: column.prop, order: column.order });
+      } else {
+        self.queryForm.sort = "";
+      }
+      self.getData();
     },
     addGoods(data) {
       let self = this;

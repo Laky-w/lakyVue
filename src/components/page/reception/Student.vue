@@ -28,29 +28,29 @@
       <el-button type="primary" icon="el-icon-edit" size="mini" @click="dialogFormVisible=true">添加正式学员</el-button>
       <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
     </div>
-    <el-table :data="tableData" stripe v-loading="loading" :row-class-name="tableRowClassName" border style="width: 100%">
-      <el-table-column label="名称">
+    <el-table :data="tableData" stripe v-loading="loading" :row-class-name="tableRowClassName" border @sort-change="handSortChange" style="width: 100%">
+      <el-table-column label="名称" sortable="custom" prop="name">
         <template slot-scope="scope">
           <a href="javascript:void(0)" @click="handleView(scope.row.id)">{{ scope.row.name }}</a>
         </template>
       </el-table-column>
-      <el-table-column label="校区" prop="schoolZoneName">
+      <el-table-column label="校区" sortable="custom" prop="schoolZoneName">
       </el-table-column>
-      <el-table-column label="性别" prop="sex" :formatter="filterSex">
+      <el-table-column label="性别" sortable="custom" prop="sex" :formatter="filterSex">
       </el-table-column>
-      <el-table-column label="联系电话" prop="phone">
+      <el-table-column label="联系电话" sortable="custom" prop="phone">
       </el-table-column>
-      <el-table-column label="联系人" prop="contactId">
+      <el-table-column label="联系人" sortable="custom" prop="contactId">
       </el-table-column>
-      <el-table-column label="学管师" prop="ownerId">
+      <el-table-column label="学管师" sortable="custom" prop="ownerId">
       </el-table-column>
-      <el-table-column label="报名状态" prop="classStatus" :formatter="filterClassStatus">
+      <el-table-column label="报名状态" sortable="custom" prop="classStatus" :formatter="filterClassStatus">
       </el-table-column>
-      <el-table-column label="来源活动" prop="sourceId">
+      <el-table-column label="来源活动" sortable="custom" prop="sourceId">
       </el-table-column>
-      <el-table-column label="创建时间" sortable prop="createTime">
+      <el-table-column label="创建时间" sortable="custom" prop="createTime">
       </el-table-column>
-      <el-table-column label="备注" prop="remarks">
+      <el-table-column label="备注" sortable="custom" prop="remarks">
       </el-table-column>
 
       <!-- <el-table-column label="操作">
@@ -277,6 +277,16 @@ export default {
       self.viewId = id;
       self.dialogViewVisible = true;
       // self.$refs["view"].show();
+    },
+    handSortChange(column, prop, order) {
+      console.log(column);
+      let self = this;
+      if (column.column) {
+        self.queryForm.sort = JSON.stringify({ prop: column.prop, order: column.order });
+      } else {
+        self.queryForm.sort = "";
+      }
+      self.getData();
     },
     handleCheckChange(allNode) {
       let self = this;

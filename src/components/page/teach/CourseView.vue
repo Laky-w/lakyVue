@@ -5,7 +5,7 @@
         <el-tag type="info">{{view.name}}</el-tag>
       </el-form-item>
       <el-form-item label="校区:">
-        <el-tag type="info">{{view.schoolName}}</el-tag>
+        <el-tag type="info">{{view.schoolZoneName}}</el-tag>
       </el-form-item>
       <el-form-item label="科目:">
         <el-tag type="info">{{view.clazzName}}</el-tag>

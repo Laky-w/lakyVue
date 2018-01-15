@@ -15,19 +15,19 @@
     <div style="margin:5px;">
       <el-button type="primary" icon="el-icon-edit" size="mini" @click="handleAdd">添加时间段</el-button>
     </div>
-    <el-table :data="tableData" stripe v-loading="loading" border style="width: 100%">
-      <el-table-column label="名称">
+    <el-table :data="tableData" stripe v-loading="loading" border @sort-change="handSortChange" style="width: 100%">
+      <el-table-column label="名称" sortable="custom" prop="name">
         <template slot-scope="scope">
           <a href="javascript:void(0)" @click="handleView(scope.row.id)">{{scope.row.name}}</a>
         </template>
       </el-table-column>
-      <el-table-column label="校区" prop="schoolZoneName">
+      <el-table-column label="校区" sortable="custom" prop="schoolZoneName">
       </el-table-column>
-      <el-table-column sortable label="开始时间" prop="startTime">
+      <el-table-column label="开始时间" sortable="custom" prop="startTime">
       </el-table-column>
-      <el-table-column label="结束时间" sortable prop="endTime">
+      <el-table-column label="结束时间" sortable="custom" prop="endTime">
       </el-table-column>
-      <el-table-column label="学时" sortable prop="courseHour">
+      <el-table-column label="学时" sortable="custom" prop="courseHour">
       </el-table-column>
       <el-table-column label="操作" min-width="130">
         <template slot-scope="scope">
@@ -199,6 +199,16 @@ export default {
       let self = this;
       self.viewId = id;
       self.dialogViewVisible = true;
+    },
+    handSortChange(column, prop, order) {
+      console.log(column);
+      let self = this;
+      if (column.column) {
+        self.queryForm.sort = JSON.stringify({ prop: column.prop, order: column.order });
+      } else {
+        self.queryForm.sort = "";
+      }
+      self.getData();
     },
     //控件方法
     handleEdit(index, row) {
