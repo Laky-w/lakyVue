@@ -1,8 +1,36 @@
 import axios from 'axios';
 
 let base = '';
-//获取当前校区id
-export const _getCurrentUserInfo = params => { let user = JSON.parse(sessionStorage.getItem("userInfo")); return user };
+//获取当前登录用户
+export const _getCurrentUserInfo = params => {
+  let userInfo = sessionStorage.getItem("userInfo");
+  if (userInfo == "undefined") {
+    return "null";
+  } else {
+    let user = JSON.parse(userInfo);
+    return user;
+  }
+
+};
+//获取权限
+export const _getUserAuthority = key => {
+  let user = _getCurrentUserInfo();
+  if (user.isSuper == 1) {
+    return true;
+  } else {
+    let authorities = JSON.parse(sessionStorage.getItem("authorities"));
+    let flag = false;
+    authorities.forEach(item => {
+      if (item.key == key) {
+        flag = true;
+        return;
+      }
+    })
+    return flag;
+  }
+
+
+};
 
 // 请求登录
 export const requestLogin = params => { return axios.post(`organization/login`, params).then(res => res.data); };
@@ -11,6 +39,8 @@ export const loginOut = params => { return axios.get(`organization/loginOut`).th
 //系统=============
 //获取菜单
 export const getMenu = params => { return axios.get(`organization/getMenu`, params).then(res => res.data); };
+//获取用户菜单
+export const getUserMenu = params => { return axios.get(`organization/getUserMenu`, params).then(res => res.data); };
 //主页部分 公告
 export const findNewNoticeAll = params => { return axios.get(`organization/findNewNoticeAll`, params).then(res => res.data); };
 //查询公告
@@ -73,16 +103,23 @@ export const getCustomerView = id => { return axios.get(`supply/getCustomerView/
 //创建生源
 export const createCustomer = params => { return axios.post(`supply/createCustomer`, params).then(res => res.data); };
 //删除生源
-export const deleteCustomer = (id, params) => { return axios.delete(`supply/deleteCustomer/${id}`, params).then(res => res.data); };
+export const deleteCustomer = (id) => { return axios.delete(`supply/deleteCustomer/${id}`).then(res => res.data); };
+//分配生源
+export const updateUserOwner = (id, params) => { return axios.put(`supply/updateUserOwner/${id}`, params).then(res => res.data); };
 //查询联系记录
 export const getContactList = (pageNumber, pageSize, params) => { return axios.post(`supply/getContactList/${pageNumber}/${pageSize}`, params).then(res => res.data); };
-
+//联系记录详情
+export const getContactView = id => { return axios.get(`supply/getContactView/${id}`).then(res => res.data); };
 //创建联系记录
 export const createContact = params => { return axios.post(`supply/createContact`, params).then(res => res.data); };
+//删除联系记录
+export const deleteContent = id => { return axios.delete(`supply/deleteContent/${id}`).then(res => res.data); };
 //查询邀约记录
 export const getInviteList = (pageNumber, pageSize, params) => { return axios.post(`supply/getInviteList/${pageNumber}/${pageSize}`, params).then(res => res.data); };
 //创建邀约记录
 export const createInvite = params => { return axios.post(`supply/createInvite`, params).then(res => res.data); };
+//删除邀约记录
+export const deleteInvite = ids => { return axios.delete(`supply/deleteInvite/${ids}`).then(res => res.data); };
 //查询市场活动
 export const getActivityList = (pageNumber, pageSize, params) => { return axios.post(`supply/getActivityList/${pageNumber}/${pageSize}`, params).then(res => res.data); };
 // 市场活动详情

@@ -15,7 +15,7 @@
 
 <script>
 import subMenu from "./Sub";
-import { getMenu } from "../api/api";
+import { getUserMenu } from "../api/api";
 import { getRoutesList } from "../../router";
 export default {
   data() {
@@ -32,9 +32,13 @@ export default {
   },
   created: function () {
     var self = this;
-    getMenu().then(data => {
-      self.items = data.data;
-      getRoutesList(data.data);
+    getUserMenu().then(data => {
+      self.items = data.data.menuList;
+      sessionStorage.setItem(
+        "authorities",
+        JSON.stringify(data.data.authorities)
+      );
+      getRoutesList(data.data.menuList);
     });
   },
   computed: {

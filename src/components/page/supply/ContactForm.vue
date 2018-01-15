@@ -1,16 +1,22 @@
 <template>
   <el-dialog title="添加沟通记录" :visible.sync="visible" width="750px" :close-on-click-modal=false @close="$emit('update:dialogFormVisible', false)" custom-class="dialog-form">
     <el-form :model="form" ref="ruleForm" size="small">
-      <el-form-item v-if="theType==1" label="联系人" :label-width="formLabelWidth" prop="studentId" :rules="[{ required: true, message: '名称必填'}]">
+      <el-form-item v-if="theType==1 && !form.id" label="联系人" style="width:100%" :label-width="formLabelWidth" prop="studentId" :rules="[{ required: true, message: '名称必填'}]">
         <customer-dialog v-model="form.studentId" title="联系人" placeholder-text="联系人名称">
         </customer-dialog>
       </el-form-item>
-      <el-form-item v-if="theType==2" label="联系人" :label-width="formLabelWidth">
-        {{studnetName}}
+      <el-form-item v-if="theType==2 || form.id" label="联系人" :label-width="formLabelWidth">
+        {{studnetName}}{{form.studentName}}
       </el-form-item>
-      <el-form-item label="意向级别" prop="intentionLevel" :label-width="formLabelWidth" :rules="[{ required: true, message: '该项必填'}]">
+      <el-form-item style="display:inline-block" label="意向级别" prop="intentionLevel" :label-width="formLabelWidth" :rules="[{ required: true, message: '该项必填'}]">
         <el-rate v-model="form.intentionLevel" :texts="['没意向', '观望', '一般', '考虑', '极高']" show-text :colors="['#99A9BF', '#F7BA2A', '#FF9900']">
         </el-rate>
+      </el-form-item>
+      <el-form-item style="display:inline-block" label="生源状态" prop="theStatus" :label-width="formLabelWidth" :rules="[{ required: true, message: '该项必填'}]">
+        <el-tooltip :content="'标记为 ' + theStatus" placement="top">
+          <el-switch v-model="form.theStatus" active-color="#13ce66" inactive-color="#ff4949" active-value="2" inactive-value="3">
+          </el-switch>
+        </el-tooltip>
       </el-form-item>
       <!-- <el-form-item label="记录人" :label-width="formLabelWidth" prop="userId">
         <user-dialog v-model="form.userId" title="选择记录人" :rules="[{ required: true, message: '该项必填'}]" placeholder-text="记录人"></user-dialog>
@@ -40,9 +46,10 @@
 </template>
 <script>
 import UserDialog from "../../common/system/UserDialog.vue";
-import CustomerDialog from "../../common/supply/CustomerDialog";
+import CustomerDialog from "../../common/supply/CustomerDialog.vue";
 import {
   findBranchParameterValueAll,
+  getContactView,
   createContact
 } from "../../api/api";
 export default {
@@ -50,26 +57,37 @@ export default {
     return {
       visible: this.dialogFormVisible,
       parameterValue: [],
-      form: {
+      oldForm: {
         //表单 v-modle绑定的值
         userId: "",
         contactTime: new Date().Format("yyyy-MM-dd hh:mm:ss"),
         lastContactTime: "",
         intentionLevel: 3,
+        theStatus: "2",
         content: "",
         studentId: self.studentAddId,
         contactStyleId: ""
+      },
+      form: {
+
       },
       formLabelWidth: "120px",
       loadingForm: false
     };
   },
+  computed: {
+    theStatus() {
+      if (this.form.theStatus == 3) return "已跟进";
+      return "已放弃";
+    }
+  },
   watch: {
     dialogFormVisible(val) {
+      if (val) { this.form = this.oldForm };
       this.visible = val;
     },
     studentAddId(val) {
-      this.form.studentId = val;
+      this.oldForm.studentId = val;
     }
   },
   created() {
@@ -85,6 +103,18 @@ export default {
           self.form.categoryId = self.parameterValue[0].id;
         }
       });
+    },
+    editForm(id) {
+      let self = this;
+      getContactView(id).then(data => {
+        if (data.code == 200) {
+          self.visible = true;
+          let obj = data.data;
+          obj.intentionLevel = Number(obj.intentionLevel);
+          obj.theStatus = obj.contactStatus + "";
+          self.form = data.data;
+        }
+      })
     },
     submitForm(formName) {
       let self = this;

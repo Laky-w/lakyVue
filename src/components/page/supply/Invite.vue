@@ -5,32 +5,57 @@
         <el-form-item>
           <el-input v-model="queryForm.studentId" placeholder="邀约人名称/拼音/手机号" class="handle-input mr10"></el-input>
         </el-form-item>
-        <el-form-item>
-          <el-input v-model="queryForm.userId" placeholder="记录人" class="handle-input mr10"></el-input>
+        <el-form-item prop="contactStatus">
+          <el-select v-model="queryForm.inviteStatus" clearable placeholder="到访状态" class="handle-select mr10">
+            <el-option key="1" label="未到访" value="1"></el-option>
+            <el-option key="2" label="已到访" value="2"></el-option>
+          </el-select>
         </el-form-item>
         <el-form-item>
-          <school-tree :is-show-checkbox=true :the-type="2" place-text="校区" @handleCheckChange="handleCheckChange"></school-tree>
+          <date-range startPlaceholder="参观时间" v-model="queryForm.contactTime" endPlaceholder="参观时间"></date-range>
         </el-form-item>
-
-        <el-button type="mini" icon="el-icon-search" @click="search('queryForm')">搜索</el-button>
+        <el-button-group>
+          <el-button size="mini" icon="el-icon-search" @click="search('queryForm')">搜索</el-button>
+          <el-button size="mini" style="padding:7px" v-if="isShowMore==false" type="primary" icon="el-icon-arrow-down" @click="isShowMore=true"></el-button>
+          <el-button size="mini" style="padding:7px" v-if="isShowMore==true" type="primary" icon="el-icon-arrow-up" @click="isShowMore=false"></el-button>
+        </el-button-group>
+        <el-button size="mini" icon="el-icon-refresh" @click="$refs['queryForm'].resetFields();search('queryForm');">重置</el-button>
+        <div v-show="isShowMore">
+          <el-form-item>
+            <el-input v-model="queryForm.userId" placeholder="记录人" class="handle-input mr10"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <school-tree :is-show-checkbox=true :the-type="2" place-text="校区" @handleCheckChange="handleCheckChange"></school-tree>
+          </el-form-item>
+        </div>
       </el-form>
     </div>
-    <div style="margin:5px;">
-      <el-button type="primary" icon="el-icon-edit" size="mini" @click="dialogFormVisible=true">添加邀约记录</el-button>
-      <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
+    <div v-if="checkedData.length==0" style="margin:5px;">
+      <div style="margin:5px;">
+        <el-button type="primary" icon="el-icon-edit" size="mini" @click="dialogFormVisible=true">添加邀约记录</el-button>
+        <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
+      </div>
     </div>
-    <el-table :data="tableData" stripe v-loading="loading" border style="width: 100%">
-      <el-table-column label="邀约人" prop="studentId">
+    <div v-if="checkedData.length>0" style="margin:5px;min-height:18px">
+      <el-button v-if="$isAuthority('allort-customer')" type="danger" icon="el-icon-delete" size="mini" @click="handleDeleteInvite">批量删除</el-button>
+    </div>
+    <el-table :data="tableData" stripe v-loading="loading" @sort-change="handSortChange" @selection-change="handleSelectionChange" border style="width: 100%">
+      <el-table-column type="selection" width="30">
       </el-table-column>
-      <el-table-column label="校区" prop="schoolZoneName">
+      <el-table-column label="邀约人" sortable="custom" prop="studentName">
+        <template slot-scope="scope">
+          <a href="javascript:void(0)" @click="viewId=scope.row.studentId;dialogStudentVisible=true;">{{ scope.row.studentName }}</a>
+        </template>
       </el-table-column>
-      <el-table-column label="到访时间" sortable prop="inviteTime">
+      <el-table-column label="校区" sortable="custom" prop="schoolZoneName">
       </el-table-column>
-      <el-table-column label="到访状态" :formatter="filterInviteStatus" prop="inviteStatus">
+      <el-table-column label="到访时间" sortable="custom" prop="inviteTime">
       </el-table-column>
-      <el-table-column label="记录人" prop="userId">
+      <el-table-column label="到访状态" sortable="custom" :formatter="filterInviteStatus" prop="inviteStatus">
       </el-table-column>
-      <el-table-column label="备注" prop="remarks">
+      <el-table-column label="记录人" sortable="custom" prop="userName">
+      </el-table-column>
+      <el-table-column label="备注" sortable="custom" prop="remarks">
       </el-table-column>
       <!-- <el-table-column label="操作">
             <template slot-scope="scope">
@@ -44,100 +69,43 @@
             </template>
             </el-table-column> -->
     </el-table>
+    <customer-view :view-id="viewId" :dialog-view-visible.sync="dialogStudentVisible"></customer-view>
+    <invite-form @saveSuccess="getData" :dialog-form-visible.sync="dialogFormVisible"></invite-form>
     <div class="pagination">
       <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[20, 50, 100, 200]" :page-size="page_size" layout="total, sizes, prev, pager, next, jumper" :total="total">
       </el-pagination>
     </div>
-    <el-dialog title="添加邀约记录" :visible.sync="dialogFormVisible" :close-on-click-modal=false>
-      <el-form :model="form" ref="ruleForm">
-        <!--<el-form-item label="名称" :label-width="formLabelWidth" prop="studentId"  :rules="[{ required: true, message: '邀约人必填'}]">-->
-        <!--<el-input v-model="form.studentId"   placeholder="邀约人"  ></el-input>-->
-        <!--</el-form-item>-->
-        <el-form-item label="邀约人" :label-width="formLabelWidth" prop="studentId" :rules="[{ required: true, message: '名称必填'}]">
-          <customer-dialog v-model="form.studentId" title="邀约人" placeholder-text="邀约人">
-          </customer-dialog>
-        </el-form-item>
-        <el-form-item label="校区" :label-width="formLabelWidth" prop="schoolName" :rules="[{ required: true, message: '参观校区必填'}]">
-          <school-tree @nodeClick="handleSchool" :name="form.schoolName" :the-type="2" place-text="参观校区" :default-value="schoolId"></school-tree>
-        </el-form-item>
-        <el-form-item label="到访状态" :label-width="formLabelWidth" prop="inviteStatus" :rules="[{ required: true, message: '必选项'}]">
-          <el-radio-group v-model="form.inviteStatus">
-            <el-radio :label="1">未到</el-radio>
-            <el-radio :label="2">到达</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="到访时间" :label-width="formLabelWidth" prop="inviteTime" :rules="[{ required: true, message: '必选项'}]">
-          <el-date-picker v-model="form.inviteTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="到访时间">
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item label="记录人" :label-width="formLabelWidth" prop="userId">
-          <user-dialog v-model="form.userId" title="选择记录人" placeholder-text="记录人"></user-dialog>
-        </el-form-item>
-        <el-form-item label="备注" :label-width="formLabelWidth" prop="remarks">
-          <el-input v-model="form.remarks" :rows=3 type="textarea" placeholder="备注"></el-input>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button :loading="loadingForm" type="primary" @click="submitForm('ruleForm')">确 定</el-button>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
-<style scoped>
-.ms-tree-space {
-  position: relative;
-  top: 1px;
-  display: inline-block;
-  font-family: "Glyphicons Halflings";
-  font-style: normal;
-  font-weight: 400;
-  line-height: 2;
-  width: 18px;
-  height: 14px;
-}
-
-.ms-tree-space::before {
-  content: "";
-}
-
-table td {
-  line-height: 26px;
-}
-</style>
-
-<script type="text/ecmascript-6">
+<script >
 import SchoolTree from "../../common/system/SchoolTree.vue";
 import UserDialog from "../../common/system/UserDialog.vue";
+import DateRange from "../../common/Daterange.vue";
 import CustomerDialog from "../../common/supply/CustomerDialog";
-import { getInviteList, createInvite } from "../../api/api";
+import InviteForm from "./InviteForm.vue";
+import CustomerView from "./CustomerView.vue";
+import { getInviteList, deleteInvite } from "../../api/api";
 export default {
   data() {
     return {
       tableData: [],
+      checkedData: [],
       dialogFormVisible: false,
+      dialogStudentVisible: false,
+      isShowMore: false,
+      viewId: "",
       total: 0,
       cur_page: 1,
       page_size: 20,
       queryForm: {
         userId: "",
         studentId: "",
+        contactTime: "",
+        inviteStatus: "1",
         schoolZoneId2: []
       },
-      form: {
-        //表单 v-modle绑定的值
-        nameId: "",
-        studentId: "",
-        inviteStatus: 1,
-        inviteTime: "",
-        remarks: "",
-        schoolZoneId: "",
-        schoolName: ""
-      },
-      formLabelWidth: "120px",
       loading: false,
-      loadingForm: false,
       schoolId: "" //添加用户默认学校id
     };
   },
@@ -151,8 +119,6 @@ export default {
     getSchoolId() {
       let self = this;
       let user = self.$user();
-      self.form.schoolZoneId = user.schoolZoneId;
-      self.form.schoolName = user.schoolZone.name;
       self.schoolId = user.schoolZoneId;
     },
     //初始化属性end
@@ -189,40 +155,26 @@ export default {
         }
       });
     },
-    //保存表单
-    submitForm(formName) {
-      let self = this;
-      self.$refs[formName].validate(valid => {
-        if (valid) {
-          self.loadingForm = true;
-          createInvite(self.form).then(data => {
-            self.loadingForm = false;
-            if (data.code == 200) {
-              self.$message.success(data.message);
-              self.dialogFormVisible = false;
-              self.getData();
-              self.$refs[formName].resetFields();
-            } else {
-              this.$message.error(data.data);
-            }
-          });
-        } else {
-          return false;
-        }
-      });
-    },
     filterInviteStatus(value, row) {
       if (value.inviteStatus == 1) row.tag = "未到";
       else row.tag = "到达";
       return row.tag;
     },
     //控件方法
+    handSortChange(column) {
+      let self = this;
+      if (column.column) {
+        self.queryForm.sort = JSON.stringify({ prop: column.prop, order: column.order });
+      } else {
+        self.queryForm.sort = "";
+      }
+      self.getData();
+    },
     handleEdit(index, row) {
       this.form.fatherId = row.id;
       this.form.fatherName = row.name;
       this.dialogFormVisible = true;
     },
-    handleDelete(index, row) { },
     handleSchool(data) {
       this.form.schoolName = data.name;
       this.form.schoolZoneId = data.id;
@@ -233,9 +185,35 @@ export default {
       for (let i = 0; i < allNode.length; i++) {
         self.queryForm.schoolZoneId2.push(allNode[i].id);
       }
+    },
+    handleSelectionChange(val) {
+      this.checkedData = val;
+    },
+    handleDeleteInvite() {
+      let self = this;
+      self.$confirm('确认删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        let ids = "";
+        self.checkedData.forEach(item => {
+          ids += item.id + ",";
+        })
+        deleteInvite(ids).then(data => {
+          if (data.code == 200) {
+            self.getData();
+            self.$message.success(data.message);
+          } else {
+            self.$message.error(data.message);
+          }
+        })
+      }).catch(() => {
+
+      });
     }
   },
-  components: { SchoolTree, UserDialog, CustomerDialog } //注入组件
+  components: { SchoolTree, UserDialog, CustomerDialog, DateRange, InviteForm, CustomerView } //注入组件
 };
 </script>
 

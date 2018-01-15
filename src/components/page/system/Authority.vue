@@ -6,12 +6,6 @@
           <el-input v-model="authorityform.name" clearable placeholder="职能名称" class="handle-input mr10">
           </el-input>
         </el-form-item>
-        <!-- <el-form-item >
-                    <el-select v-model="queryForm.theType"   value=1 clearable placeholder="下级类型" class="handle-select mr10" >
-                        <el-option key="1" label="校区" value="1"></el-option>
-                        <el-option key="2" label="部门" value="2"></el-option>
-                    </el-select>
-                </el-form-item> -->
       </el-form>
     </div>
     <el-table :data="tableData" stripe v-loading="loading" style="width: 100%" :row-style="showTr" border="" :row-class-name="selectTr">

@@ -37,6 +37,7 @@
         <p style="font-size:12px;line-height:30px;color:#fff000;"></p>
       </el-form>
     </div>
+    <div style="position: fixed;bottom: 150px;text-align: center;margin: 0 auto;width: 100%;">技术支持@湖之教育工作室.2018/01/01</div>
   </div>
 </template>
 

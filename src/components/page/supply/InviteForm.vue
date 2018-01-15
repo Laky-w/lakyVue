@@ -1,15 +1,15 @@
 <template>
-  <el-dialog title="添加邀约记录" :visible.sync="visible" width="750px" :close-on-click-modal=false @close="$emit('update:dialogFormVisible', false)" custom-class="dialog-form">
+  <el-dialog title="添加邀约参观" :visible.sync="visible" width="750px" :close-on-click-modal=false @close="$emit('update:dialogFormVisible', false)" custom-class="dialog-form">
     <el-form :model="form" ref="ruleForm" size="small">
-      <el-form-item v-if="theType==1" label="邀约人" :label-width="formLabelWidth" prop="studentId" :rules="[{ required: true, message: '名称必填'}]">
-        <customer-dialog v-model="form.studentId" title="邀约人" placeholder-text="邀约人">
+      <el-form-item v-if="theType==1" label="参观人" :label-width="formLabelWidth" prop="studentId" :rules="[{ required: true, message: '名称必填'}]">
+        <customer-dialog v-model="form.studentId" title="参观人" placeholder-text="参观人">
         </customer-dialog>
       </el-form-item>
-      <el-form-item v-if="theType==2" label="邀约人" :label-width="formLabelWidth">
+      <el-form-item v-if="theType==2" label="参观人" :label-width="formLabelWidth">
         {{studnetName}}
       </el-form-item>
-      <el-form-item label="到访时间" :label-width="formLabelWidth" prop="inviteTime" :rules="[{ required: true, message: '必选项'}]">
-        <el-date-picker v-model="form.inviteTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="到访时间">
+      <el-form-item label="参观时间" :label-width="formLabelWidth" prop="inviteTime" :rules="[{ required: true, message: '必选项'}]">
+        <el-date-picker v-model="form.inviteTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="参观时间">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="备注" :label-width="formLabelWidth" prop="remarks">

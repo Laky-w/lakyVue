@@ -23,36 +23,41 @@
         <el-button type="mini" icon="el-icon-search" @click="search('queryForm')">搜索</el-button>
       </el-form>
     </div>
-    <div style="margin:5px;">
+    <div v-if="checkedData.length==0" style="margin:5px;">
       <el-button type="primary" icon="el-icon-edit" size="mini" @click="handleAdd">添加活动</el-button>
       <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
     </div>
-    <el-table :data="tableData" stripe v-loading="loading" border style="width: 100%">
-      <el-table-column label="市场活动">
+    <div v-if="checkedData.length>0" style="margin:5px;min-height:18px">
+      <el-button v-if="$isAuthority('allort-customer')" type="danger" icon="el-icon-delete" size="mini" @click="handleDeleteInvite">批量删除</el-button>
+    </div>
+    <el-table :data="tableData" stripe v-loading="loading" @sort-change="handSortChange" @selection-change="handleSelectionChange" border style="width: 100%">
+      <el-table-column type="selection" width="30">
+      </el-table-column>
+      <el-table-column sortable="custom" label="市场活动" prop="name">
         <template slot-scope="scope">
           <a href="javascript:void(0)" @click="handleView(scope.row.id)">{{ scope.row.name }}</a>
         </template>
       </el-table-column>
-      <el-table-column label="校区" prop="schoolZoneName">
+      <el-table-column label="校区" sortable="custom" prop="schoolZoneName">
       </el-table-column>
-      <el-table-column label="负责人" prop="userName">
+      <el-table-column label="负责人" sortable="custom" prop="userName">
       </el-table-column>
-      <el-table-column sortable label="状态" prop="theType" :formatter="filterType">
+      <el-table-column sortable="custom" label="状态" prop="theType" :formatter="filterType">
       </el-table-column>
-      <el-table-column sortable label="预算支出" prop="cost">
+      <el-table-column sortable="custom" label="预算支出" prop="cost">
       </el-table-column>
-      <el-table-column sortable label="计划招生人数" prop="targetNumber" min-width="120">
+      <el-table-column sortable="custom" label="计划招生人数" prop="targetNumber" min-width="120">
       </el-table-column>
-      <el-table-column sortable label="活动分类" prop="cateGoryName" min-width="120">
+      <el-table-column sortable="custom" label="活动分类" prop="cateGoryName" min-width="120">
       </el-table-column>
-      <el-table-column sortable label="计划开始日期" prop="startDate" min-width="120">
+      <el-table-column sortable="custom" label="计划开始日期" prop="startDate" min-width="120">
       </el-table-column>
-      <el-table-column sortable label="计划结束日期" prop="endDate" min-width="120">
+      <el-table-column sortable="custom" label="计划结束日期" prop="endDate" min-width="120">
       </el-table-column>
       <el-table-column label="操作" min-width="130">
         <template slot-scope="scope">
           <el-button type="primary" plain size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-          <el-button type="primary" plain size="mini" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+          <!-- <el-button type="primary" plain size="mini" @click="handleDelete(scope.$index, scope.row)">删除</el-button> -->
         </template>
       </el-table-column>
     </el-table>
@@ -109,6 +114,7 @@ export default {
   data() {
     return {
       tableData: [],
+      checkedData: [],
       viewId: "",
       dialogViewVisible: false,
       dialogFormVisible: false,
@@ -120,7 +126,8 @@ export default {
         name: "",
         schoolZoneId2: [],
         categoryId: "",
-        theType: ""
+        theType: "",
+        sort: ""
       },
       pickerOptions1: {
         disabledDate(time) {
@@ -263,15 +270,30 @@ export default {
         }
       })
     },
-
+    handSortChange(column) {//排序方法
+      let self = this;
+      if (column.column) {
+        self.queryForm.sort = JSON.stringify({ prop: column.prop, order: column.order });
+      } else {
+        self.queryForm.sort = "";
+      }
+      self.getData();
+    },
+    handleSelectionChange(val) {
+      this.checkedData = val;
+    },
     handleDelete(index, row) {
       let self = this;
-      self.$confirm('确定删除该市场活动吗?', '提示', {
+      self.$confirm('确认删除吗?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning', closeOnClickModal: false
       }).then(data => {
-        deleteActivity(row.id).then(data => {
+        let ids = "";
+        self.checkedData.forEach(item => {
+          ids += item.id + ",";
+        })
+        deleteActivity(ids).then(data => {
           if (data.code == 200) {
             self.getData();
             self.$message.success(data.message);
