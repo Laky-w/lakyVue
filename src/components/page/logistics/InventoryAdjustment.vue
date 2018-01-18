@@ -21,36 +21,14 @@
       </el-table-column>
       <el-table-column label="校区" sortable="custom" prop="schoolZoneName">
       </el-table-column>
-      <!-- <el-table-column
-              label="类别" prop="clazzName">
-          </el-table-column> -->
-      <el-table-column label="数量" sortable="custom" prop="amount">
+      <el-table-column label="调整前数量" sortable="custom" prop="oldAmount">
       </el-table-column>
-      <!-- <el-table-column
-              label="单价" prop="price">
-          </el-table-column>
-          <el-table-column
-              label="总额" prop="totalPrice" :formatter="filterTotalPrice">
-          </el-table-column> -->
-      <!-- <el-table-column
-              label="领用人"
-              prop="otherName">
-          </el-table-column> -->
+      <el-table-column label="调整后数量" sortable="custom" prop="amount">
+      </el-table-column>
       <el-table-column label="经手人" sortable="custom" prop="userName">
       </el-table-column>
       <el-table-column label="登记日期" sortable="custom" prop="createTime">
       </el-table-column>
-      <!-- <el-table-column label="操作">
-          <template slot-scope="scope">
-              <el-button
-              size="mini"
-              @click="handleEdit(scope.$index, scope.row)">添加</el-button>
-              <el-button
-              size="mini"
-              type="danger"
-              @click="handleDelete(scope.$index, scope.row)">删除</el-button>
-          </template>
-          </el-table-column> -->
     </el-table>
     <div class="pagination">
       <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[20, 50, 100, 200]" :page-size="page_size" layout="total, sizes, prev, pager, next, jumper" :total="total">
@@ -80,7 +58,7 @@
             调整后库存数量
           </el-form-item>
           <el-form-item size="mini" style="display: inline-block;">
-            <goods-dialog :button-type="2" @selectData="addGoods" placeholder-text="添加物品" selected-type=2></goods-dialog>
+            <goods-dialog :button-type="2" ref="goodsDialog" @selectData="addGoods" placeholder-text="添加物品" selected-type=2></goods-dialog>
             <!-- <el-button @click="addChargeStandard" text-align="添加物品" icon="el-icon-edit" size="mini" type="primary"></el-button> -->
           </el-form-item>
         </el-form-item>
@@ -244,6 +222,9 @@ export default {
             if (data.code == 200) {
               self.$message.success(data.message);
               self.$refs[formName].resetFields();
+              self.form.goodsList = [];
+              self.$refs["goodsDialog"].getData();
+              self.$refs["goodsDialog"].clean();
               self.getData();
             } else {
               self.$message.error(data.message);

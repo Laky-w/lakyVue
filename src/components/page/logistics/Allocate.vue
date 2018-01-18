@@ -19,18 +19,22 @@
     <el-table :data="tableData" stripe v-loading="loading" border show-summary @sort-change="handSortChange" style="width: 100%">
       <el-table-column label="物品" sortable="custom" prop="goodsName">
       </el-table-column>
-      <el-table-column label="校区" sortable="custom" prop="schoolZoneName">
+      <el-table-column label="调拨校区" sortable="custom" prop="schoolZoneName">
       </el-table-column>
       <el-table-column label="调入校区" sortable="custom" prop="schoolZoneNameIn">
       </el-table-column>
       <!-- <el-table-column
               label="类别" prop="clazzName">
           </el-table-column> -->
+      <el-table-column label="调拨前数量" sortable="custom" prop="oldAmount">
+      </el-table-column>
       <el-table-column label="调拨数量" sortable="custom" prop="amount">
+      </el-table-column>
+      <el-table-column label="调拨后数量" sortable="custom" prop="lastAmount">
       </el-table-column>
       <el-table-column label="单价" sortable="custom" prop="price">
       </el-table-column>
-      <el-table-column label="总额" prop="totalPrice" :formatter="filterTotalPrice">
+      <el-table-column label="总额" sortable prop="totalPrice" :formatter="filterTotalPrice">
       </el-table-column>
       <el-table-column label="经手人" sortable="custom" prop="userName">
       </el-table-column>
@@ -75,7 +79,7 @@
             总额
           </el-form-item>
           <el-form-item size="mini" style="display: inline-block;">
-            <goods-dialog :button-type="2" @selectData="addGoods" placeholder-text="添加物品" selected-type=2 v-model="selectedGoods"></goods-dialog>
+            <goods-dialog :button-type="2" @selectData="addGoods" ref="goodsDialog" placeholder-text="添加物品" selected-type=2 v-model="selectedGoods"></goods-dialog>
             <!-- <el-button @click="addChargeStandard" text-align="添加物品" icon="el-icon-edit" size="mini" type="primary"></el-button> -->
           </el-form-item>
         </el-form-item>
@@ -83,12 +87,11 @@
           <el-form-item style="display:inline-block;width:100px;margin-bottom:5px;" size="mini">
             {{goods.goodsName}}
           </el-form-item>
-
           <el-form-item style="display:inline-block;width:100px;margin-bottom:5px;" :prop="'goodsList.' + index + '.amount'" :rules="[
                     { required: true, message: '必填项'}
                     ]" size="mini">
             <!-- <el-input v-model.number="goods.amount" placeholder="数量" ></el-input> -->
-            <el-input-number style="width:100px" v-model.number="goods.amount" :min="0" placeholder="价格" :max="goods.oldAmount"></el-input-number>
+            <el-input-number style="width:100px" v-model.number="goods.amount" :min="0" placeholder="数量" :max="goods.oldAmount"></el-input-number>
           </el-form-item>
           <el-form-item style="display:inline-block;width:100px;margin-bottom:5px;" :prop="'goodsList.' + index + '.price'" :rules="[
                     { required: true, message: '必填项'},
@@ -184,10 +187,10 @@ export default {
       // this.form.goodsMoney.totalPrice=0;
       this.form.goodsList.forEach(item => {
         if (!item.price) item.price = 0;
-        item.totalPrice = Number(item.price.mul(item.amount));
       })
       return this.form.goodsList;
-    }
+    },
+
     //实时计算
   },
   methods: {
@@ -248,9 +251,9 @@ export default {
     submitForm(formName) {
       let self = this;
       self.$refs[formName].validate(valid => {
-        self.$refs[formName].resetFields();
-        console.log(self.form);
-        return;
+        // self.$refs[formName].resetFields();
+        // console.log(self.form);
+        // return;
         if (valid) {
           self.loadingForm = true;
           let goodsJson = JSON.stringify(self.form);
@@ -261,6 +264,8 @@ export default {
               self.$message.success(data.message);
               self.$refs[formName].resetFields();
               self.form.goodsList = [];
+              self.$refs["goodsDialog"].getData();
+              self.$refs["goodsDialog"].clean();
               self.getData();
             } else {
               self.$message.error(data.message);
@@ -317,6 +322,7 @@ export default {
           {
             price: item.price,
             amount: 1,
+            newAmount: item.newAmount,
             totalPrice: item.price,
             theType: 6,
             schoolZoneId2: [],
