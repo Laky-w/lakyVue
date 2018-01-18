@@ -110,6 +110,7 @@ export default {
   created() { },
   watch: {
     value(val) {
+      console.log("==" + val + "==");
       if (!val || val.length == 0) {
         this.userInput = "";
         this.userId = "";
@@ -161,6 +162,10 @@ export default {
       //搜索方法
       this.cur_page = 1;
       this.getData();
+    },
+    clean() {
+      this.userInput = '';
+      this.userId = '';
     },
     //加载数据
     getData() {

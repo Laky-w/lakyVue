@@ -71,7 +71,7 @@
                     总额
                 </el-form-item> -->
           <el-form-item size="mini" style="display: inline-block;">
-            <goods-dialog :button-type="2" @selectData="addGoods" placeholder-text="添加物品" selected-type=2 v-model="selectedGoods"></goods-dialog>
+            <goods-dialog :button-type="2" @selectData="addGoods" ref="goodsDialog" placeholder-text="添加物品" selected-type=2 v-model="selectedGoods"></goods-dialog>
             <!-- <el-button @click="addChargeStandard" text-align="添加物品" icon="el-icon-edit" size="mini" type="primary"></el-button> -->
           </el-form-item>
         </el-form-item>
@@ -237,6 +237,9 @@ export default {
             if (data.code == 200) {
               self.$message.success(data.message);
               self.$refs[formName].resetFields();
+              self.form.goodsList = [];
+              self.$refs["goodsDialog"].getData();
+              self.$refs["goodsDialog"].clean();
               self.getData();
             } else {
               self.$message.error(data.message);
