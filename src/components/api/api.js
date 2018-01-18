@@ -10,7 +10,10 @@ export const _getCurrentUserInfo = params => {
     let user = JSON.parse(userInfo);
     return user;
   }
-
+};
+export const _getCurrentSchoolZone = params => {
+  let user = _getCurrentUserInfo();
+  return user.schoolZone;
 };
 //获取权限
 export const _getUserAuthority = key => {
@@ -116,7 +119,7 @@ export const createContact = params => { return axios.post(`supply/createContact
 export const deleteContent = id => { return axios.delete(`supply/deleteContent/${id}`).then(res => res.data); };
 //查询邀约记录
 export const getInviteList = (pageNumber, pageSize, params) => { return axios.post(`supply/getInviteList/${pageNumber}/${pageSize}`, params).then(res => res.data); };
-//查询邀约记录详情 
+//查询邀约记录详情
 export const getInviteView = id => { return axios.get(`supply/getInviteView/${id}`).then(res => res.data); };
 //创建邀约记录
 export const createInvite = params => { return axios.post(`supply/createInvite`, params).then(res => res.data); };
@@ -161,12 +164,18 @@ export const deleteRoom = id => { return axios.delete(`teach/deleteRoom/${id}`).
 export const getRoomView = id => { return axios.get(`teach/getRoomView/${id}`).then(res => res.data); };
 // 查询课程详情
 export const getCourseView = id => { return axios.get(`teach/getCourseView/${id}`).then(res => res.data); };
-//查询课程
+//查询授权的校区课程
 export const getCourseList = (pageNumber, pageSize, params) => { return axios.post(`teach/getCourseList/${pageNumber}/${pageSize}`, params).then(res => res.data); };
+//查询机构课程
+export const getBranchCourseList = (pageNumber, pageSize, params) => { return axios.post(`teach/getBranchCourseList/${pageNumber}/${pageSize}`, params).then(res => res.data); };
 //查询课程树
 export const getCourseTreeList = (params) => { return axios.get(`teach/getCourseTreeList`, params).then(res => res.data); };
+//查看课程授权的校区
+export const getCourseSchool = (courseId) => { return axios.get(`teach/getCourseSchool/${courseId}`).then(res => res.data); };
 //创建课程
 export const createCourse = params => { return axios.post(`teach/createCourse`, params).then(res => res.data); };
+//修改课程校区
+export const updateCourseSchool = (id, params) => { return axios.put(`teach/updateCourseSchool/${id}`, params).then(res => res.data); };
 //查询课程收费标准
 export const getChargeStandard = (courseId) => { return axios.get(`teach/getChargeStandard/` + courseId).then(res => res.data); };
 // 查询班级

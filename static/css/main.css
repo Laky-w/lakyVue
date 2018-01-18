@@ -17,7 +17,10 @@ body {
     background-color: #f5f7fa;
 }
 
-
+a{
+  color: #66b1ff;
+  cursor: pointer;
+}
 a:link {
   color:#66b1ff;
   text-decoration:none;
@@ -210,7 +213,17 @@ a:active {
     width: 100%;
 }
 
-
+/*详情页*/
+.viewForm .el-textarea.is-disabled .el-textarea__inner {
+  background-color: #f4f4f5;
+  cursor: auto;
+}
+.viewForm .el-form-item {
+  width: 45%;
+}
+.viewForm .el-tag {
+  width: 180px;
+}
 /*Readme*/
 
 .ms-doc .el-checkbox__input.is-disabled+.el-checkbox__label {

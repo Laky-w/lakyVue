@@ -15,7 +15,7 @@
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-select v-model="queryForm.clazzId" multiple value=1 clearable placeholder="科目" class="handle-select mr10">
+          <el-select v-model="queryForm.clazzId" multiple value=1 clearable placeholder="类别" class="handle-select mr10">
             <el-option v-for="item in parameterValue" :key="item.id" :label="item.name" :value="item.id"></el-option>
           </el-select>
         </el-form-item>
@@ -33,14 +33,19 @@
     <el-table :data="tableData" stripe v-loading="loading" border @sort-change="handSortChange" style="width: 100%">
       <el-table-column label="课程" sortable="custom" prop="name">
         <template slot-scope="scope">
-          <a href="javascript:void(0)" @click="handleView(scope.row.id)">{{scope.row.name}}</a>
+          <a @click="handleView(scope.row.id)">{{scope.row.name}}</a>
         </template>
       </el-table-column>
-      <el-table-column label="校区" sortable="custom" prop="schoolZoneName">
+      <el-table-column label="收费类型" sortable="custom" prop="standardType" :formatter="filterStandardType">
       </el-table-column>
-      <el-table-column label="科目" sortable="custom" prop="clazzName">
+      <el-table-column label="授权校区" sortable="custom" prop="schoolZoneNumber">
+        <template slot-scope="scope">
+          <a @click="handleCourseShool(scope.row.id);">{{scope.row.schoolZoneNumber}}个校区</a>
+        </template>
       </el-table-column>
-      <el-table-column label="类型" sortable="custom" prop="theType" :formatter="filterTheType">
+      <el-table-column label="类别" sortable="custom" prop="clazzName">
+      </el-table-column>
+      <el-table-column label="课程类型" sortable="custom" prop="theType" :formatter="filterTheType">
       </el-table-column>
       <el-table-column label="描述" sortable="custom" prop="remarks">
       </el-table-column>
@@ -61,14 +66,14 @@
       <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[20, 50, 100, 200]" :page-size="page_size" layout="total, sizes, prev, pager, next, jumper" :total="total">
       </el-pagination>
     </div>
-    <el-dialog title="新增课程" :visible.sync="dialogFormVisible" :close-on-click-modal=false v-loading="loadingForm">
+    <el-dialog title="新增课程" :visible.sync="dialogFormVisible" :close-on-click-modal=false>
       <el-steps :active="formActive" :simple=true finish-status="success">
         <el-step title="课程基本信息"></el-step>
         <el-step title="收费标准"></el-step>
         <el-step title="授权校区"></el-step>
       </el-steps>
       <el-form :model="form" ref="ruleForm1" :style="formActive!=1?'display:none':''">
-        <el-form-item label="名称" :label-width="formLabelWidth" prop="name" :rules="[{ required: true, message: '名称必填'}]">
+        <el-form-item label="名称" :label-width="formLabelWidth" prop="name" :rules="[{ required: true, message: '名称必填'},{ validator:validateCourseName, trigger: 'blur'}]">
           <el-input v-model="form.name" autofocus placeholder="课程名称" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="课程类型" :label-width="formLabelWidth" prop="theType" :rules="[{ required: true, message: '类型必填'}]">
@@ -77,8 +82,8 @@
             <el-option label="一对多" value="2"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="科目" :label-width="formLabelWidth" prop="clazzId" :rules="[{ required: true, message: '科目必填'}]">
-          <el-select v-model="form.clazzId" style="width:100%" placeholder="科目">
+        <el-form-item label="类别" :label-width="formLabelWidth" prop="clazzId" :rules="[{ required: true, message: '科目必填'}]">
+          <el-select v-model="form.clazzId" style="width:100%" placeholder="类别">
             <el-option v-for="(item,index) in parameterValue" :key="item.id" :label="item.name" :value="item.id"></el-option>
           </el-select>
         </el-form-item>
@@ -147,6 +152,7 @@
         <el-button :loading="loadingForm" type="primary" @click="submitForm('ruleForm')">{{formActive!=3?'下一步':'保存'}}</el-button>
       </div>
     </el-dialog>
+    <course-school :couser-id="viewId" :dialog-form-visible.sync="dialogSchoolVisible" @saveSuccess="getData()"></course-school>
   </div>
 </template>
 <style>
@@ -160,20 +166,6 @@
 </style>
 
 <style scoped>
-.ms-tree-space {
-  position: relative;
-  top: 1px;
-  display: inline-block;
-  font-family: "Glyphicons Halflings";
-  font-style: normal;
-  font-weight: 400;
-  line-height: 1;
-  width: 18px;
-  height: 14px;
-}
-.ms-tree-space::before {
-  content: "";
-}
 .freeTitle {
   display: inline-block;
   background-color: #faebd7;
@@ -181,21 +173,19 @@
   text-align: center;
   margin-bottom: 5px;
 }
-
-table td {
-  line-height: 26px;
-}
 </style>
 
 <script>
 import SchoolTree from "../../common/system/SchoolTree.vue";
 import CourseView from "./CourseView.vue";
-import { findChildSchoolZoneAll, createCourse, getCourseList, findBranchParameterValueAll } from "../../api/api";
+import CourseSchool from "./CourseSchool.vue";
+import { findChildSchoolZoneAll, createCourse, getBranchCourseList, findBranchParameterValueAll, getCourseList } from "../../api/api";
 export default {
   data() {
     return {
       tableData: [],
       dialogFormVisible: false,
+      dialogSchoolVisible: false,
       total: 0,
       cur_page: 1,
       page_size: 20,
@@ -251,6 +241,12 @@ export default {
       self.form.schoolZoneName = user.schoolZone.name;
       self.schoolId = user.schoolZoneId;
     },
+    handleCourseShool(courseId) {
+      let self = this;
+      self.viewId = courseId;
+      self.dialogSchoolVisible = true;
+      // self.$refs["courseSchool"].getSchool();
+    },
     //初始化属性end
     //分页方法start
     handleSizeChange(val) {
@@ -267,6 +263,29 @@ export default {
       //搜索方法
       this.cur_page = 1;
       this.getData();
+    },
+    validateCourseName(rule, value, callback) {//手机验证
+      getBranchCourseList(1, 20, { "name2": value }).then(data => {
+        if (data.code == 200) {
+          if (data.data.total > 0) {
+            let count = 0;
+            data.data.list.forEach(item => {
+              if (item.id != this.form.id) {
+                count++;
+              }
+            })
+            if (count > 0) {
+              callback(new Error("该课程名称已存在！"));
+            } else {
+              callback();
+            }
+          } else {
+            callback();
+          }
+        } else {
+          callback(new Error("网络错误，请尝试刷新操作！"));
+        }
+      })
     },
     getSchool() {
       let self = this;
@@ -312,7 +331,7 @@ export default {
     getData() {
       let self = this;
       self.loading = true;
-      getCourseList(
+      getBranchCourseList(
         self.cur_page,
         self.page_size,
         self.queryForm
@@ -368,6 +387,11 @@ export default {
       else row.tag = "一对多";
       return row.tag;
     },
+    filterStandardType(value, row) {
+      if (value.standardType == 1) row.tag = "标准收费";
+      else row.tag = "区间收费";
+      return row.tag;
+    },
     //控件方法
     handleEdit(index, row) {
       this.form.fatherId = row.id;
@@ -387,7 +411,6 @@ export default {
       }
     },
     handSortChange(column, prop, order) {
-      console.log(column);
       let self = this;
       if (column.column) {
         self.queryForm.sort = JSON.stringify({ prop: column.prop, order: column.order });
@@ -399,7 +422,6 @@ export default {
     handleView(id) {
       let self = this;
       self.viewId = id;
-      console.log(id);
       self.dialogViewVisible = true;
     },
     removeChargeStandard(item) {
@@ -417,6 +439,6 @@ export default {
       });
     }
   },
-  components: { SchoolTree, CourseView } //注入组件
+  components: { SchoolTree, CourseView, CourseSchool } //注入组件
 };
 </script>

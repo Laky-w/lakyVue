@@ -5,7 +5,7 @@ import ElementUI from 'element-ui';
 // import "../static/js/common.js";
 import axios from 'axios';
 import validateLaky from "./validate";
-import { _getCurrentUserInfo, _getUserAuthority } from "./components/api/api";
+import { _getCurrentUserInfo, _getCurrentSchoolZone, _getUserAuthority } from "./components/api/api";
 import "common.js";
 import 'element-ui/lib/theme-chalk/index.css'; // 默认主题
 import "../static/css/icon/iconfont.css";
@@ -15,6 +15,7 @@ import "babel-polyfill";
 Vue.use(ElementUI);
 Vue.prototype.$validate = validateLaky;
 Vue.prototype.$user = _getCurrentUserInfo;
+Vue.prototype.$schoolZone = _getCurrentSchoolZone;
 Vue.prototype.$isAuthority = _getUserAuthority;
 Vue.prototype.$axios = axios;
 // Vue.directive('authority',{

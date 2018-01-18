@@ -33,7 +33,7 @@
         <el-step title="2018/1/14" description="页面排序搭建start————by hreo"></el-step>
         <el-step title="2018/01/09" description="前台细化start————by laky-w"></el-step>
         <el-step title="2018/01/15" description="前台细化end————by laky-w"></el-step>
-        <el-step title="2018/01/16" description="教务细化end————by laky-w"></el-step>
+        <el-step title="2018/01/16" description="教务细化start————by laky-w"></el-step>
       </el-steps>
     </div>
   </div>

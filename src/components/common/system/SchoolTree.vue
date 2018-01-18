@@ -58,6 +58,7 @@ export default {
         this.isShow = true;
       }
     });
+    console.log(this.filterText);
     this.getSchool();
   },
   watch: {
@@ -149,7 +150,9 @@ export default {
 
   props: {
     value: "",
-    defaultText: "",
+    defaultText: {
+      default: ""
+    },
     isShowCheckbox: {
       default: false
     },
