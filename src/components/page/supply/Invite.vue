@@ -57,20 +57,14 @@
       </el-table-column>
       <el-table-column label="备注" sortable="custom" prop="remarks">
       </el-table-column>
-      <!-- <el-table-column label="操作">
-            <template slot-scope="scope">
-                <el-button
-                size="mini"
-                @click="handleEdit(scope.$index, scope.row)">添加</el-button>
-                <el-button
-                size="mini"
-                type="danger"
-                @click="handleDelete(scope.$index, scope.row)">删除</el-button>
-            </template>
-            </el-table-column> -->
+      <el-table-column label="操作">
+        <template slot-scope="scope">
+          <el-button type="primary" plain size="mini" @click="$refs['inviteForm'].editForm(scope.row.id)">修改</el-button>
+        </template>
+      </el-table-column>
     </el-table>
     <customer-view :view-id="viewId" :dialog-view-visible.sync="dialogStudentVisible"></customer-view>
-    <invite-form @saveSuccess="getData" :dialog-form-visible.sync="dialogFormVisible"></invite-form>
+    <invite-form @saveSuccess="getData" ref="inviteForm" :dialog-form-visible.sync="dialogFormVisible"></invite-form>
     <div class="pagination">
       <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[20, 50, 100, 200]" :page-size="page_size" layout="total, sizes, prev, pager, next, jumper" :total="total">
       </el-pagination>
@@ -156,8 +150,8 @@ export default {
       });
     },
     filterInviteStatus(value, row) {
-      if (value.inviteStatus == 1) row.tag = "未到";
-      else row.tag = "到达";
+      if (value.inviteStatus == 1) row.tag = "未到访";
+      else row.tag = "已到访";
       return row.tag;
     },
     //控件方法

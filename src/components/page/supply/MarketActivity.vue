@@ -33,7 +33,7 @@
     <el-table :data="tableData" stripe v-loading="loading" @sort-change="handSortChange" @selection-change="handleSelectionChange" border style="width: 100%">
       <el-table-column type="selection" width="30">
       </el-table-column>
-      <el-table-column sortable="custom" label="市场活动" prop="name">
+      <el-table-column sortable="custom" label="市场活动" prop="name" min-width="100px">
         <template slot-scope="scope">
           <a href="javascript:void(0)" @click="handleView(scope.row.id)">{{ scope.row.name }}</a>
         </template>
@@ -44,15 +44,15 @@
       </el-table-column>
       <el-table-column sortable="custom" label="状态" prop="theType" :formatter="filterType">
       </el-table-column>
-      <el-table-column sortable="custom" label="预算支出" prop="cost">
+      <el-table-column sortable="custom" label="预算支出" prop="cost" min-width="100px">
       </el-table-column>
-      <el-table-column sortable="custom" label="计划招生人数" prop="targetNumber" min-width="120">
+      <el-table-column sortable="custom" label="计划招生人数" prop="targetNumber" min-width="120px">
       </el-table-column>
-      <el-table-column sortable="custom" label="活动分类" prop="cateGoryName" min-width="120">
+      <el-table-column sortable="custom" label="活动分类" prop="cateGoryName" min-width="120px">
       </el-table-column>
-      <el-table-column sortable="custom" label="计划开始日期" prop="startDate" min-width="120">
+      <el-table-column sortable="custom" label="计划开始日期" prop="startDate" min-width="120px">
       </el-table-column>
-      <el-table-column sortable="custom" label="计划结束日期" prop="endDate" min-width="120">
+      <el-table-column sortable="custom" label="计划结束日期" prop="endDate" min-width="120px">
       </el-table-column>
       <el-table-column label="操作" min-width="130">
         <template slot-scope="scope">

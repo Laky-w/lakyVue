@@ -2,7 +2,7 @@
   <div class="table">
     <el-form :model="form" ref="ruleForm">
       <el-form-item label="选择学员" :label-width="formLabelWidth" prop="studentId" :rules="[{ required: true, message: '学员必填'}]">
-        <customer-dialog :defaulUser="student" style="width:80%" v-model="form.studentId" title="选择意向学员" placeholder-text="姓名/拼音/手机号"></customer-dialog>
+        <customer-dialog :defaulUser="student" :student-type-no="9" style="width:80%" v-model="form.studentId" title="选择意向学员" placeholder-text="姓名/拼音/手机号"></customer-dialog>
         <div style="display:inline-block;">
           <customer-form size="medium" text="快速添加" @saveSuccess="handleSaveSuccess"></customer-form>
         </div>
@@ -321,13 +321,14 @@ export default {
       this.form.financeAccount.forEach(item => {
         let maxMoney = 0;
         this.form.financeAccount.forEach(otherItem => {
-          if (otherItem.id != item.id) {
+          if (otherItem.accountId != item.accountId) {
             //maxMoney = maxMoney+otherItem.money;
             maxMoney = maxMoney.add(otherItem.money);
           }
         })
         // let totalMoney =this.form.bill.total-this.form.bill.subtractMoney-maxMoney);
         let totalMoney = Number(Number(this.form.bill.total.sub(this.form.bill.subtractMoney)).sub(maxMoney));
+        // console.log(maxMoney);
         if (totalMoney < 0) {
           item.arrears = 0;
           item.money = 0;
@@ -338,6 +339,7 @@ export default {
           item.arrears = totalMoney;
         }
       })
+      // console.log(this.form.financeAccount);
       return this.form.financeAccount;
     }
   },
