@@ -177,7 +177,13 @@ export const createCourse = params => { return axios.post(`teach/createCourse`, 
 //修改课程校区
 export const updateCourseSchool = (id, params) => { return axios.put(`teach/updateCourseSchool/${id}`, params).then(res => res.data); };
 //查询课程收费标准
-export const getChargeStandard = (courseId) => { return axios.get(`teach/getChargeStandard/` + courseId).then(res => res.data); };
+export const getChargeStandard = (courseId) => { return axios.get(`teach/getChargeStandard/${courseId}`).then(res => res.data); };
+//删除课程
+export const deleteCourse = (courseId) => { return axios.delete(`teach/deleteCourse/${courseId}`).then(res => res.data); };
+//封存课程
+export const normalCourse = (courseId) => { return axios.put(`teach/normalCourse/${courseId}`).then(res => res.data); };
+//启用课程
+export const sealUpCourse = (courseId) => { return axios.put(`teach/sealUpCourse/${courseId}`).then(res => res.data); };
 // 查询班级
 export const getSchoolClassList = (pageNumber, pageSize, params) => { return axios.post(`teach/getSchoolClassList/${pageNumber}/${pageSize}`, params).then(res => res.data); };
 // 班级详情
