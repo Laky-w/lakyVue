@@ -11,13 +11,20 @@
           <img class="user-logo" :src="userHeadLogo" onerror="this.src='../../../static/img/headPhoto.jpg'"> {{username}}
         </span>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item command="loginout">退出</el-dropdown-item>
+        <el-dropdown-item command="userinfo">用户信息
+        </el-dropdown-item>
+        <el-dropdown-item command="updatePWD">修改密码</el-dropdown-item>
+        <el-dropdown-item command="loginout">退出系统</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </div>
+    <user-view :view-id="viewId" :dialog-view-visible.sync="dialogViewVisible"></user-view>
+    <user-password ref="passwordForm" @saveSuccess="loginOut"></user-password>
   </div>
 </template>
 <script>
+import UserView from "../page/system/UserView.vue";
+import UserPassword from "../page/user/UserPassword.vue";
 import { findNewNoticeAll, loginOut } from "../api/api";
 export default {
   data() {
@@ -27,7 +34,9 @@ export default {
       defaultHeadLogo: "../../../static/img/img.jpg",
       notices: "",
       notice: "",
-      noticeIndex: 0
+      noticeIndex: 0,
+      viewId: "",//详情id
+      dialogViewVisible: false
     };
   },
   computed: {
@@ -76,8 +85,10 @@ export default {
       });
     },
     getData() { },
-    handleCommand(command) {
-      if (command == "loginout") {
+    handleUpdatePWD() {
+      this.$refs["passwordForm"].handleOpen();
+    },
+    loginOut(){
         sessionStorage.removeItem("userInfo");
         sessionStorage.removeItem("branch");
         loginOut().then(data => {
@@ -87,9 +98,21 @@ export default {
             this.$router.push('/login');
           }
         });
+    },
+    handleCommand(command) {
+      if (command == "loginout") {
+        this.loginOut();
+      } else if (command == "updatePWD") {
+        this.handleUpdatePWD();
       }
-    }
-  }
+    },
+    handleView(id) {
+      let self = this;
+      self.viewId = id;
+      self.dialogViewVisible = true;
+    },
+  },
+  components: { UserPassword,UserView } //注入组件
 };
 </script>
 <style scoped>

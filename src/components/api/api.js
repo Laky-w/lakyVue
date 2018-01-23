@@ -83,6 +83,10 @@ export const createNewRole = params => { return axios.post(`organization/createN
 export const getUserList = (pageNumber, pageSize, params) => { return axios.post(`organization/getUserList/${pageNumber}/${pageSize}`, params).then(res => res.data); };
 //查询用户详情
 export const getUserView = (id) => { return axios.post(`organization/getUserView/${id}`).then(res => res.data); };
+//  验证用户密码
+export const validateUserPassword = params => { return axios.post(`organization/validateUserPassword`, params).then(res => res.data); };
+//  更新用户密码
+export const updateUserPassword = params => { return axios.put(`organization/updateUserPassword`, params).then(res => res.data); };
 //创建用户
 export const createUser = params => { return axios.post(`organization/createUser`, params).then(res => res.data); };
 //删除用户
