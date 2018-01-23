@@ -58,7 +58,7 @@
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-dropdown split-button type="primary" @click="handleEdit(scope.$index, scope.row)" @command="hadleCommand" size="small">
+          <el-dropdown split-button type="primary" @click="handleEdit(scope.$index, scope.row)" @command="handleCommand" size="small">
             修改
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item v-if="scope.row.theType!==3" :command="{row:scope.row,type:'add'}">添加下级</el-dropdown-item>
@@ -347,7 +347,7 @@ export default {
       self.viewId = id;
       self.dialogViewVisible = true;
     },
-    hadleCommand(command) {
+    handleCommand(command) {
       switch (command.type) {
         case "add":
           this.handleAdd(command.row);
