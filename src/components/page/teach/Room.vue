@@ -10,6 +10,7 @@
         </el-form-item>
 
         <el-button type="mini" icon="el-icon-search" @click="search('queryForm')">搜索</el-button>
+        <el-button size="mini" icon="el-icon-refresh" @click="$refs['queryForm'].resetFields();search('queryForm');">重置</el-button>
       </el-form>
     </div>
     <div style="margin:5px;">
@@ -30,7 +31,7 @@
       </el-table-column>
       <el-table-column label="操作" min-width="130">
         <template slot-scope="scope">
-          <el-button type="primary" plain size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+          <el-button type="primary" plain size="mini" @click="handleEdit(scope.$index, scope.row)">修改</el-button>
           <el-button type="primary" plain size="mini" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
         </template>
       </el-table-column>
@@ -42,7 +43,7 @@
     </div>
     <el-dialog :title="titleDialog" :visible.sync="dialogFormVisible" :close-on-click-modal=false>
       <el-form :model="form" ref="ruleForm">
-        <el-form-item label="教室" :label-width="formLabelWidth" prop="name" :rules="[{ required: true, message: '名称必填'},{ min: 5, max: 20, message: '长度在 5 到 20 个字符', trigger: 'blur' }]">
+        <el-form-item label="教室" :label-width="formLabelWidth" prop="name" :rules="[{ required: true, message: '名称必填'},{ min: 1, max: 20, message: '长度在 1 到 20 个字符', trigger: 'blur' }]">
           <el-input v-model="form.name" placeholder="教室名称" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="容纳人数" :label-width="formLabelWidth" prop="maxCount">

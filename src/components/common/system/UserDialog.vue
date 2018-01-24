@@ -124,6 +124,7 @@ export default {
       this.$emit("input", val);
     },
     defaultText(val) {
+      console.log(val);
       this.userInput = val;
     },
     parentSchoolId(val) {
@@ -133,7 +134,6 @@ export default {
       this.getUser();
     }
   },
-  mounted() { },
   methods: {
     //分页方法start
     handleSizeChange(val) {

@@ -1,14 +1,14 @@
 <template>
-  <div>
-    <el-form :model="form" ref="ruleForm">
-      <el-form-item label="名称" :label-width="formLabelWidth" prop="name" :rules="[{ required: true, message: '班级名称必填'}]">
+  <el-dialog :title="titleText" :visible.sync="visible" :close-on-click-modal="false" custom-class="dialog-form">
+    <el-form :model="form" ref="classForm">
+      <el-form-item label="名称" :label-width="formLabelWidth" prop="name" :rules="[{ required: true, message: '班级名称必填'}, { validator:validateClassName, trigger: 'blur'}]">
         <el-input v-model="form.name" placeholder="班级名称"></el-input>
       </el-form-item>
       <el-form-item label="课程" :label-width="formLabelWidth" prop="courseId" :rules="[{ required: true, message: '课程必填'}]">
         <course v-model="form.courseId" :default-value="form.courseInfo"></course>
       </el-form-item>
       <el-form-item label="校区" :label-width="formLabelWidth" prop="schoolZoneName" :rules="[{ required: true, message: '校区必填'}]">
-        <school-tree @nodeClick="handleSchool" :name="form.schoolZoneName" :the-type="2" place-text="校区" :default-value="form.schoolZoneId"></school-tree>
+        <school-tree @nodeClick="handleSchool" :name="form.schoolZoneName" the-type="2" place-text="校区" :default-value="form.schoolZoneId"></school-tree>
       </el-form-item>
       <el-form-item label="主教" :label-width="formLabelWidth" prop="mainTeacherId">
         <user-dialog v-model="form.mainTeacherId" title="选择主教" :the-type="3" :parent-school-id="form.schoolZoneId" placeholder-text="主教" :default-text="form.mainTeacherName"></user-dialog>
@@ -31,14 +31,18 @@
         <el-input v-model="form.remarks" :rows=3 type="textarea" placeholder="备注"></el-input>
       </el-form-item>
     </el-form>
-  </div>
+    <div slot="footer" class="dialog-footer">
+      <el-button @click="visible=false;">取 消</el-button>
+      <el-button :loading="loadingForm" type="primary" @click="submitForm('classForm')">确 定</el-button>
+    </div>
+  </el-dialog>
 </template>
 <script>
 import SchoolTree from "../../common/system/SchoolTree.vue";
 import UserDialog from "../../common/system/UserDialog.vue";
 import Course from "../../common/teach/Course.vue";
 import RoomDialog from "../../common/teach/RoomDialog.vue";
-import { createSchoolClass, getSchoolClassView } from "../../api/api";
+import { createSchoolClass, getSchoolClassView, getSchoolClassList } from "../../api/api";
 export default {
   data() {
     return {
@@ -56,6 +60,8 @@ export default {
           }
         }
       },
+      visible: false,
+      titleText: "开班",
       oldForm: {
         //表单 v-modle绑定的值
         name: "",
@@ -76,11 +82,6 @@ export default {
   },
   created() {
     this.getSchoolId();
-    if (this.editClass) {
-      let obj = this.editClass;
-      obj.courseInfo = [obj.clazzId, obj.theType, obj.courseId];
-      this.form = obj;
-    }
   },
   computed: {
     //实时计算
@@ -90,8 +91,11 @@ export default {
   },
   watch: {
     startDate(val) {
-
-      this.form.endDate = "";
+      if (new Date(this.form.endDate).getTime() < new Date(this.form.startDate).getTime()) {
+        this.form.endDate = "";
+      }
+      console.log(new Date(this.form.endDate));
+      // this.form.endDate = "";
     },
     editClass(val) {
       val.courseInfo = [val.clazzId, val.theType, val.courseId];
@@ -106,10 +110,37 @@ export default {
       self.oldForm.schoolZoneId = user.schoolZoneId;
       self.oldForm.schoolZoneName = user.schoolZone.name;
     },
+    validateClassName(rule, value, callback) {//名字重复验证
+      if (value) {
+        getSchoolClassList(1, 20, { "name2": value }).then(data => {
+          if (data.code == 200) {
+            if (data.data.total > 0) {
+              let count = 0;
+              data.data.list.forEach(item => {
+                if (item.id != this.form.id) {
+                  count++;
+                }
+              })
+              if (count > 0) {
+                callback(new Error("该班级名称已存在，请重新填写！"));
+              } else {
+                callback();
+              }
+            } else {
+              callback();
+            }
+          } else {
+            callback(new Error("网络错误，请尝试刷新操作！"));
+          }
+        })
+      } else {
+        callback(new Error("请输入班级名称！"));
+      }
+    },
     //保存表单
-    submitForm(callback) {
+    submitForm(formName) {
       let self = this;
-      self.$refs["ruleForm"].validate(valid => {
+      self.$refs[formName].validate(valid => {
         if (valid) {
           self.loadingForm = true;
           createSchoolClass(self.form).then(data => {
@@ -117,28 +148,32 @@ export default {
             if (data.code == 200) {
               self.$message.success(data.message);
               self.$refs[formName].resetFields();
-              self.dialogFormVisible = false;
+              self.visible = false;
+              this.$emit("saveSuccess", data.data);
             } else {
               this.$message.error(data.data);
             }
-            if (callback) {
-              callback(data.data);
-            }
           });
         } else {
-          if (callback) {
-            callback(false);
-          }
           return false;
         }
       });
     },
+    handleOpenDialog() {
+      this.visible = true;
+      this.form = this.oldForm;
+      this.titleText = "开班";
+      this.$refs['classForm'].resetFields();
+    },
     handleEditOpenDialog(id) {
       getSchoolClassView(id).then(data => {
-        this.dialogFormVisible = true;
-        let obj = data.data;
-        obj.courseInfo = [obj.clazzId, obj.theType, obj.courseId]
-        this.form = obj;
+        if (data.code == 200) {
+          this.visible = true;
+          let obj = data.data;
+          obj.courseInfo = [obj.clazzId, obj.theType, obj.courseId];
+          this.titleText = "修改-" + obj.name;
+          this.form = obj;
+        }
       })
     },
     handleSchool(data) {

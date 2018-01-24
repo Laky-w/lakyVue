@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <el-dialog title="排课" :visible.sync="visbile" :close-on-click-modal="false">
     <el-form :model="form" ref="ruleForm">
       <el-form-item label="班级" :label-width="formLabelWidth" required>
         {{form.className}}
@@ -14,7 +14,7 @@
         <room-dialog v-model="form.roomId" :default-text="form.roomName" />
       </el-form-item>
       <el-form-item label="排课日期" :label-width="formLabelWidth" prop="scheduleDate" :rules="[{ required: true, message: '排课日期必填'}]">
-        <el-date-picker v-model="form.scheduleDate" type="daterange" format="yyyy-MM-dd" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期">
+        <el-date-picker v-model="form.scheduleDate" type="daterange" value-format="yyyy-MM-dd" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="排课次数" :label-width="formLabelWidth" prop="maxCount">
@@ -31,10 +31,10 @@
               </el-form-item>
             </template>
           </el-table-column>
-          <el-table-column label="上课时间">
+          <el-table-column label="上课时间" width="230px">
             <template slot-scope="scope">
               <el-form-item size="mini" :prop="'classTimes.' + scope.$index + '.classTime'" :rules="[{ required: true, message: '该项必填'}]">
-                <el-time-picker is-range v-model="scope.row.classTime" range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间" placeholder="选择上课时间">
+                <el-time-picker is-range v-model="scope.row.classTime" format="HH:mm" value-format="HH:mm" range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间" placeholder="选择上课时间">
                 </el-time-picker>
               </el-form-item>
             </template>
@@ -44,6 +44,13 @@
               <el-form-item size="mini" :prop="'classTimes.' + scope.$index + '.courseHour'" :rules="[{ required: true, message: '该项必填'}]">
                 <el-input-number style="width:100%" v-model="scope.row.courseHour" :min="0" />
               </el-form-item>
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" width="80px">
+            <template slot-scope="scope">
+              <el-button size="mini" v-if="form.classTimes.length!=1" type="danger" plain @click="form.classTimes.splice(scope.$index, 1);">
+                <i class="el-icon-delete"></i>
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -81,7 +88,7 @@
             <el-table-column label="上课时间">
               <template slot-scope="scope">
                 <el-form-item size="mini" :prop="'classTimes.' + scope.$index + '.classTime'" :rules="[{ required: true, message: '该项必填'}]">
-                  <el-time-picker is-range v-model="scope.row.classTime" range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间" placeholder="选择上课时间">
+                  <el-time-picker is-range v-model="scope.row.classTime" range-separator="至" format="HH:mm" value-format="HH:mm" start-placeholder="开始时间" end-placeholder="结束时间" placeholder="选择上课时间">
                   </el-time-picker>
                 </el-form-item>
               </template>
@@ -101,7 +108,11 @@
         <el-button type="primary" @click="handleClickTimeOk">确 定</el-button>
       </div>
     </el-dialog>
-  </div>
+    <div slot="footer" class="dialog-footer">
+      <el-button @click="visbile=false;">取 消</el-button>
+      <el-button :loading="loadingForm" type="primary" @click="submitForm('scheduleForm')">确 定</el-button>
+    </div>
+  </el-dialog>
 </template>
 <style>
 .scheduleTable .el-form-item {
@@ -114,11 +125,12 @@ import SchoolTree from "../../common/system/SchoolTree.vue";
 import UserDialog from "../../common/system/UserDialog.vue";
 import Course from "../../common/teach/Course.vue";
 import RoomDialog from "../../common/teach/RoomDialog.vue";
-import { createScheduleStandard, getScheduleStandard } from "../../api/api";
+import { createClassSchedule, getScheduleStandard } from "../../api/api";
 export default {
   data() {
     return {
       dialogVisible: false,
+      visbile: false,
       workDay: "",
       restDay: "",
       weeks: [
@@ -157,7 +169,7 @@ export default {
         schoolTime: "",
         classTimes: [
           {
-            classTime: [new Date(), new Date((Date.now() + 60 * 60 * 1000))],
+            classTime: [new Date().Format("hh:ss"), new Date((Date.now() + 60 * 60 * 1000)).Format("hh:ss")],
             courseHour: 1
           }
         ]
@@ -165,19 +177,19 @@ export default {
       },
       form: {
         //表单 v-modle绑定的值
-        classId: this.currentClass.id,
-        className: this.currentClass.name,
-        teacherId: this.currentClass.mainTeacherId,
-        teacherName: this.currentClass.teacherName,
-        roomId: this.currentClass.roomId,
-        roomName: this.currentClass.roomName,
+        classId: "",
+        className: "",
+        teacherId: "",
+        teacherName: "",
+        roomId: "",
+        roomName: "",
         helpTeacherId: [],
         scheduleDate: [],
         maxCount: 0,
         schoolZoneId: "",
         classTimes: [{
           weekDay: 2,
-          classTime: [new Date(), new Date((Date.now() + 60 * 60 * 1000))],
+          classTime: [new Date().Format("hh:ss"), new Date((Date.now() + 60 * 60 * 1000)).Format("hh:ss")],
           courseHour: 1,
         }]
       },
@@ -196,14 +208,6 @@ export default {
     }
   },
   watch: {
-    currentClass(val) {
-      this.form.classId = val.id;
-      this.form.className = val.name;
-      this.form.roomId = val.roomId;
-      this.form.roomName = val.roomName;
-      this.form.teacherId = val.mainTeacherId;
-      this.form.teacherName = val.teacherName;
-    },
   },
   methods: {
     //初始化属性start
@@ -220,34 +224,62 @@ export default {
         }
       })
     },
+    handleOpenDialog(val) {
+      this.visbile = true;
+      // console.log(this.form);
+      this.form.classId = val.id;
+      this.form.className = val.name;
+      this.form.roomId = val.roomId;
+      this.form.roomName = val.roomName;
+      this.form.teacherId = val.teacherId;
+      this.form.teacherName = val.teacherName;
+      // this.titleText = "开班";
+      if (this.$refs['ruleForm']) {
+        this.$refs['ruleForm'].resetFields();
+      }
+
+    },
     //保存表单
-    submitForm(callback) {
+    submitForm() {
       let self = this;
+      let message = self.checkisExistTime();
+      if (message) {
+        this.$message.error(message);
+        return false;
+      }
       self.$refs["ruleForm"].validate(valid => {
         if (valid) {
-          createScheduleStandard({ scheduleFormStr: JSON.stringify(self.form) }).then(data => {
+          createClassSchedule({ scheduleFormStr: JSON.stringify(self.form) }).then(data => {
             if (data.code == 200) {
+              self.visbile = false;
               self.$message.success(data.message);
               self.$refs["ruleForm"].resetFields();
             } else {
               this.$message.error(data.data);
             }
-            if (callback) {
-              callback(data.data);
-            }
           });
         } else {
-          if (callback) {
-            callback(false);
-          }
           return false;
         }
       });
+    },
+    checkisExistTime() {//检查重复上课时间
+      let message = "";
+      this.form.classTimes.forEach((item, i) => {
+        for (let j = i; j < this.form.classTimes.length; j++) {
+          let item2 = this.form.classTimes[j];
+          if (i != j && item.weekDay == item2.weekDay && item.classTime[0] == item2.classTime[0] && item.classTime[1] && item2.classTime[1]) {
+            message += "第" + (i + 1) + "行和第" + (j + 1) + "行上课时间重复！";
+          }
+        }
+      })
+      return message;
     },
     handleSchool(data) {
       this.form.schoolName = data.name;
       this.form.schoolZoneId = data.id;
     },
+
     handleChangeWorkDay(val) {
       let self = this;
       if (val) {
@@ -288,7 +320,6 @@ export default {
         if (valid) {
           self.weekForm.checkedDay.forEach(item => {
             self.weekForm.classTimes.forEach(tiem => {
-              console.log(tiem.classTime);
               self.form.classTimes.push({
                 weekDay: item,
                 classTime: tiem.classTime,
@@ -309,19 +340,15 @@ export default {
       this.schoolTimes.forEach(item => {
         if (item.id == value) {
           self.weekForm.classTimes.forEach(time => {
-            let startDate = item.startTime.split(":");
-            let endDate = item.endTime.split(":");
-            let date = new Date();
-            time.classTime = [new Date(date.getFullYear(), date.getMonth(), date.getDate(), startDate[0], startDate[1], 0),
-            new Date(new Date(date.getFullYear(), date.getMonth(), date.getDate(), endDate[0], endDate[1], 0))];
+            time.classTime = [item.startTime, item.endTime];
             time.courseHour = item.courseHour;
           })
         }
       })
-    }
+    },
+
   },
   props: {
-    currentClass: "",//选择班级
   },
   components: { SchoolTree, Course, UserDialog, RoomDialog } //注入组件
 }

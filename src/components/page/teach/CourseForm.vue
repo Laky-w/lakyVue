@@ -1,5 +1,5 @@
 <template>
-  <el-dialog title="新增课程" v-loading="loading" :visible.sync="visible" :close-on-click-modal="false">
+  <el-dialog :title="title" v-loading="loading" :visible.sync="visible" :close-on-click-modal="false">
     <div class="course-active">
       <el-steps :active="formActive" :simple="true" finish-status="success">
         <el-step title="课程基本信息"></el-step>
@@ -113,6 +113,7 @@ export default {
       visible: false,
       loading: false,
       parameterValue: [],
+      title: "新增课程",
       formActive: 1,
       schoolData: [], //全部授权校区
       oldForm: {
@@ -210,6 +211,7 @@ export default {
     handleAddCourse() {//点击添加课程
       let self = this;
       self.form = self.oldForm;
+      self.title = "新增课程";
       self.formActive = 1;
       self.visible = true;
     },
@@ -220,6 +222,7 @@ export default {
           let course = data.data;
           course.chargeStandard = course.chargeStandards;
           course.schoolIds = [];
+          self.title = "修改-" + course.course.name;
           course.courseSchool.forEach(item => {
             course.schoolIds.push(item.schoolZoneId);
           })

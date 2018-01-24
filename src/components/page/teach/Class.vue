@@ -2,17 +2,37 @@
   <div class="table">
     <div class="handle-box">
       <el-form ref="queryForm" :inline="true" :model="queryForm" label-width="80px" size="mini">
-        <el-form-item>
-          <el-input v-model="queryForm.name" placeholder="班级名称" class="handle-input mr10"></el-input>
+        <el-form-item prop="name">
+          <el-input v-model="queryForm.name" placeholder="班级名称" clearable class="handle-input mr10"></el-input>
         </el-form-item>
-        <el-form-item>
-          <school-tree :is-show-checkbox=true :the-type="2" place-text="校区" @handleCheckChange="handleCheckChange"></school-tree>
+        <el-form-item prop="teacherName">
+          <el-input v-model="queryForm.teacherName" placeholder="班主任" clearable class="handle-input mr10"></el-input>
         </el-form-item>
-        <el-button type="mini" icon="el-icon-search" @click="search('queryForm')">搜索</el-button>
+        <el-form-item prop="courseName">
+          <el-input v-model="queryForm.courseName" placeholder="课程" clearable class="handle-input mr10"></el-input>
+        </el-form-item>
+
+        <el-button-group>
+          <el-button size="mini" icon="el-icon-search" @click="search('queryForm')">搜索</el-button>
+          <el-button size="mini" style="padding:7px" v-if="isShowMore==false" type="primary" icon="el-icon-arrow-down" @click="isShowMore=true"></el-button>
+          <el-button size="mini" style="padding:7px" v-if="isShowMore==true" type="primary" icon="el-icon-arrow-up" @click="isShowMore=false"></el-button>
+        </el-button-group>
+        <el-button size="mini" icon="el-icon-refresh" @click="$refs['queryForm'].resetFields();search('queryForm')">重置</el-button>
+        <div v-show="isShowMore">
+          <el-form-item>
+            <school-tree :is-show-checkbox=true :the-type="2" place-text="校区" @handleCheckChange="handleCheckChange"></school-tree>
+          </el-form-item>
+          <el-form-item prop="roomName">
+            <el-input v-model="queryForm.roomName" placeholder="教室" clearable class="handle-input mr10"></el-input>
+          </el-form-item>
+          <el-form-item prop="mainTeacherName">
+            <el-input v-model="queryForm.mainTeacherName" placeholder="主教" clearable class="handle-input mr10"></el-input>
+          </el-form-item>
+        </div>
       </el-form>
     </div>
     <div style="margin:5px;">
-      <el-button type="primary" icon="el-icon-edit" size="mini" @click="dialogFormVisible=true">开班</el-button>
+      <el-button type="primary" icon="el-icon-edit" size="mini" @click="$refs['classForm'].handleOpenDialog()">开班</el-button>
       <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
     </div>
     <el-table :data="tableData" stripe v-loading="loading" border @sort-change="handSortChange" style="width: 100%">
@@ -31,16 +51,16 @@
       </el-table-column>
       <el-table-column label="主教" sortable="custom" prop="mainTeacherName">
       </el-table-column>
-      <el-table-column label="创建时间" sortable="custom" prop="createTime">
+      <el-table-column label="创建时间" sortable="custom" prop="createTime" min-width="155px">
       </el-table-column>
       <el-table-column label="计划开班日期" sortable="custom" prop="startDate">
       </el-table-column>
       <el-table-column label="计划结课日期" sortable="custom" prop="endDate">
       </el-table-column>
-      <el-table-column label="操作">
+      <el-table-column label="操作" min-width="120px">
         <template slot-scope="scope">
           <el-dropdown split-button type="primary" @click="handleEdit(scope.$index, scope.row)" @command="handleCommand" size="small">
-            编辑
+            修改
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item :command="{item:'course',row:scope.row}">排课</el-dropdown-item>
               <el-dropdown-item :command="{item:'delete',row:scope.row}">删除</el-dropdown-item>
@@ -54,20 +74,15 @@
       <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[20, 50, 100, 200]" :page-size="page_size" layout="total, sizes, prev, pager, next, jumper" :total="total">
       </el-pagination>
     </div>
-    <el-dialog title="开班" :visible.sync="dialogFormVisible" :close-on-click-modal="false">
-      <class-form ref="classForm" :edit-class="currentClass"></class-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible=false;">取 消</el-button>
-        <el-button :loading="loadingForm" type="primary" @click="submitForm('classForm')">确 定</el-button>
-      </div>
-    </el-dialog>
-    <el-dialog title="排课" :visible.sync="dialogScheduleFormVisible" :close-on-click-modal=false>
-      <schedule-form ref="scheduleForm" :current-class="currentClass"></schedule-form>
+    <class-form ref="classForm" @saveSuccess="getData"></class-form>
+    <schedule-form ref="scheduleForm"></schedule-form>
+    <!-- <el-dialog title="排课" :visible.sync="dialogScheduleFormVisible" :close-on-click-modal=false>
+
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogScheduleFormVisible=false;">取 消</el-button>
         <el-button :loading="loadingForm" type="primary" @click="submitForm('scheduleForm')">确 定</el-button>
       </div>
-    </el-dialog>
+    </el-dialog> -->
   </div>
 </template>
 
@@ -82,10 +97,11 @@ import ClassView from "./ClassView.vue";
 import SchoolTree from "../../common/system/SchoolTree.vue";
 import ClassForm from "./ClassForm.vue";
 import ScheduleForm from "./ScheduleForm.vue";
-import { getSchoolClassList, deleteSchoolClass, getSchoolClassView } from "../../api/api";
+import { getSchoolClassList, deleteSchoolClass } from "../../api/api";
 export default {
   data() {
     return {
+      isShowMore: false,
       tableData: [],
       dialogFormVisible: false,
       dialogScheduleFormVisible: false,
@@ -96,6 +112,10 @@ export default {
       dialogViewVisible: false,
       queryForm: {
         name: "",
+        teacherName: "",
+        courseName: "",
+        roomName: "",
+        mainTeacherName: "",
         theDate: "",
         theType: "",
         schoolZoneId2: []
@@ -170,12 +190,7 @@ export default {
     },
     //控件方法
     handleEdit(index, row) {
-      let self = this;
-      getSchoolClassView(row.id).then(data => {
-        self.dialogFormVisible = true;
-        let obj = data.data;
-        self.currentClass = obj;
-      })
+      this.$refs['classForm'].handleEditOpenDialog(row.id);
     },
     handleDelete(row) {
       let self = this;
@@ -223,9 +238,7 @@ export default {
       let self = this;
       switch (command.item) {
         case "course":
-          self.currentClass = command.row;
-          console.log(self.currentClass);
-          self.dialogScheduleFormVisible = true;
+          self.$refs["scheduleForm"].handleOpenDialog(command.row);
           break;
         case "delete":
           self.handleDelete(command.row);

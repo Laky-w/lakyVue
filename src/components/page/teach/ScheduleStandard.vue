@@ -10,6 +10,7 @@
         </el-form-item>
 
         <el-button type="mini" icon="el-icon-search" @click="search('queryForm')">搜索</el-button>
+        <el-button size="mini" icon="el-icon-refresh" @click="$refs['queryForm'].resetFields();search('queryForm');">重置</el-button>
       </el-form>
     </div>
     <div style="margin:5px;">
@@ -31,7 +32,7 @@
       </el-table-column>
       <el-table-column label="操作" min-width="130">
         <template slot-scope="scope">
-          <el-button type="primary" plain size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+          <el-button type="primary" plain size="mini" @click="handleEdit(scope.$index, scope.row)">修改</el-button>
           <el-button type="primary" plain size="mini" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
         </template>
       </el-table-column>
@@ -50,7 +51,7 @@
           <school-tree @nodeClick="handleSchool" :name="form.schoolZoneName" :the-type="2" place-text="校区" :default-value="form.schoolZoneId"></school-tree>
         </el-form-item>
         <el-form-item label="时间" :label-width="formLabelWidth" prop="time" :rules="[{ required: true, message: '上课时间段必填'}]">
-          <el-time-picker is-range v-model="form.time" value-format="HH:mm" range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间" placeholder="选择上课时间段">
+          <el-time-picker is-range v-model="form.time" format="HH:mm" value-format="HH:mm" range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间" placeholder="选择上课时间段">
           </el-time-picker>
         </el-form-item>
         <el-form-item label="学时" :label-width="formLabelWidth" prop="courseHour" :rules="[{ required: true, message: '学时必填'}]">
