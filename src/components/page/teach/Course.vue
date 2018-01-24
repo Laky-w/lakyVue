@@ -28,7 +28,7 @@
         <el-button-group>
           <el-button size="mini" icon="el-icon-search" @click="search('queryForm')">搜索</el-button>
         </el-button-group>
-        <el-button size="mini" icon="el-icon-refresh" @click="refresh('queryForm')">重置</el-button>
+        <el-button size="mini" icon="el-icon-refresh" @click="$refs['queryForm'].resetFields();search('queryForm');">重置</el-button>
       </el-form>
     </div>
     <div style="margin:5px;">

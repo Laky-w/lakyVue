@@ -7,11 +7,8 @@
       <el-form-item label="校区:">
         <el-tag type="info">{{view.schoolZoneName}}</el-tag>
       </el-form-item>
-      <el-form-item label="开始时间:">
-        <el-tag type="info">{{view.startTime}}</el-tag>
-      </el-form-item>
-      <el-form-item label="结束时间:">
-        <el-tag type="info">{{view.endTime}}</el-tag>
+      <el-form-item label="上课时间:">
+        <el-tag type="info">{{view.startTime}}--{{view.endTime}}</el-tag>
       </el-form-item>
       <el-form-item label="学时:">
         <el-tag type="info">{{view.courseHour}}</el-tag>

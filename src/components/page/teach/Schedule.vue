@@ -2,16 +2,32 @@
   <div class="table">
     <div class="handle-box">
       <el-form ref="queryForm" :inline="true" :model="queryForm" label-width="80px" size="mini">
-        <el-form-item>
-          <el-input v-model="queryForm.className" placeholder="班级名称" class="handle-input mr10"></el-input>
+        <el-form-item prop="className">
+          <el-input v-model="queryForm.className" placeholder="班级名称" clearable class="handle-input mr10"></el-input>
         </el-form-item>
-        <el-form-item>
-          <school-tree :is-show-checkbox=true :the-type="2" place-text="校区" @handleCheckChange="handleCheckChange"></school-tree>
+        <el-form-item prop="roomName">
+          <el-input v-model="queryForm.roomName" placeholder="教室名称" clearable class="handle-input mr10"></el-input>
         </el-form-item>
-        <el-form-item>
+        <el-form-item prop="startTime">
           <date-range startPlaceholder="上课日期" v-model="queryForm.startTime" endPlaceholder="上课日期"></date-range>
         </el-form-item>
-        <el-button type="mini" icon="el-icon-search" @click="search('queryForm')">搜索</el-button>
+        <el-button-group>
+          <el-button size="mini" icon="el-icon-search" @click="search('queryForm')">搜索</el-button>
+          <el-button size="mini" style="padding:7px" v-if="isShowMore==false" type="primary" icon="el-icon-arrow-down" @click="isShowMore=true"></el-button>
+          <el-button size="mini" style="padding:7px" v-if="isShowMore==true" type="primary" icon="el-icon-arrow-up" @click="isShowMore=false"></el-button>
+        </el-button-group>
+        <el-button size="mini" icon="el-icon-refresh" @click="$refs['queryForm'].resetFields();search('queryForm')">重置</el-button>
+        <div v-show="isShowMore">
+          <el-form-item>
+            <school-tree :is-show-checkbox=true :the-type="2" place-text="校区" @handleCheckChange="handleCheckChange"></school-tree>
+          </el-form-item>
+          <el-form-item prop="teachName">
+            <el-input v-model="queryForm.teachName" placeholder="主教姓名" clearable class="handle-input mr10"></el-input>
+          </el-form-item>
+          <el-form-item prop="headTeachName">
+            <el-input v-model="queryForm.headTeachName" placeholder="助教姓名" clearable class="handle-input mr10"></el-input>
+          </el-form-item>
+        </div>
       </el-form>
     </div>
     <div style="margin:5px;">
@@ -70,6 +86,7 @@ import { getClassSchedule } from "../../api/api";
 export default {
   data() {
     return {
+      isShowMore: false,
       tableData: [],
       dialogFormVisible: false,
       dialogScheduleFormVisible: false,
@@ -78,6 +95,9 @@ export default {
       page_size: 20,
       queryForm: {
         className: "",
+        roomName: "",
+        teachName: "",
+        headTeachName: "",
         // theDate: "",
         // theType: "",
         schoolZoneId2: [],

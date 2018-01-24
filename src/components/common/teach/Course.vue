@@ -10,7 +10,7 @@ export default {
   data() {
     return {
       options: [],
-      selectedOptions: []
+      selectedOptions: this.defaultValue
     };
   },
   watch: {
@@ -40,7 +40,9 @@ export default {
   },
   props: {
     value: "",
-    defaultValue: []
+    defaultValue: {
+      default: []
+    }
   }
 };
 </script>
