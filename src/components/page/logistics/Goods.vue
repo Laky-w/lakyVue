@@ -37,7 +37,7 @@
       </el-table-column>
       <el-table-column label="操作" min-width="130">
         <template slot-scope="scope">
-          <el-button type="primary" plain size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+          <el-button type="primary" plain size="mini" @click="handleEdit(scope.$index, scope.row)">修改</el-button>
           <el-button type="primary" plain size="mini" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
         </template>
       </el-table-column>
@@ -49,7 +49,7 @@
     </div>
     <el-dialog :title="titleDialog" :visible.sync="dialogFormVisible" width="550px" :close-on-click-modal=false>
       <el-form :model="form" ref="ruleForm">
-        <el-form-item label="物品" :label-width="formLabelWidth" prop="name" :rules="[{ required: true, message: '物品必填'}]">
+        <el-form-item label="物品" :label-width="formLabelWidth" prop="name" :rules="[{ required: true, message: '物品必填'},{ validator:validateGoodsName, trigger: 'blur'},]">
           <el-input v-model="form.name" placeholder="物品"></el-input>
         </el-form-item>
         <el-form-item label="类别" :label-width="formLabelWidth" prop="clazzId" :rules="[{ required: true, message: '类别必填'}]">
@@ -168,6 +168,29 @@ export default {
   computed: {},
   watch: {},
   methods: {
+    validateGoodsName(rule, value, callback) {//手机验证
+      getGoodsList(1, 20, { "name2": value }).then(data => {
+        if (data.code == 200) {
+          if (data.data.total > 0) {
+            let i = 0;
+            data.data.list.forEach(item => {
+              if (item.id != this.form.id) {//判断是不是当前修改的数据
+                i++;
+              }
+            })
+            if (i > 0) {
+              callback(new Error("该物品名称已存在！"));
+            } else {
+              callback();
+            }
+          } else {
+            callback();
+          }
+        } else {
+          callback(new Error("网络错误，请尝试刷新操作！"));
+        }
+      })
+    },
     //初始化属性end
     //分页方法start
     handleSizeChange(val) {
@@ -253,7 +276,7 @@ export default {
     handleAdd() {
       let self = this;
       self.dialogFormVisible = true;
-      self.titleDialog = "添加市场活动";
+      self.titleDialog = "添加物品";
       self.form = self.oldForm;
     },
     handleView(id) {
@@ -273,7 +296,7 @@ export default {
     },
     handleDelete(index, row) {
       let self = this;
-      self.$confirm('确定删除该市场活动吗?', '提示', {
+      self.$confirm('确定删除该物品吗?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning', closeOnClickModal: false
@@ -292,6 +315,6 @@ export default {
     }
   },
   components: { SchoolTree, Course, UserDialog, RoomDialog, GoodsView } //注入组件
-};
+}
 </script>
 

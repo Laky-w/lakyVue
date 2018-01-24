@@ -25,10 +25,6 @@ let routesList = [{
     component: resolve => require(['../components/common/Wait.vue'], resolve)
   },
   {
-    path: '/goodsDialog',
-    component: resolve => require(['../components/common/logistics/GoodsDialog.vue'], resolve)
-  },
-  {
     path: '/authority1',
     name: "添加职能",
     component: resolve => require(['../components/page/system/Authority.vue'], resolve)

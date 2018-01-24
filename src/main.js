@@ -14,10 +14,11 @@ import "../static/css/main.css";
 import "babel-polyfill";
 Vue.use(ElementUI);
 Vue.prototype.$validate = validateLaky;
-Vue.prototype.$user = _getCurrentUserInfo;
-Vue.prototype.$schoolZone = _getCurrentSchoolZone;
-Vue.prototype.$isAuthority = _getUserAuthority;
 Vue.prototype.$axios = axios;
+Vue.prototype.$user = _getCurrentUserInfo;//获取用户
+Vue.prototype.$schoolZone = _getCurrentSchoolZone;//获取用户校区的
+Vue.prototype.$isAuthority = _getUserAuthority;//获取用户权限的
+
 // Vue.directive('authority',{
 
 // })

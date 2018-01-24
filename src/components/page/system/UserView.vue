@@ -102,7 +102,7 @@ export default {
       if (value.quitStatus == 1) tag = "在职";
       else tag = "离职";
       return tag;
-    }
+    },
   },
   props: {
     viewId: "",
