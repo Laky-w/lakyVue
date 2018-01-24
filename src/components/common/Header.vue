@@ -1,29 +1,33 @@
 <template>
-  <div class="header">
-    <div class="logo">
-      <img src="../../../static/img/logo2.png" :title="branchName" width="80px">
+  <div>
+    <div class="header">
+      <div class="logo" ref="logo">
+        <img src="../../../static/img/logo2.png" :title="branchName" width="80px">
+      </div>
+      <div class="notice">
+        <i class="el-icon-location"></i>公告:{{notice}}</div>
+      <div class="user-info">
+        <el-dropdown trigger="click" @command="handleCommand">
+          <span class="el-dropdown-link">
+            <img class="user-logo" :src="userHeadLogo" onerror="this.src='../../../static/img/headPhoto.jpg'"> {{username}}
+          </span>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item command="userinfo">我的资料
+            </el-dropdown-item>
+            <el-dropdown-item command="updatePWD">修改密码</el-dropdown-item>
+            <el-dropdown-item command="loginout">退出系统</el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
+      </div>
     </div>
-    <div class="notice">
-      <i class="el-icon-location"></i>公告:{{notice}}</div>
-    <div class="user-info">
-      <el-dropdown trigger="click" @command="handleCommand">
-        <span class="el-dropdown-link">
-          <img class="user-logo" :src="userHeadLogo" onerror="this.src='../../../static/img/headPhoto.jpg'"> {{username}}
-        </span>
-        <el-dropdown-menu slot="dropdown">
-        <el-dropdown-item command="userinfo">用户信息
-        </el-dropdown-item>
-        <el-dropdown-item command="updatePWD">修改密码</el-dropdown-item>
-        <el-dropdown-item command="loginout">退出系统</el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
-    </div>
-    <user-view :view-id="viewId" :dialog-view-visible.sync="dialogViewVisible"></user-view>
-    <user-password ref="passwordForm" @saveSuccess="loginOut"></user-password>
+    <div>
+        <user-info ref="userInfo"></user-info>
+        <user-password ref="passwordForm" @saveSuccess="loginOut"></user-password>
+      </div>
   </div>
 </template>
 <script>
-import UserView from "../page/system/UserView.vue";
+import UserInfo from "../page/user/UserInfo.vue";
 import UserPassword from "../page/user/UserPassword.vue";
 import { findNewNoticeAll, loginOut } from "../api/api";
 export default {
@@ -86,33 +90,34 @@ export default {
     },
     getData() { },
     handleUpdatePWD() {
+      console.log(this.$refs);
       this.$refs["passwordForm"].handleOpen();
     },
-    loginOut(){
-        sessionStorage.removeItem("userInfo");
-        sessionStorage.removeItem("branch");
-        loginOut().then(data => {
-          if (data.code == 200) {
-            //退出成功
-            sessionStorage.removeItem("token");
-            this.$router.push('/login');
-          }
-        });
+    loginOut() {
+      sessionStorage.removeItem("userInfo");
+      sessionStorage.removeItem("branch");
+      loginOut().then(data => {
+        if (data.code == 200) {
+          //退出成功
+          sessionStorage.removeItem("token");
+          this.$router.push('/login');
+        }
+      });
+    },
+    userInfo() {
+      this.$refs["userInfo"].visible = true;
     },
     handleCommand(command) {
       if (command == "loginout") {
         this.loginOut();
       } else if (command == "updatePWD") {
         this.handleUpdatePWD();
+      } else if (command == "userinfo") {
+        this.userInfo();
       }
     },
-    handleView(id) {
-      let self = this;
-      self.viewId = id;
-      self.dialogViewVisible = true;
-    },
   },
-  components: { UserPassword,UserView } //注入组件
+  components: { UserPassword, UserInfo } //注入组件
 };
 </script>
 <style scoped>

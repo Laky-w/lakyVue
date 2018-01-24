@@ -56,7 +56,7 @@
       </el-table-column>
       <el-table-column label="操作" min-width="130">
         <template slot-scope="scope">
-          <el-button type="primary" plain size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+          <el-button type="primary" plain size="mini" @click="handleEdit(scope.$index, scope.row)">修改</el-button>
           <!-- <el-button type="primary" plain size="mini" @click="handleDelete(scope.$index, scope.row)">删除</el-button> -->
         </template>
       </el-table-column>
