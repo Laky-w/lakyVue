@@ -56,7 +56,7 @@
       </el-table-column>
       <el-table-column label="操作" min-width="130">
         <template slot-scope="scope">
-          <el-button type="primary" plain size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+          <el-button type="primary" plain size="mini" @click="handleEdit(scope.$index, scope.row)">修改</el-button>
           <!-- <el-button type="primary" plain size="mini" @click="handleDelete(scope.$index, scope.row)">删除</el-button> -->
         </template>
       </el-table-column>
@@ -68,7 +68,7 @@
     </div>
     <el-dialog :title="titleDialog" :visible.sync="dialogFormVisible" :close-on-click-modal=false>
       <el-form :model="form" ref="ruleForm">
-        <el-form-item label="名称" :label-width="formLabelWidth" prop="name" :rules="[{ required: true, message: '班级名称必填'}]">
+        <el-form-item label="名称" :label-width="formLabelWidth" prop="name" :rules="[{ required: true, message: '班级名称必填'},{validator:validateMarketActivityName,trigger:'blur'},]">
           <el-input v-model="form.name" placeholder="活动名称"></el-input>
         </el-form-item>
         <el-form-item label="活动分类" :label-width="formLabelWidth" prop="categoryId" :rules="[{ required: true, message: '该项必填'}]">
@@ -181,6 +181,29 @@ export default {
     }
   },
   methods: {
+    validateMarketActivityName(rule, value, callback) {//名称验证
+      getActivityList(1, 20, { "name2": value }).then(data => {
+        if (data.code == 200) {
+          if (data.data.total > 0) {
+            let i = 0;
+            data.data.list.forEach(item => {
+              if (item.id != this.form.id) {//判断是不是当前修改的数据
+                i++;
+              }
+            })
+            if (i > 0) {
+              callback(new Error("该市场活动名称已存在！"));
+            } else {
+              callback();
+            }
+          } else {
+            callback();
+          }
+        } else {
+          callback(new Error("网络错误，请尝试刷新操作！"));
+        }
+      })
+    },
     //初始化属性start
     getSchoolId() {
       let self = this;
