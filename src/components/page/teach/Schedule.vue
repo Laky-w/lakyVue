@@ -24,16 +24,21 @@
           <el-form-item prop="teachName">
             <el-input v-model="queryForm.teachName" placeholder="主教姓名" clearable class="handle-input mr10"></el-input>
           </el-form-item>
-          <el-form-item prop="headTeachName">
-            <el-input v-model="queryForm.headTeachName" placeholder="助教姓名" clearable class="handle-input mr10"></el-input>
+          <el-form-item prop="helpTeacherName">
+            <el-input v-model="queryForm.helpTeacherName" placeholder="助教姓名" clearable class="handle-input mr10"></el-input>
           </el-form-item>
         </div>
       </el-form>
     </div>
-    <div style="margin:5px;">
+    <div v-if="checkedData.length==0" style="margin:5px;">
       <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
     </div>
-    <el-table :data="tableData" stripe v-loading="loading" border @sort-change="handSortChange" style="width: 100%">
+    <div v-if="checkedData.length>0" style="margin:5px;min-height:18px">
+      <el-button type="danger" icon="el-icon-delete" size="mini" @click="handleBatchDelete">批量删除</el-button>
+    </div>
+    <el-table :data="tableData" stripe v-loading="loading" border @sort-change="handSortChange" @selection-change="handleSelectionChange" style="width: 100%">
+      <el-table-column type="selection" width="30">
+      </el-table-column>
       <el-table-column label="校区" sortable="custom" prop="schoolZoneName">
       </el-table-column>
       <el-table-column label="班级" sortable="custom" prop="schoolClassName">
@@ -47,28 +52,21 @@
 
       <el-table-column label="主教" sortable="custom" prop="teachName">
       </el-table-column>
-      <el-table-column label="助教" sortable="custom" prop="headTeachName">
+      <el-table-column label="助教" sortable="custom" prop="helpTeacherName">
       </el-table-column>
       <el-table-column label="考勤状态" sortable="custom" prop="attendanceStatus" :formatter="filterAttendanceStatus">
       </el-table-column>
-      <!-- <el-table-column label="操作">
-            <template slot-scope="scope">
-              <el-dropdown  @command="handleCommand">
-                <el-button type="primary" size="mini">
-                  操作<i class="el-icon-arrow-down el-icon--right"></i>
-                </el-button>
-                <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item :command="{item:'a',class:scope.row}">排课</el-dropdown-item>
-
-                </el-dropdown-menu>
-              </el-dropdown>
-            </template>
-            </el-table-column> -->
+      <el-table-column label="操作">
+        <template slot-scope="scope">
+          <el-button type="primary" plain size="mini" @click="$refs['simpleForm'].openDialog(scope.row.id)">修改</el-button>
+        </template>
+      </el-table-column>
     </el-table>
     <div class="pagination">
       <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[20, 50, 100, 200]" :page-size="page_size" layout="total, sizes, prev, pager, next, jumper" :total="total">
       </el-pagination>
     </div>
+    <schedule-simple-form ref="simpleForm" @saveSuccess="getData"></schedule-simple-form>
   </div>
 </template>
 
@@ -82,12 +80,14 @@ table td {
 import SchoolTree from "../../common/system/SchoolTree.vue";
 import DateRange from "../../common/Daterange.vue";
 import ScheduleForm from "./ScheduleForm.vue";
-import { getClassSchedule } from "../../api/api";
+import ScheduleSimpleForm from "./ScheduleSimpleForm.vue";
+import { getClassScheduleAll, deleteClassSchedule } from "../../api/api";
 export default {
   data() {
     return {
       isShowMore: false,
       tableData: [],
+      checkedData: [],
       dialogFormVisible: false,
       dialogScheduleFormVisible: false,
       total: 0,
@@ -97,7 +97,7 @@ export default {
         className: "",
         roomName: "",
         teachName: "",
-        headTeachName: "",
+        helpTeacherName: "",
         // theDate: "",
         // theType: "",
         schoolZoneId2: [],
@@ -133,7 +133,7 @@ export default {
     getData() {
       let self = this;
       self.loading = true;
-      getClassSchedule(
+      getClassScheduleAll(
         self.cur_page,
         self.page_size,
         self.queryForm
@@ -187,6 +187,32 @@ export default {
       this.form.fatherName = row.name;
       this.dialogFormVisible = true;
     },
+    handleBatchDelete() {
+      let self = this;
+      self.$confirm('确认删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        let ids = "";
+        self.checkedData.forEach(item => {
+          ids += item.id + ",";
+        })
+        deleteClassSchedule(ids).then(data => {
+          if (data.code == 200) {
+            self.getData();
+            self.$message.success(data.message);
+          } else {
+            self.$message.error(data.message);
+          }
+        })
+      }).catch(() => {
+
+      });
+    },
+    handleSelectionChange(val) {
+      this.checkedData = val;
+    },
     handleDelete(index, row) { },
     handleCheckChange(allNode) {
       let self = this;
@@ -220,6 +246,6 @@ export default {
       }
     }
   },
-  components: { SchoolTree, ScheduleForm, DateRange } //注入组件
+  components: { SchoolTree, ScheduleForm, ScheduleSimpleForm, DateRange } //注入组件
 };
 </script>

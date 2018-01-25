@@ -110,7 +110,7 @@
     </el-dialog>
     <div slot="footer" class="dialog-footer">
       <el-button @click="visbile=false;">取 消</el-button>
-      <el-button :loading="loadingForm" type="primary" @click="submitForm('scheduleForm')">确 定</el-button>
+      <el-button :loading="loadingForm" type="primary" @click="submitForm()">确 定</el-button>
     </div>
   </el-dialog>
 </template>

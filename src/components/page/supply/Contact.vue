@@ -2,13 +2,13 @@
   <div class="table">
     <div class="handle-box">
       <el-form ref="queryForm" :inline="true" :model="queryForm" label-width="80px" size="mini">
-        <el-form-item>
+        <el-form-item prop="studentName">
           <el-input v-model="queryForm.studentName" clearable placeholder="联系人名称/拼音/手机号" class="handle-input mr10"></el-input>
         </el-form-item>
-        <el-form-item>
+        <el-form-item prop="content">
           <el-input v-model="queryForm.content" clearable placeholder="联系内容" class="handle-input mr10"></el-input>
         </el-form-item>
-        <el-form-item>
+        <el-form-item prop="contactTime">
           <date-range startPlaceholder="联系时间" v-model="queryForm.contactTime" endPlaceholder="联系时间"></date-range>
         </el-form-item>
         <el-button-group>
@@ -98,7 +98,7 @@ export default {
       queryForm: {
         schoolZoneId2: [],
         userName: "",
-        contactTime: "",
+        contactTime: [],
         content: "",
         studentName: "",
         contactStyleId: "",

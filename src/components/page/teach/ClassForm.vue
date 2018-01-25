@@ -70,6 +70,7 @@ export default {
         mainTeacherId: "",
         teacherId: "",
         startDate: "",
+        roomId: "",
         endDate: "",
         schoolZoneId: "",
         schoolZoneName: ""

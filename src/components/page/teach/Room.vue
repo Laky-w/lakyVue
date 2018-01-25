@@ -189,9 +189,9 @@ export default {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning', closeOnClickModal: false
-      }).then(data => {
+      }).then(() => {
         deleteRoom(row.id).then(data => {
-          if (data = code == 200) {
+          if (data.code == 200) {
             self.getData();
             self.$message.success(data.message);
           } else {
