@@ -56,7 +56,8 @@ export default {
   },
   watch: {
     value(val) {
-      if (val.length == 0 && this.mVal.length > 0) {
+      console.log(val);
+      if (val != null && val.length == 0 && this.mVal != null && this.mVal.length > 0) {
         this.mVal = [];
       }
     },

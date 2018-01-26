@@ -29,7 +29,7 @@
       </el-table-column>
       <el-table-column prop="theType" label="操作" sortable="custom" :formatter="filterType">
       </el-table-column>
-      <el-table-column prop="theDatetime" sortable="custom" abel="登录时间">
+      <el-table-column prop="theDatetime" sortable="custom" label="登录时间">
       </el-table-column>
     </el-table>
     <div class="pagination">

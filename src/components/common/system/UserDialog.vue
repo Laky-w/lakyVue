@@ -59,12 +59,12 @@
           </div>
           <div style="float: left;" v-else>
             已选择：
-            <el-tag size="mini" style="margin-right:3px" v-for="tag in userId" :key="tag.id" @close="handleTagClose(tag)" closable>
+            <el-tag size="mini" style="margin-right:3px" v-for="(tag,index) in selectedRow" :key="tag.id" @close="handleTagClose(index)" closable>
               {{tag.name}}
             </el-tag>
           </div>
           <div style="float: right;">
-            <el-button size="small" @click="userInput='';userId='';dialogTableVisible=false">取消</el-button>
+            <el-button size="small" @click="dialogTableVisible=false">取消</el-button>
             <el-button size="small" type="primary" @click="dialogTableVisible=false">确定</el-button>
           </div>
         </div>
@@ -84,7 +84,8 @@ export default {
   data() {
     return {
       userInput: this.defaultText,
-      userId: this.value,
+      userId: "",
+      selectedRow: [],
       dialogTableVisible: false,
       tableData: [],
       total: 0,
@@ -105,27 +106,46 @@ export default {
     if (!this.isAll) {
       this.queryForm.schoolZoneId2.push(this.parentSchoolId);
     }
+    if (this.selectedType == 2) {
+      this.refreshSelectedRow();
+    }
     this.getUser();
   },
   watch: {
     value(val) {
-      if (!val) this.userInput = "";
+      if (!val) {
+        this.userInput = "";
+      } else {//处理当父组件id发生改变时，文本显示不一致的问题
+        if (this.selectedType == 1) {//单选
+          console.log(this.userId, val);
+          if (this.userId != val) {
+            this.userId = val;
+            this.userInput = this.defaultText;
+          }
+        } else {//多选
+          // if(JSON.stringify(val))
+          // if
+          if (val.toString() != this.userId.toString()) {
+            this.userId = val;
+            this.userInput = this.defaultText;
+            this.refreshSelectedRow();
+          }
+        }
+      }
+    },
+    selectedRow(val) {
+      let userInput = "";
+      let userId = [];
+      for (let i = 0; i < val.length; i++) {
+        userInput += val[i].name + ",";
+        userId.push(val[i].id);
+        // val.push(this.userId[i].id);
+      }
+      this.userId = userId;
+      this.userInput = userInput.substring(0, userInput.length - 1);
     },
     userId(val) {
-      if (this.selectedType != 1) {
-        let userInput = "";
-        val = [];
-        for (let i = 0; i < this.userId.length; i++) {
-          userInput += this.userId[i].name + ",";
-          val.push(this.userId[i].id);
-        }
-        this.userInput = userInput.substring(0, userInput.length - 1);
-      }
       this.$emit("input", val);
-    },
-    defaultText(val) {
-      console.log(val);
-      this.userInput = val;
     },
     parentSchoolId(val) {
       this.queryForm.parentSchoolId = val;
@@ -145,6 +165,18 @@ export default {
     handleCurrentChange(val) {
       this.cur_page = val;
       this.getUser();
+    },
+    refreshSelectedRow() {
+      if (this.defaultText) {
+        let texts = this.defaultText.split(",");
+        let selectedRow = [];
+        this.value.forEach((item, i) => {
+          selectedRow.push({ id: item, name: texts[i] });
+        })
+        this.selectedRow = selectedRow;
+      } else {
+        this.selectedRow = [];
+      }
     },
     search(form) {
       //搜索方法
@@ -188,29 +220,19 @@ export default {
         this.userInput = row.name;
         this.userId = row.id;
       } else {
-        if (this.userId == "") {
-          this.userId = [];
-        } else {
-          let falg = false;
-          for (let i = 0; i < this.userId.length; i++) {
-            if (this.userId[i].id == row.id) {
-              falg = true;
-              break;
-            }
+        let falg = false;
+        for (let i = 0; i < this.userId.length; i++) {
+          if (this.selectedRow[i].id == row.id) {
+            falg = true;
+            break;
           }
-          if (falg) return;
         }
-        this.userId.push(row);
+        if (falg) return;
+        this.selectedRow.push({ id: row.id, name: row.name });
       }
     },
-    handleTagClose(tag) {
-      for (let i = 0; i < this.userId.length; i++) {
-        if (this.userId[i].id == tag.id) {
-          // delete this.userId[i];
-          this.userId.splice(i, 1);
-          break;
-        }
-      }
+    handleTagClose(index) {
+      this.selectedRow.splice(index, 1);
     }
   },
   props: {

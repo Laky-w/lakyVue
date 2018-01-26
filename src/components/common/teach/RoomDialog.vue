@@ -27,7 +27,7 @@
         </el-table-column>
       </el-table>
       <div class="pagination">
-        <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[20, 50, 100, 200]" :page-size="page_size" layout="total, sizes, prev, pager, next, jumper" :total="total">
+        <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[20, 50, 100, 200]" :page-size="page_size" layout="total,  prev, pager, next, jumper" :total="total">
         </el-pagination>
       </div>
       <div style=" overflow: hidden;">

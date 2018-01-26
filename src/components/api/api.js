@@ -210,8 +210,13 @@ export const deleteScheduleStandard = id => { return axios.delete(`teach/deleteS
 //班级排课
 export const createClassSchedule = params => { return axios.post(`teach/createClassSchedule`, params).then(res => res.data); };
 //查询班级排课
-export const getClassSchedule = (pageNumber, pageSize, params) => { return axios.post(`teach/getClassSchedule/${pageNumber}/${pageSize}`, params).then(res => res.data); };
-
+export const getClassScheduleAll = (pageNumber, pageSize, params) => { return axios.post(`teach/getClassScheduleAll/${pageNumber}/${pageSize}`, params).then(res => res.data); };
+//查询排课详情
+export const getClassSchedule = id => { return axios.get(`teach/getClassSchedule/${id}`).then(res => res.data); };
+//修改排课记录
+export const updateClassSchedule = params => { return axios.put(`teach/updateClassSchedule`, params).then(res => res.data); };
+//删除排课记录
+export const deleteClassSchedule = ids => { return axios.delete(`teach/deleteClassSchedule/${ids}`).then(res => res.data); };
 //教学=============>>>
 
 //财务=============>>>

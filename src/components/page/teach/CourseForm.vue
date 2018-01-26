@@ -244,7 +244,7 @@ export default {
           if (self.formActive == 3) {
             self.loadingForm = true;
             let formJson = JSON.stringify(self.form);
-            console.log(formJson);
+            console.log(JSON.stringify(formJson));
             createCourse({ "courseJson": formJson }).then(data => {
               self.loadingForm = false;
               if (data.code == 200) {
