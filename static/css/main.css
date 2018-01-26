@@ -153,6 +153,15 @@ a:active {
   width: 10px;
 }
 
+.el-table .cell {
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  word-break: normal;
+  line-height: 23px;
+  overflow: hidden;
+  text-overflow:ellipsis;
+  white-space: nowrap;
+}
 
 /*dialog*/
 

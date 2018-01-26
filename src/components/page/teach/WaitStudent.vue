@@ -15,11 +15,15 @@
         <el-button type="mini" icon="el-icon-search" @click="search('queryForm')">搜索</el-button>
       </el-form>
     </div>
-    <div style="margin:5px;">
-      <el-button type="primary" icon="el-icon-edit" size="mini" @click="dialogFormVisible=true">分班</el-button>
+    <div v-if="checkedData.length==0" style="margin:5px;">
       <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
     </div>
-    <el-table :data="tableData" stripe v-loading="loading" :row-class-name="tableRowClassName" border @sort-change="handSortChange" style="width: 100%">
+    <div v-if="checkedData.length>0" style="margin:5px;min-height:18px">
+      <el-button type="primary" icon="el-icon-edit" size="mini" @click="handleClass">分班</el-button>
+    </div>
+    <el-table :data="tableData" stripe v-loading="loading" :row-class-name="tableRowClassName" border @sort-change="handSortChange" @selection-change="handleSelectionChange" style="width: 100%">
+      <el-table-column type="selection" width="30">
+      </el-table-column>
       <el-table-column label="姓名" sortable="custom" prop="studentName">
         <template slot-scope="scope">
           <a href="javascript:void(0)" @click="handleView(scope.row.studentId)">{{scope.row.studentName}}</a>
@@ -44,11 +48,12 @@
         </template>
         </el-table-column> -->
     </el-table>
-    <student-view :view-id="viewId" :dialog-view-visible.sync="dialogViewVisible"></student-view>
     <div class="pagination">
       <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[20, 50, 100, 200]" :page-size="page_size" layout="total, sizes, prev, pager, next, jumper" :total="total">
       </el-pagination>
     </div>
+    <student-view :view-id="viewId" :dialog-view-visible.sync="dialogViewVisible"></student-view>
+    <wait-student-class ref="waitStudentClass"></wait-student-class>
   </div>
 </template>
 
@@ -61,6 +66,7 @@ import SchoolTree from "../../common/system/SchoolTree.vue";
 import UserDialog from "../../common/system/UserDialog.vue";
 import MarketActivityDialog from "../../common/supply/MarketActivityDialog.vue";
 import CourseDialog from "../../common/teach/CourseDialog.vue";
+import WaitStudentClass from "./WaitStudentClass.vue";
 import {
   getWaitStudentList,
   findBranchParameterValueAll,
@@ -71,6 +77,7 @@ export default {
   data() {
     return {
       tableData: [],
+      checkedData: [],
       dialogFormVisible: false,
       total: 0,
       cur_page: 1,
@@ -80,7 +87,8 @@ export default {
       queryForm: {
         name: "",
         schoolZoneId2: [],
-        courseId: ""
+        courseId: "",
+        classStatus: 2
       },
       parameterValue: [],
       form: {
@@ -131,7 +139,6 @@ export default {
     //初始化属性end
     //分页方法start
     handleSizeChange(val) {
-      console.log(this.page_size);
       this.page_size = val;
       this.getData();
     },
@@ -215,6 +222,30 @@ export default {
       self.viewId = id;
       self.dialogViewVisible = true;
     },
+    handleClass() {//分班
+      let falg = true;
+      let courseId = this.checkedData[0].courseId;
+      let studentIds = "";
+      this.checkedData.forEach(item => {
+        studentIds += item.id + ",";
+
+        this.checkedData.forEach(item2 => {
+          if (item.courseId != item2.courseId) {
+            this.$message.warning("请选择同一课程学员进行分班！");
+            falg = false;
+            return false;
+          }
+        })
+        if (falg) {
+          this.$refs["waitStudentClass"].openDialog(courseId, studentIds);
+          // this.$message.success("开始分班！");
+        }
+
+      })
+    },
+    handleSelectionChange(val) {
+      this.checkedData = val;
+    },
     handSortChange(column, prop, order) {
       console.log(column);
       let self = this;
@@ -233,6 +264,6 @@ export default {
       }
     }
   },
-  components: { SchoolTree, UserDialog, MarketActivityDialog, CourseDialog, StudentView } //注入组件
+  components: { SchoolTree, UserDialog, MarketActivityDialog, CourseDialog, StudentView, WaitStudentClass } //注入组件
 };
 </script>

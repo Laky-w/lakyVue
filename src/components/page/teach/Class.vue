@@ -38,7 +38,7 @@
     <el-table :data="tableData" stripe v-loading="loading" border @sort-change="handSortChange" style="width: 100%">
       <el-table-column label="名称" sortable="custom" prop="name">
         <template slot-scope="scope">
-          <a href="javascript:void(0)" @click="handleView(scope.row.id)">{{scope.row.name}}</a>
+          <a href="javascript:void(0)" @click="handleView(scope.row.id,'class-info')">{{scope.row.name}}</a>
         </template>
       </el-table-column>
       <el-table-column label="校区" sortable="custom" prop="schoolZoneName">
@@ -57,6 +57,11 @@
       </el-table-column>
       <el-table-column label="计划结课日期" sortable="custom" prop="endDate">
       </el-table-column>
+      <el-table-column label="人数" sortable="custom" prop="nowStudentNumber">
+        <template slot-scope="scope">
+          <a href="javascript:void(0)" @click="handleView(scope.row.id,'class-student')">{{ scope.row.nowStudentNumber }}/{{ scope.row.studentNumber?scope.row.studentNumber:0 }}</a>
+        </template>
+      </el-table-column>
       <el-table-column label="操作" min-width="120px">
         <template slot-scope="scope">
           <el-dropdown split-button type="primary" @click="handleEdit(scope.$index, scope.row)" @command="handleCommand" size="small">
@@ -69,7 +74,7 @@
         </template>
       </el-table-column>
     </el-table>
-    <class-view :view-id="viewId" :dialog-view-visible.sync="dialogViewVisible"></class-view>
+    <class-view :view-id="viewId" :current-table-name="viewTable" :dialog-view-visible.sync="dialogViewVisible"></class-view>
     <div class="pagination">
       <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[20, 50, 100, 200]" :page-size="page_size" layout="total, sizes, prev, pager, next, jumper" :total="total">
       </el-pagination>
@@ -109,6 +114,7 @@ export default {
       cur_page: 1,
       page_size: 20,
       viewId: "",
+      viewTable: "",
       dialogViewVisible: false,
       queryForm: {
         name: "",
@@ -218,9 +224,10 @@ export default {
         self.queryForm.schoolZoneId2.push(allNode[i].id);
       }
     },
-    handleView(id) {
+    handleView(id, tableName) {
       let self = this;
       self.viewId = id;
+      self.viewTable = tableName;
       self.dialogViewVisible = true;
     },
     handSortChange(column, prop, order) {

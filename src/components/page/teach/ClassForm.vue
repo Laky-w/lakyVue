@@ -19,6 +19,9 @@
       <el-form-item label="默认教室" :label-width="formLabelWidth" prop="roomId">
         <room-dialog v-model="form.roomId" :parent-school-id="form.schoolZoneId" :is-all="false" :default-text="form.roomName"></room-dialog>
       </el-form-item>
+      <el-form-item label="预招人数" :label-width="formLabelWidth" prop="studentNumber">
+        <el-input-number v-model="form.studentNumber" :min="0" style="width:100%"></el-input-number>
+      </el-form-item>
       <el-form-item label="计划开班日期" :label-width="formLabelWidth" prop="startDate">
         <el-date-picker v-model="form.startDate" type="date" value-format="yyyy-MM-dd" placeholder="计划开班日期" :picker-options="pickerOptions1">
         </el-date-picker>
@@ -73,7 +76,8 @@ export default {
         roomId: "",
         endDate: "",
         schoolZoneId: "",
-        schoolZoneName: ""
+        schoolZoneName: "",
+        studentNumber: 1,
       },
       form: {},
       dialogFormVisible: false,
