@@ -68,9 +68,12 @@ export default {
         courseId: "",
         courseInfo: [],
         mainTeacherId: "",
+        mainTeacherName: "",
         teacherId: "",
+        teacherName: "",
         startDate: "",
         roomId: "",
+        roomName: "",
         endDate: "",
         schoolZoneId: "",
         schoolZoneName: ""

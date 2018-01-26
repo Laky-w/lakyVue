@@ -51,13 +51,15 @@ import {
 export default {
   data() {
     return {
-      visible: this.dialogFormVisible,
+      visible: false,
       parameterValue: [],
       oldForm: {
         name: "",
         sex: 1,
         contactId: "",
+        contactName: "",
         sourceId: "",
+        sourceName: "",
         ownerName: "",
         ownerId: "",
         phone: "",

@@ -110,7 +110,7 @@ export default {
         phone: "",
         remarks: "",
         schoolZoneId: "",
-        schoolName: "",
+        schoolZoneName: "",
         intentionId: []
       },
       form: {},
@@ -134,7 +134,7 @@ export default {
       let self = this;
       let user = self.$user();
       self.oldForm.schoolZoneId = user.schoolZoneId;
-      self.oldForm.schoolName = user.schoolZone.name;
+      self.oldForm.schoolZoneName = user.schoolZone.name;
       self.schoolId = user.schoolZoneId;
     },
     getParameterValue(id) {
@@ -233,7 +233,7 @@ export default {
       self.form = self.oldFrom;
     },
     handleSchool(data) {
-      this.form.schoolName = data.name;
+      this.form.schoolZoneName = data.name;
       this.form.schoolZoneId = data.id;
       this.form.roles = [];
     },
