@@ -5,29 +5,23 @@
         <el-form-item>
           <school-tree :is-show-checkbox=true @handleCheckChange="handleCheckChange" :the-type="2" place-text="校区"></school-tree>
         </el-form-item>
-        <el-form-item>
-          <el-select v-model="queryForm.theType" clearable placeholder="收费类型" class="handle-select mr10">
-            <el-option key="1" label="缴费" value="1"></el-option>
-            <el-option key="2" label="退费" value="2"></el-option>
-          </el-select>
         </el-form-item>
-        <!-- <el-form-item>
-          <el-select v-model="queryForm.checkStatus" clearable placeholder="审核状态" class="handle-select mr10">
-            <el-option key="1" label="未审核" value="1"></el-option>
-            <el-option key="2" label="已审核" value="2"></el-option>
-          </el-select>
-        </el-form-item> -->
         <el-form-item>
           <date-range startPlaceholder="费用日期" v-model="queryForm.createTime" endPlaceholder="费用日期"></date-range>
         </el-form-item>
         <el-button type="mini" icon="el-icon-search" @click="search('queryForm')">搜索</el-button>
       </el-form>
     </div>
-    <div style="margin:5px;">
-      <el-button type="primary" icon="el-icon-edit" size="mini" @click="dialogFormVisible=true">添加流水</el-button>
-      <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
+    <div v-if="checkedData.length==0" style="margin:5px">
+      <div style="margin:5px;">
+        <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
+      </div>
     </div>
-    <el-table :data="tableData" stripe :summary-method="getSummaries" show-summary v-loading="loading" border @expand-change="handleExpandChange" @sort-change="handSortChange" style="width: 100%">
+    <div v-if="checkedData.length>0" style="margin:5px; min-height:18px" ;>
+      <el-button icon="el-icon-edit" size="mini" @click="handleCheckStatus">批量审核</el-button>
+    </div>
+    <el-table :data="tableData" stripe :summary-method="getSummaries" show-summary v-loading="loading" border @expand-change="handleExpandChange" @sort-change="handSortChange"
+    @selection-change="handleSelectionChange" border style="width: 100%">
       <el-table-column type="expand">
         <template slot-scope="props">
           <el-form label-position="left" inline class="demo-table-expand" :loading="loadingAccount">
@@ -39,10 +33,6 @@
         </template>
       </el-table-column>
       <el-table-column label="校区" sortable="custom" prop="schoolZoneName">
-      </el-table-column>
-      <el-table-column label="收费类型" sortable="custom" prop="theType" :formatter="filterType">
-      </el-table-column>
-      <el-table-column label="审核状态" sortable="custom" prop="checkStatus" :formatter="filterCheckStatus">
       </el-table-column>
       <el-table-column label="金额" sortable="custom" prop="money">
       </el-table-column>
@@ -84,14 +74,16 @@ export default {
       loadingAccount: false,
       loading: false,
       tableData: [],
+      checkedData: [],
       total: 0,
       cur_page: 1,
       page_size: 20,
       queryForm: {
         schoolZoneId2: [],
-        theType: "",
-        checkStatus: "",
-        createTime: ""
+        theType: 1,
+        checkStatus: 1,
+        createTime: "",
+        sort: ""
       }
     }
   },
@@ -155,6 +147,9 @@ export default {
 
       }
     },
+    handleSelectionChange(val) {
+      this.checkedData = val;
+    },
     getSummaries(param) {
       let { columns, data } = param;
       let sums = [];
@@ -194,22 +189,6 @@ export default {
       }
       self.getData();
     },
-    filterType(value, row) {
-      if (value.theType == 1) {
-        row.tag = "缴费"
-      } else {
-        row.tag = "退费"
-      }
-      return row.tag;
-    },
-    filterCheckStatus(value, row) {
-      if (value.checkStatus == 1) {
-        row.tag = "未审核"
-      } else {
-        row.tag = "已审核"
-      }
-      return row.tag;
-    }
   },
   components: { SchoolTree, DateRange } //注入组件
 }

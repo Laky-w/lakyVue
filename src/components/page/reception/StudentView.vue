@@ -14,16 +14,16 @@
         <el-tag type="info"> {{view.phone}}</el-tag>
       </el-form-item>
       <el-form-item label="联系人:">
-        <el-tag type="info">{{view.contactId}}</el-tag>
+        <el-tag type="info">{{view.contactName}}</el-tag>
       </el-form-item>
       <el-form-item label="学管师:">
-        <el-tag type="info">{{view.ownerId}}</el-tag>
+        <el-tag type="info">{{view.ownerName}}</el-tag>
       </el-form-item>
       <el-form-item label="报名状态:">
-        <el-tag type="info">{{filterClassStatus(view.theType)}}</el-tag>
+        <el-tag type="info">{{filterClassStatus(view.classStatus)}}</el-tag>
       </el-form-item>
       <el-form-item label="来源活动:">
-        <el-tag type="info">{{view.sourceId}}</el-tag>
+        <el-tag type="info">{{view.sourceName}}</el-tag>
       </el-form-item>
       <el-form-item label="创建时间:">
         <el-tag type="info">{{view.createTime}}</el-tag>
@@ -76,9 +76,9 @@ export default {
         }
       })
     },
-    filterClassStatus(theType) {
+    filterClassStatus(classStatus) {
       let tag = "";
-      if (theType == 1) tag = "未报名";
+      if (classStatus == 1) tag = "未报名";
       else tag = "已报名";
       return tag;
     }

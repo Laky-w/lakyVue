@@ -150,7 +150,8 @@ export const getStudentList = (pageNumber, pageSize, params) => { return axios.p
 export const getStudentView = id => { return axios.get(`reception/getStudentView/${id}`).then(res => res.data); };
 //创建学员
 export const createStudent = params => { return axios.post(`reception/createStudent`, params).then(res => res.data); };
-
+// 删除正式学员
+export const deleteStudent = id => { return axios.delete(`reception/deleteStudent/${id}`).then(res => res.data); };
 //报名
 export const createStudentApply = (studentId, params) => { return axios.post(`reception/createStudentApply/${studentId}`, params).then(res => res.data); };
 //查询订单  getOrderList
