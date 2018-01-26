@@ -90,7 +90,7 @@ export default {
       queryForm: {
         schoolZoneId2: [],
         theType: "",
-        checkStatus: "",
+        checkStatus: 2,
         createTime: ""
       }
     }

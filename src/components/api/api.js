@@ -232,6 +232,8 @@ export const createFinanceAccount = params => { return axios.post(`finance/creat
 export const deleteFinanceAccount = id => { return axios.delete(`finance/deleteFinanceAccount/${id}`).then(res => res.data); };
 //查询收支记录
 export const getMoneyRecord = (pageNumber, pageSize, params) => { return axios.post(`finance/getMoneyRecordList/${pageNumber}/${pageSize}`, params).then(res => res.data); };
+//审核收支记录 checkedMoneyRecord
+export const checkedMoneyRecord = params => { return axios.put(`finance/checkedMoneyRecord`, params).then(res => res.data); };
 //查询收支记录账户明细
 export const getMoneyRecordAccountList = (recordId) => { return axios.get(`finance/getMoneyRecordAccountList/${recordId}`).then(res => res.data); };
 //财务============

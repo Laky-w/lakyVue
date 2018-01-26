@@ -13,8 +13,9 @@
         </el-form-item>
         <el-form-item>
           <el-select v-model="queryForm.checkStatus" clearable placeholder="审核状态" class="handle-select mr10">
-            <el-option key="1" label="未审核" value="1"></el-option>
-            <el-option key="2" label="已审核" value="2"></el-option>
+            <el-option key="1" label="待审核" value="1"></el-option>
+            <el-option key="2" label="审核成功" value="2"></el-option>
+            <el-option key="3" label="审核失败" value="3"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item>
@@ -175,8 +176,10 @@ export default {
     filterCheckStatus(value, row) {
       if (value.checkStatus == 1) {
         row.tag = "未审核"
-      } else {
-        row.tag = "已审核"
+      } else if (value.checkStatus == 2) {
+        row.tag = "审核成功"
+      } else if (value.checkStatus == 3) {
+        row.tag = "审核失败"
       }
       return row.tag;
     }

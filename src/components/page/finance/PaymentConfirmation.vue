@@ -17,12 +17,14 @@
         <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
       </div>
     </div>
-    <div v-if="checkedData.length>0" style="margin:5px; min-height:18px" ;>
-      <el-button icon="el-icon-edit" size="mini" @click="handleCheckStatus">批量审核</el-button>
+    <div v-if="checkedData.length>0" style="margin:5px; min-height:18px">
+      <el-button icon="el-icon-edit" type="success" size="mini" @click="handleCheckStatus(2)">批量通过</el-button>
+      <el-button icon="el-icon-edit" type="warning" size="mini" @click="handleCheckStatus(3)">批量不通过</el-button>
     </div>
-    <el-table :data="tableData" stripe :summary-method="getSummaries" show-summary v-loading="loading" border @expand-change="handleExpandChange" @sort-change="handSortChange"
-    @selection-change="handleSelectionChange" border style="width: 100%">
-      <el-table-column type="expand">
+    <el-table :data="tableData" stripe :summary-method="getSummaries" show-summary v-loading="loading" border @expand-change="handleExpandChange" @sort-change="handSortChange" @selection-change="handleSelectionChange" border style="width: 100%">
+      <el-table-column type="selection" width="30">
+      </el-table-column>
+      <el-table-column type="expand" prop="recordAccount">
         <template slot-scope="props">
           <el-form label-position="left" inline class="demo-table-expand" :loading="loadingAccount">
             <el-form-item v-for="(item,index) in props.row.recordAccount" :key="index">
@@ -67,7 +69,7 @@
 <script scoped>
 import SchoolTree from "../../common/system/SchoolTree.vue";
 import DateRange from "../../common/Daterange.vue";
-import { getMoneyRecord, getMoneyRecordAccountList } from "../../api/api"
+import { getMoneyRecord, getMoneyRecordAccountList, checkedMoneyRecord } from "../../api/api"
 export default {
   data() {
     return {
@@ -148,13 +150,39 @@ export default {
       }
     },
     handleSelectionChange(val) {
+
       this.checkedData = val;
+      console.log(this.checkedData.length);
+    },
+    handleCheckStatus(checkStatus) {
+      let self = this;
+      let message = (checkStatus == 2 ? "通过审核" : "拒绝该申请");
+      self.$confirm('确认' + message + '吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        let ids = "";
+        self.checkedData.forEach(item => {
+          ids += item.id + ",";
+        })
+        checkedMoneyRecord({ ids: ids, checkedStatus: checkStatus }).then(data => {
+          if (data.code == 200) {
+            self.getData();
+            self.$message.success(data.message);
+          } else {
+            self.$message.error(data.message);
+          }
+        })
+      }).catch(() => {
+
+      });
     },
     getSummaries(param) {
       let { columns, data } = param;
       let sums = [];
       columns.forEach((column, index) => {
-        if (index === 1) {
+        if (index === 2) {
           sums[index] = '合计';
           return;
         }
