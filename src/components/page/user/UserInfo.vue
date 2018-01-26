@@ -31,9 +31,7 @@
       <el-form-item label="生日：">
         <el-tag type="info">{{view.birthday}}</el-tag>
       </el-form-item>
-      <!-- <el-form-item label="头像">
-        <el-tag type="info">{{view.headLogo}}</el-tag>
-      </el-form-item> -->
+       -->
     </el-form>
   </el-dialog>
 </template>
