@@ -230,6 +230,8 @@ export const getFinanceAccountView = id => { return axios.get(`finance/getFinanc
 export const createFinanceAccount = params => { return axios.post(`finance/createFinanceAccount`, params).then(res => res.data); };
 //   删除财务账户
 export const deleteFinanceAccount = id => { return axios.delete(`finance/deleteFinanceAccount/${id}`).then(res => res.data); };
+// 创建收支流水
+export const createMoneyRecord = params => { return axios.post(`finance/createMoneyRecord`, params).then(res => res.data); };
 //查询收支记录
 export const getMoneyRecord = (pageNumber, pageSize, params) => { return axios.post(`finance/getMoneyRecordList/${pageNumber}/${pageSize}`, params).then(res => res.data); };
 //审核收支记录 checkedMoneyRecord

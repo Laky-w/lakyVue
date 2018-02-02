@@ -11,12 +11,6 @@
             <el-option key="2" label="退费" value="2"></el-option>
           </el-select>
         </el-form-item>
-        <!-- <el-form-item>
-          <el-select v-model="queryForm.checkStatus" clearable placeholder="审核状态" class="handle-select mr10">
-            <el-option key="1" label="未审核" value="1"></el-option>
-            <el-option key="2" label="已审核" value="2"></el-option>
-          </el-select>
-        </el-form-item> -->
         <el-form-item>
           <date-range startPlaceholder="费用日期" v-model="queryForm.createTime" endPlaceholder="费用日期"></date-range>
         </el-form-item>
@@ -24,7 +18,7 @@
       </el-form>
     </div>
     <div style="margin:5px;">
-      <el-button type="primary" icon="el-icon-edit" size="mini" @click="dialogFormVisible=true">添加流水</el-button>
+      <el-button type="primary" icon="el-icon-edit" size="mini" @click="handleAdd">添加流水</el-button>
       <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
     </div>
     <el-table :data="tableData" stripe :summary-method="getSummaries" show-summary v-loading="loading" border @expand-change="handleExpandChange" @sort-change="handSortChange" style="width: 100%">
@@ -46,15 +40,50 @@
       </el-table-column>
       <el-table-column label="金额" sortable="custom" prop="money">
       </el-table-column>
+      <el-table-column label="类型" sortable="custom" prop="clazzName"></el-table-column>
       <el-table-column label="缴费时间" sortable="custom" prop="createTime">
       </el-table-column>
       <el-table-column label="收费人" sortable="custom" prop="salesmanName">
+      </el-table-column>
+      <el-table-column label="备注" sortable="custom" prop="remarks">
       </el-table-column>
     </el-table>
     <div class="pagination">
       <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[20, 50, 100, 200]" :page-size="page_size" layout="total, sizes, prev, pager, next, jumper" :total="total">
       </el-pagination>
     </div>
+    <el-dialog :title="titleDialog" :visible.sync="dialogFormVisible" :close-on-click-modal="false" width="750px">
+      <el-form :model="form" ref="ruleForm">
+        <el-form-item label="金额" :label-width="formLableWidth" prop="money" :rules="[{required:true,message:'必填项'},{validator:$validate.validateMoney,trigger:'blur',}]">
+          <el-input v-model="form.money" placeholder="金额">
+            <template slot="append">元(￥)</template>
+          </el-input>
+        </el-form-item>
+        <el-form-item label="类型" :label-width="formLableWidth" prop="theType" :rules="[{required:true,message:'必填项'}]">
+          <el-radio-group v-model="form.theType">
+            <el-radio :label="1">缴费</el-radio>
+            <el-radio :label="2">退费</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="账户" :label-width="formLableWidth" prop="contactId" :rules="[{ required: true, message: '该项必填'}]">
+        <el-select v-model="form.contactId" style="width:100%" placeholder="账户">
+          <el-option v-for="(item,index) in parameterValue" :key="item.id" :label="item.name" :value="item.id"></el-option>
+        </el-select>
+      </el-form-item>
+        <el-form-item label="类别" :label-width="formLableWidth" prop="clazzId" :rules="[{required:true,message:'必填项'}]">
+          <el-select v-model="form.clazzId" style="width:100%" placeholder="类别">
+            <el-option v-for="(item,index) in parameterValue" :key="item.id" :label="item.name" :value="item.id"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="备注" :label-width="formLableWidth" prop="remarks">
+          <el-input type="textarea" :rows="3" v-model="form.remarks"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button :loading="loadingForm" type="primary" @click="submitForm('ruleForm')">保 存</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <style >
@@ -77,26 +106,39 @@
 <script scoped>
 import SchoolTree from "../../common/system/SchoolTree.vue";
 import DateRange from "../../common/Daterange.vue";
-import { getMoneyRecord, getMoneyRecordAccountList } from "../../api/api"
+import { getMoneyRecord, getMoneyRecordAccountList, findBranchParameterValueAll, createMoneyRecord } from "../../api/api"
 export default {
   data() {
     return {
       loadingAccount: false,
       loading: false,
+      titleDialog: "添加收支流水",
+      dialogFormVisible: false,
       tableData: [],
       total: 0,
       cur_page: 1,
       page_size: 20,
+      parameterValue: [],
       queryForm: {
         schoolZoneId2: [],
         theType: "",
         checkStatus: 2,
         createTime: ""
-      }
+      },
+      oldFrom: {
+        money: "",
+        remarks: "",
+        clazzId: "",
+        theType: "1"
+      },
+      form: {},
+      formLableWidth: "100px",
+      loadingForm: false
     }
   },
   created() {
     this.getData();
+    this.getParameterValue(11);
   },
   methods: {
     //分页方法start
@@ -113,6 +155,15 @@ export default {
       //搜索方法
       this.cur_page = 1;
       this.getData();
+    },
+    getParameterValue(id) {
+      let self = this;
+      findBranchParameterValueAll(id).then(data => {
+        if (data.code == 200) {
+          self.parameterValue = data.data;
+          self.form.contactId = self.parameterValue[0].id;
+        }
+      })
     },
     getData() {
       let self = this;
@@ -131,12 +182,39 @@ export default {
         }
       });
     },
+    submitForm(formName) {
+      let self = this;
+      self.$refs[formName].validate(valid => {
+        if (valid) {
+          self.loadingForm = true;
+          createMoneyRecord(self.form).then(data => {
+            self.loadingForm = false;
+            if (data.code == 200) {
+              self.$message.success(data.message);
+              self.dialogFormVisible = false;
+              self.getData();
+              self.$refs[formName].resetFields();
+            } else {
+              this.$message.error(data.data);
+            }
+          });
+        } else {
+          return false;
+        }
+      });
+    },
     handleCheckChange(allNode) {
       let self = this;
       self.queryForm.schoolZoneId2 = [];
       for (let i = 0; i < allNode.length; i++) {
         self.queryForm.schoolZoneId2.push(allNode[i].id);
       }
+    },
+    handleAdd() {
+      let self = this;
+      self.dialogFormVisible = true;
+      self.titleDialog = "添加收支流水";
+      self.form = self.oldFrom;
     },
     handleExpandChange(row, expandedRows) {
       if (!row.recordAccount) {
@@ -163,7 +241,7 @@ export default {
           sums[index] = '合计';
           return;
         }
-        if (column.label == "收费类型" || column.label == "审核状态") {
+        if (column.label == "收费类型" || column.label == "审核状态" || column.label == "备注") {
           sums[index] = '';
           return;
         }
