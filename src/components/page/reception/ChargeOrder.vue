@@ -58,11 +58,17 @@
       </el-table-column>
       <el-table-column label="校区" sortable="custom" prop="schoolZoneName">
       </el-table-column>
+      <el-table-column label="操作">
+        <template slot-scope="scope">
+          <el-button v-if="scope.row.costStatus==2" type="primary" plain size="mini" @click="handleOpenChargeForm(scope.row.id)">收费</el-button>
+        </template>
+      </el-table-column>
     </el-table>
     <div class="pagination">
       <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[20, 50, 100, 200]" :page-size="page_size" layout="total, sizes, prev, pager, next, jumper" :total="total">
       </el-pagination>
     </div>
+    <money-record-form ref="moneyRecordForm" @saveSuccess="getData"></money-record-form>
   </div>
 </template>
 <style >
@@ -98,6 +104,7 @@
 
 <script scoped>
 import SchoolTree from "../../common/system/SchoolTree.vue";
+import MoneyRecordForm from "./MoneyRecordForm.vue";
 import DateRange from "../../common/Daterange.vue";
 import { getOrderList, getOrderDetailList } from "../../api/api"
 export default {
@@ -215,6 +222,10 @@ export default {
 
       }
     },
+    handleOpenChargeForm(id) {
+      let self = this;
+      self.$refs["moneyRecordForm"].openDialog(id);
+    },
     filterType(value, row) {
       if (value.theType == 1) {
         row.tag = "缴费"
@@ -238,7 +249,7 @@ export default {
       return row.tag;
     },
   },
-  components: { SchoolTree, DateRange } //注入组件
+  components: { SchoolTree, DateRange, MoneyRecordForm } //注入组件
 }
 </script>
 

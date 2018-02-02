@@ -1,6 +1,6 @@
 <template>
   <el-tabs tab-position="top" type="card">
-    <el-tab-pane label="收费">
+    <el-tab-pane label="缴费">
       <charge-order></charge-order>
     </el-tab-pane>
     <el-tab-pane label="退费">

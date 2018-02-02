@@ -74,7 +74,7 @@
           <el-table-column label="减免" min-width="100px">
             <template slot-scope="scope">
               <el-form-item :prop="'chargeDetails.' + scope.$index + '.subtractPrice'" size="mini" class="clean-bottom" :rules="[{ validator:$validate.validateMoney}]">
-                <el-input-number style="width:100px" v-model="scope.row.subtractPrice" :min="1" :max="scope.row.total">
+                <el-input-number style="width:100px" v-model="scope.row.subtractPrice" :min="0" :max="scope.row.total">
                 </el-input-number>
               </el-form-item>
             </template>
@@ -359,9 +359,10 @@ export default {
         if (data.data) {
           self.financeAccount = data.data.list;
           self.financeAccount.forEach(item => {
-            if (item.thePublic == 2) {
-              self.form.financeAccount.push({ accountId: item.id, money: 0, name: item.name });
+            if (item.thePublic == 2) {//是否显示公共账户
+
             }
+            self.form.financeAccount.push({ accountId: item.id, money: 0, name: item.name });
           })
           console.log(self.form.financeAccount)
         }
