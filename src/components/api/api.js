@@ -154,16 +154,20 @@ export const createStudent = params => { return axios.post(`reception/createStud
 export const deleteStudent = id => { return axios.delete(`reception/deleteStudent/${id}`).then(res => res.data); };
 //报名
 export const createStudentApply = (studentId, params) => { return axios.post(`reception/createStudentApply/${studentId}`, params).then(res => res.data); };
-//查询订单  getOrderList
+//查询订单列表
 export const getOrderList = (pageNumber, pageSize, params) => { return axios.post(`reception/getOrderList/${pageNumber}/${pageSize}`, params).then(res => res.data); };
-//查询订单详情 getOrderDetailList
+//查询订单
+export const getOrderDetail = (orderId) => { return axios.get(`reception/getOrderDetail/${orderId}`).then(res => res.data); };
+//查询订单详情
 export const getOrderDetailList = (orderId) => { return axios.get(`reception/getOrderDetailList/${orderId}`).then(res => res.data); };
+//新建订单收款信息
+export const createOrderMoneyRecord = params => { return axios.post(`reception/createOrderMoneyRecord`, params).then(res => res.data); };
 //教学=============
 // 查询教室
 export const getRoomList = (pageNumber, pageSize, params) => { return axios.post(`teach/getRoomList/${pageNumber}/${pageSize}`, params).then(res => res.data); };
 // 创建教室
 export const createRoom = params => { return axios.post(`teach/createRoom`, params).then(res => res.data); };
-// 删除教室  deleteRoom
+// 删除教室
 export const deleteRoom = id => { return axios.delete(`teach/deleteRoom/${id}`).then(res => res.data); };
 // 教室详情
 export const getRoomView = id => { return axios.get(`teach/getRoomView/${id}`).then(res => res.data); };
@@ -233,7 +237,9 @@ export const deleteFinanceAccount = id => { return axios.delete(`finance/deleteF
 // 创建收支流水
 export const createMoneyRecord = params => { return axios.post(`finance/createMoneyRecord`, params).then(res => res.data); };
 //查询收支记录
-export const getMoneyRecord = (pageNumber, pageSize, params) => { return axios.post(`finance/getMoneyRecordList/${pageNumber}/${pageSize}`, params).then(res => res.data); };
+export const getMoneyRecordList = (pageNumber, pageSize, params) => { return axios.post(`finance/getMoneyRecordList/${pageNumber}/${pageSize}`, params).then(res => res.data); };
+//查询收支记录详情
+export const getMoneyRecord = id => { return axios.get(`finance/getMoneyRecord/${id}`).then(res => res.data); };
 //审核收支记录 checkedMoneyRecord
 export const checkedMoneyRecord = params => { return axios.put(`finance/checkedMoneyRecord`, params).then(res => res.data); };
 //查询收支记录账户明细

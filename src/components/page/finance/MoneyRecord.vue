@@ -168,7 +168,7 @@ export default {
     getData() {
       let self = this;
       self.loading = true;
-      getMoneyRecord(
+      getMoneyRecordList(
         self.cur_page,
         self.page_size,
         self.queryForm

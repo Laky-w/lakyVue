@@ -69,7 +69,7 @@
 <script scoped>
 import SchoolTree from "../../common/system/SchoolTree.vue";
 import DateRange from "../../common/Daterange.vue";
-import { getMoneyRecord, getMoneyRecordAccountList, checkedMoneyRecord } from "../../api/api"
+import { getMoneyRecordList, getMoneyRecordAccountList, checkedMoneyRecord } from "../../api/api"
 export default {
   data() {
     return {
@@ -111,7 +111,7 @@ export default {
     getData() {
       let self = this;
       self.loading = true;
-      getMoneyRecord(
+      getMoneyRecordList(
         self.cur_page,
         self.page_size,
         self.queryForm
