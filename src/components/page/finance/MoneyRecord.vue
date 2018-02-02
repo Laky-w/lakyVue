@@ -106,7 +106,7 @@
 <script scoped>
 import SchoolTree from "../../common/system/SchoolTree.vue";
 import DateRange from "../../common/Daterange.vue";
-import { getMoneyRecord, getMoneyRecordAccountList, findBranchParameterValueAll, createMoneyRecord } from "../../api/api"
+import { getMoneyRecordList, getMoneyRecordAccountList, findBranchParameterValueAll, createMoneyRecord } from "../../api/api"
 export default {
   data() {
     return {
