@@ -1,42 +1,49 @@
 <template>
-  <div class="table">
-    <div class="handle-box">
-      <el-form ref="authorityform" :inline="true" :model="authorityform" label-width="80px" size="mini">
-        <el-form-item prop="name" :rules="[{ required: true, message: '名称必填'}]">
+  <el-dialog title="添加职能" :visible.sync="visible" :close-on-click-modal=false :fullscreen="true" custom-class="dialog-form">
+    <div class="table">
+      <el-form ref="authorityform" :model="authorityform" label-width="80px">
+        <el-form-item label="职能名称" prop="name" style="width:100%" :rules="[{ required: true, message: '名称必填'}]">
           <el-input v-model="authorityform.name" clearable placeholder="职能名称" class="handle-input mr10">
           </el-input>
         </el-form-item>
+        <el-form-item label="职能描述" prop="remarks" style="width:100%">
+          <el-input v-model="authorityform.remarks" :rows=3 type="textarea" placeholder="职能描述"></el-input>
+        </el-form-item>
       </el-form>
-    </div>
-    <el-table :data="tableData" stripe v-loading="loading" style="width: 100%" :row-style="showTr" border="" :row-class-name="selectTr">
-      <el-table-column fixed="left" width="300px" label="菜单">
-        <template slot-scope="scope">
-          <span v-for="(space, levelIndex) in scope.row._level" class="ms-tree-space"></span>
-          <span style="cursor: pointer;color: #3a8ee6;" v-if="toggleIconShow(scope.row)" @click="toggle(scope.$index)">
-            <i v-if="!scope.row._expanded" class="el-icon-circle-plus-outline" aria-hidden="true"></i>
-            <i v-if="scope.row._expanded" class="el-icon-remove-outline" aria-hidden="true"></i>
-          </span>
-          <i :class="scope.row.icon"></i>
-          {{ scope.row.title }}
-        </template>
+      <el-table :data="tableData" stripe v-loading="loading" style="width: 100%" :row-style="showTr" border="" :row-class-name="selectTr">
+        <el-table-column fixed="left" width="300px" label="菜单">
+          <template slot-scope="scope">
+            <span v-for="(space, levelIndex) in scope.row._level" class="ms-tree-space"></span>
+            <span style="cursor: pointer;color: #3a8ee6;" v-if="toggleIconShow(scope.row)" @click="toggle(scope.$index)">
+              <i v-if="!scope.row._expanded" class="el-icon-circle-plus-outline" aria-hidden="true"></i>
+              <i v-if="scope.row._expanded" class="el-icon-remove-outline" aria-hidden="true"></i>
+            </span>
+            <i :class="scope.row.icon"></i>
+            {{ scope.row.title }}
+          </template>
 
-      </el-table-column>
-      <el-table-column label="权限">
-        <template slot-scope="scope">
-          <el-checkbox v-if="scope.row.authoritiyCount>0" v-model="scope.row.checkAll" :indeterminate="scope.row.isIndeterminate" :true-label="scope.row.id+':true'" :false-label="scope.row.id+':false'" @change="handleCheckAllChange">全选
-          </el-checkbox>
-          <el-checkbox-group style="display: inline-block;" v-model="scope.row.checkedAuthorities" @change="handleCheckedCitiesChange">
-            <el-checkbox v-for="(item, levelIndex) in scope.row.authorities" :label="item.id" :key="item.id">{{item.name}}
+        </el-table-column>
+        <el-table-column label="权限">
+          <template slot-scope="scope">
+            <el-checkbox v-if="scope.row.authoritiyCount>0" v-model="scope.row.checkAll" :indeterminate="scope.row.isIndeterminate" :true-label="scope.row.id+':true'" :false-label="scope.row.id+':false'" @change="handleCheckAllChange">全选
             </el-checkbox>
-          </el-checkbox-group>
-        </template>
-      </el-table-column>
-    </el-table>
-    <div style="margin-top: 10px;text-align: right;padding: 5px;position: fixed;bottom: 0px;z-index: 99;width: 90%; background-color: #dfe4ed;">
-      <el-button @click="$router.push('/userRole');">取 消</el-button>
+            <el-checkbox-group style="display: inline-block;" v-model="scope.row.checkedAuthorities" @change="handleCheckedCitiesChange">
+              <el-checkbox v-for="(item, levelIndex) in scope.row.authorities" :label="item.id" :key="item.id">{{item.name}}
+              </el-checkbox>
+            </el-checkbox-group>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!-- <div style="margin:10px 10px 0px 10px;text-align: right; background-color: #f0f0f0;">
+        <el-button @click="$router.push('/员工职能');">取 消</el-button>
+        <el-button :loading="loadingForm" type="primary" @click="submitForm('authorityform')">保 存</el-button>
+      </div> -->
+    </div>
+    <div slot="footer" class="dialog-footer">
+      <el-button @click="visible = false">取 消</el-button>
       <el-button :loading="loadingForm" type="primary" @click="submitForm('authorityform')">保 存</el-button>
     </div>
-  </div>
+  </el-dialog>
 </template>
 
 <style>
@@ -66,7 +73,7 @@ table td {
 </style>
 
 <script>
-import { getMenu, createNewRole } from "../../api/api";
+import { getMenu, getRoleDetail, createNewRole } from "../../api/api";
 export default {
   data() {
     return {
@@ -74,9 +81,17 @@ export default {
       tableData: [],
       treeStructure: true,
       dialogFormVisible: false,
+      visible: false,
+      oldAuthorities: [],
+      oldAuthorityform: {
+        name: "",
+        authorities: [],
+        remarks: ""
+      },
       authorityform: {
         name: "",
-        authorities: []
+        authorities: [],
+        remarks: ""
       },
       formLabelWidth: "120px",
       loading: false,
@@ -84,9 +99,30 @@ export default {
     };
   },
   created() {
-    this.getSchool();
+    // this.getdata();
   },
   methods: {
+    openDialog() {
+      this.visible = true;
+      this.authorityform = this.oldAuthorityform;
+      this.oldAuthorities = [];
+      this.getData();
+    },
+    openEditDialog(id) {
+      getRoleDetail(id).then(data => {
+        if (data.code == 200) {
+          this.visible = true;
+          let obj = {
+            id: data.data.id,
+            name: data.data.name,
+            remarks: data.data.remarks
+          }
+          this.authorityform = obj;
+          this.oldAuthorities = data.data.roleAuthorities;
+          this.getData();
+        }
+      })
+    },
     showTr(tr) {
       let row = tr.row;
       let subsCheckedCount = this.getSubsCheckedCount(row.id);
@@ -104,7 +140,6 @@ export default {
         return "selectTr";
       }
     },
-
     getSubsCheckedCount(id) {
       let self = this;
       let i = 0;
@@ -133,7 +168,7 @@ export default {
         return row._expanded && row._show;
       }
     },
-    getSchool() {
+    getData() {
       let self = this;
       self.loading = true;
       getMenu().then(data => {
@@ -166,7 +201,7 @@ export default {
       let tmp = [];
       Array.from(data).forEach(function (record) {
         if (record._expanded === undefined) {
-          record["_expanded"] = expandedAll;
+          record["_expanded"] = false;
         }
         if (parent) {
           record["_parent"] = parent;
@@ -183,7 +218,14 @@ export default {
         record["_show"] = true;
         record["checkAll"] = false;
         record["_level"] = _level;
-        record["checkedAuthorities"] = [];
+        record["checkedAuthorities"] = [];//已选择的
+        self.oldAuthorities.forEach(item => {
+          if (item.menuId == record.id) {
+            console.log(item.menuId);
+            record["checkedAuthorities"].push(item.authorityId);
+          }
+        })
+        console.log(record["checkedAuthorities"]);
         record["authoritiyCount"] = record.authorities
           ? record.authorities.length
           : 0;
@@ -230,8 +272,10 @@ export default {
           createNewRole(self.authorityform).then(data => {
             this.loadingForm = false;
             if (data.code == 200) {
-              self.$message.success("添加成功");
-              self.$router.push("/userRole");
+              self.$message.success(data.message);
+              self.visible = false;
+              self.$emit("saveSuccess", data.data);
+              // self.$router.push("/员工职能");
             } else {
               self.$message.error(data.data);
             }

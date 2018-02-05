@@ -102,6 +102,9 @@
         </template>
       </el-table-column>
       <el-table-column label="意向课程" sortable="custom" prop="intentionCourseName" min-width="150px">
+        <!-- <template slot-scope="scope">
+          <div style='white-space:nowrap;text-overflow:ellipsis;overflow:hidden;' title='鼠标悬浮显示的内容'>鼠标悬浮显示的内容</div>
+        </template> -->
       </el-table-column>
       <el-table-column label="创建时间" sortable="custom" prop="createTime" min-width="160px">
       </el-table-column>

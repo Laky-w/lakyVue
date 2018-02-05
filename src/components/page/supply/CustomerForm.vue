@@ -139,7 +139,7 @@ export default {
               self.$message.success(data.message);
               self.$refs[formName].resetFields();
               self.visible = false;
-              this.$emit("saveSuccess", data.data);
+              self.$emit("saveSuccess", data.data);
             } else {
               self.$message.error(data.message);
             }

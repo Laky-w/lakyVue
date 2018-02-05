@@ -78,7 +78,10 @@ export const getRoleList = (pageNumber, pageSize, params) => { return axios.post
 export const getRoleListBySchoolZoneId = (id, params) => { return axios.get(`organization/getRoleListBySchoolZoneId/${id}`, params).then(res => res.data) };
 //创建员工职能
 export const createNewRole = params => { return axios.post(`organization/createNewRole`, params).then(res => res.data); };
-
+//删除职能 deleteRole
+export const deleteRole = id => { return axios.delete(`organization/deleteRole/${id}`).then(res => res.data); };
+//查询职能详情 getRoleDetail
+export const getRoleDetail = id => { return axios.get(`organization/getRoleDetail/${id}`).then(res => res.data); };
 //校区查询用户
 export const getUserList = (pageNumber, pageSize, params) => { return axios.post(`organization/getUserList/${pageNumber}/${pageSize}`, params).then(res => res.data); };
 //查询用户详情
@@ -152,6 +155,8 @@ export const getStudentView = id => { return axios.get(`reception/getStudentView
 export const createStudent = params => { return axios.post(`reception/createStudent`, params).then(res => res.data); };
 // 删除正式学员
 export const deleteStudent = id => { return axios.delete(`reception/deleteStudent/${id}`).then(res => res.data); };
+//分配学管师
+export const updateStudentOwner = (id, params) => { return axios.put(`reception/updateStudentOwner/${id}`, params).then(res => res.data); };
 //报名
 export const createStudentApply = (studentId, params) => { return axios.post(`reception/createStudentApply/${studentId}`, params).then(res => res.data); };
 //查询订单列表

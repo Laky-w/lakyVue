@@ -92,7 +92,9 @@ export default {
             this.visitedViews.shift();
           }
           this.visitedViewMap.set(obj.path, obj);
-          this.visitedViews.push(obj);
+          if (obj.path != "/authority1") {//不显示标签路由过滤
+            this.visitedViews.push(obj);
+          }
         }
       }
       this.levelList = matched;

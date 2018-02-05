@@ -171,7 +171,9 @@ export default {
       this.visible = true;
       this.form = this.oldForm;
       this.titleText = "开班";
-      this.$refs['classForm'].resetFields();
+      if (this.$refs['classForm']) {
+        this.$refs['classForm'].resetFields();
+      }
     },
     handleEditOpenDialog(id) {
       getSchoolClassView(id).then(data => {

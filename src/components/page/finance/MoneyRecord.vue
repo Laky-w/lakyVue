@@ -66,10 +66,10 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="账户" :label-width="formLableWidth" prop="contactId" :rules="[{ required: true, message: '该项必填'}]">
-        <el-select v-model="form.contactId" style="width:100%" placeholder="账户">
-          <el-option v-for="(item,index) in parameterValue" :key="item.id" :label="item.name" :value="item.id"></el-option>
-        </el-select>
-      </el-form-item>
+          <el-select v-model="form.contactId" style="width:100%" placeholder="账户">
+            <el-option v-for="(item,index) in parameterValue" :key="item.id" :label="item.name" :value="item.id"></el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item label="类别" :label-width="formLableWidth" prop="clazzId" :rules="[{required:true,message:'必填项'}]">
           <el-select v-model="form.clazzId" style="width:100%" placeholder="类别">
             <el-option v-for="(item,index) in parameterValue" :key="item.id" :label="item.name" :value="item.id"></el-option>
