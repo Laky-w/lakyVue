@@ -18,7 +18,7 @@
       </el-form>
     </div>
     <div style="margin:5px;">
-      <el-button type="primary" icon="el-icon-edit" size="mini" @click="handleAdd">添加流水</el-button>
+      <el-button type="primary" icon="el-icon-edit" size="mini" @click="$refs['moneyRecordForm'].handleOpenDialog()">添加流水</el-button>
       <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
     </div>
     <el-table :data="tableData" stripe :summary-method="getSummaries" show-summary v-loading="loading" border @expand-change="handleExpandChange" @sort-change="handSortChange" style="width: 100%">
@@ -40,50 +40,26 @@
       </el-table-column>
       <el-table-column label="金额" sortable="custom" prop="money">
       </el-table-column>
-      <el-table-column label="类型" sortable="custom" prop="clazzName"></el-table-column>
+      <el-table-column label="类别" sortable="custom" prop="clazzName"></el-table-column>
       <el-table-column label="缴费时间" sortable="custom" prop="createTime">
       </el-table-column>
       <el-table-column label="收费人" sortable="custom" prop="salesmanName">
       </el-table-column>
       <el-table-column label="备注" sortable="custom" prop="remarks">
       </el-table-column>
+      <el-table-column label="操作">
+        <template slot-scope="scope">
+          <el-button v-if="scope.row.billType==2" type="primary" plain size="mini" @click="handleEdit(scope.$index, scope.row)">修改</el-button>
+          <el-button v-if="scope.row.billType==2" type="danger" plain size="mini" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+        </template>
+      </el-table-column>
+
     </el-table>
     <div class="pagination">
       <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[20, 50, 100, 200]" :page-size="page_size" layout="total, sizes, prev, pager, next, jumper" :total="total">
       </el-pagination>
     </div>
-    <el-dialog :title="titleDialog" :visible.sync="dialogFormVisible" :close-on-click-modal="false" width="750px">
-      <el-form :model="form" ref="ruleForm">
-        <el-form-item label="金额" :label-width="formLableWidth" prop="money" :rules="[{required:true,message:'必填项'},{validator:$validate.validateMoney,trigger:'blur',}]">
-          <el-input v-model="form.money" placeholder="金额">
-            <template slot="append">元(￥)</template>
-          </el-input>
-        </el-form-item>
-        <el-form-item label="类型" :label-width="formLableWidth" prop="theType" :rules="[{required:true,message:'必填项'}]">
-          <el-radio-group v-model="form.theType">
-            <el-radio :label="1">缴费</el-radio>
-            <el-radio :label="2">退费</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="账户" :label-width="formLableWidth" prop="contactId" :rules="[{ required: true, message: '该项必填'}]">
-        <el-select v-model="form.contactId" style="width:100%" placeholder="账户">
-          <el-option v-for="(item,index) in parameterValue" :key="item.id" :label="item.name" :value="item.id"></el-option>
-        </el-select>
-      </el-form-item>
-        <el-form-item label="类别" :label-width="formLableWidth" prop="clazzId" :rules="[{required:true,message:'必填项'}]">
-          <el-select v-model="form.clazzId" style="width:100%" placeholder="类别">
-            <el-option v-for="(item,index) in parameterValue" :key="item.id" :label="item.name" :value="item.id"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="备注" :label-width="formLableWidth" prop="remarks">
-          <el-input type="textarea" :rows="3" v-model="form.remarks"></el-input>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button :loading="loadingForm" type="primary" @click="submitForm('ruleForm')">保 存</el-button>
-      </div>
-    </el-dialog>
+    <money-record-form @saveSuccess="getData" ref="moneyRecordForm"></money-record-form>
   </div>
 </template>
 <style >
@@ -106,14 +82,14 @@
 <script scoped>
 import SchoolTree from "../../common/system/SchoolTree.vue";
 import DateRange from "../../common/Daterange.vue";
-import { getMoneyRecordList, getMoneyRecordAccountList, findBranchParameterValueAll, createMoneyRecord } from "../../api/api"
+import MoneyRecordForm from "./MoneyRecordForm.vue";
+import { getMoneyRecordList, getMoneyRecordAccountList, findBranchParameterValueAll, createMoneyRecord, getFinanceAccountList,deleteMoneyRecord} from "../../api/api"
 export default {
   data() {
     return {
       loadingAccount: false,
-      loading: false,
-      titleDialog: "添加收支流水",
       dialogFormVisible: false,
+      loading: false,
       tableData: [],
       total: 0,
       cur_page: 1,
@@ -125,15 +101,7 @@ export default {
         checkStatus: 2,
         createTime: ""
       },
-      oldFrom: {
-        money: "",
-        remarks: "",
-        clazzId: "",
-        theType: "1"
-      },
-      form: {},
-      formLableWidth: "100px",
-      loadingForm: false
+
     }
   },
   created() {
@@ -161,7 +129,6 @@ export default {
       findBranchParameterValueAll(id).then(data => {
         if (data.code == 200) {
           self.parameterValue = data.data;
-          self.form.contactId = self.parameterValue[0].id;
         }
       })
     },
@@ -182,26 +149,8 @@ export default {
         }
       });
     },
-    submitForm(formName) {
-      let self = this;
-      self.$refs[formName].validate(valid => {
-        if (valid) {
-          self.loadingForm = true;
-          createMoneyRecord(self.form).then(data => {
-            self.loadingForm = false;
-            if (data.code == 200) {
-              self.$message.success(data.message);
-              self.dialogFormVisible = false;
-              self.getData();
-              self.$refs[formName].resetFields();
-            } else {
-              this.$message.error(data.data);
-            }
-          });
-        } else {
-          return false;
-        }
-      });
+    saveSuccess(data) {
+      this.getData();
     },
     handleCheckChange(allNode) {
       let self = this;
@@ -210,11 +159,29 @@ export default {
         self.queryForm.schoolZoneId2.push(allNode[i].id);
       }
     },
-    handleAdd() {
+    //控件方法
+    handleEdit(index, row) {
       let self = this;
-      self.dialogFormVisible = true;
-      self.titleDialog = "添加收支流水";
-      self.form = self.oldFrom;
+      self.$refs["moneyRecordForm"].OpenEditDialog(row.id);
+    },
+    handleDelete(index, row) {
+      let self = this;
+      self.$confirm('确定删除该收支流水吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning', closeOnClickModal: false
+      }).then(data => {
+        deleteMoneyRecord(row.id).then(data => {
+          if (data.code == 200) {
+            self.getData();
+            self.$message.success(data.message);
+          } else {
+            self.$message.error(data.message);
+          }
+        })
+      }).catch(() => {
+
+      });
     },
     handleExpandChange(row, expandedRows) {
       if (!row.recordAccount) {
@@ -289,7 +256,7 @@ export default {
       return row.tag;
     }
   },
-  components: { SchoolTree, DateRange } //注入组件
+  components: { SchoolTree, DateRange, MoneyRecordForm } //注入组件
 }
 </script>
 
