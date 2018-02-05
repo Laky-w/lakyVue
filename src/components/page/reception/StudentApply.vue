@@ -2,10 +2,8 @@
   <div class="table">
     <el-form :model="form" ref="ruleForm">
       <el-form-item label="选择学员" :label-width="formLabelWidth" prop="studentId" :rules="[{ required: true, message: '学员必填'}]">
-        <customer-dialog :defaulUser="student" :student-type-no="9" style="width:80%" v-model="form.studentId" title="选择意向学员" placeholder-text="姓名/拼音/手机号"></customer-dialog>
-        <div style="display:inline-block;">
-          <customer-form size="medium" text="快速添加" @saveSuccess="handleSaveSuccess"></customer-form>
-        </div>
+        <customer-dialog :defaulUser="student" :student-type-no="9" style="width:80%;display:inline-block;" v-model="form.studentId" title="选择意向学员" placeholder-text="姓名/拼音/手机号"></customer-dialog>
+        <el-button type="primary" @click="$refs['customerForm'].handleOpenDialog()">快速添加</el-button>
       </el-form-item>
       <el-form-item label="选择课程" :label-width="formLabelWidth" prop="courseId">
         <course-dialog @selectData="handleCourse" style="width:80%" v-model="courseId" :selected-type="2"></course-dialog>
@@ -86,62 +84,6 @@
           </el-table-column>
         </el-table>
       </el-form-item>
-      <!-- <el-form-item label="收费信息" required :label-width="formLabelWidth" size="mini" style="margin-bottom:0px;">
-        <el-form-item :class="item.type ==1 ?'freeTitle':'freeTitle itemText'" :style="item.type ==3?'width:130px':''" v-for="(item,index) in titleLabel" size="mini" :key="index">
-              {{item.label}}
-        </el-form-item>
-      </el-form-item> -->
-
-      <!-- <el-form-item  :label-width="formLabelWidth"   v-for="(chargeDetail,index) in chargeDetails" style="margin-bottom:0px;" :key="index">
-          <el-form-item  class="freeContent itemText" size="mini" >
-              {{chargeDetail.courseName}}
-          </el-form-item>
-          <el-form-item  class="freeContent itemText" size="mini" :prop="'chargeDetails.' + index + '.classId'" >
-              <class-dialog  v-model="chargeDetail.classId" :course-id="chargeDetail.courseId"></class-dialog>
-          </el-form-item>
-           <el-form-item  class="freeContent itemText" size="mini" :prop="'chargeDetails.' + index + '.theType'">
-            <el-select v-model="chargeDetail.theType"   placeholder="课程类型" class="handle-select mr10" >
-              <el-option key="1" label="新报" value="1"></el-option>
-              <el-option key="2" label="扩科" value="2" ></el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item  class="freeContent" size="mini" >
-              {{chargeDetail.itemName}}({{chargeDetail.itemType == 1?"标准收费":"区间收费"}})
-          </el-form-item>
-          <el-form-item  class="freeContent" size="mini" >
-            <el-select placeholder="收费标准" @change="changeChargeStandard(chargeDetail)"
-            class="handle-select mr10" v-model.number="chargeDetail.chargeStandardId">
-              <el-option v-for="(item,index) in chargeDetail.chargeStandard" :label="item.label" :value="item.id" :key="item.id"></el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item  class="freeContent" style="width:120px" :prop="'chargeDetails.' + index + '.number'" size="mini"
-           :rules="[{ validator:$validate.validateMoney}]">
-              <el-input-number style="width:80px" v-model="chargeDetail.number"  :min="1" >
-              </el-input-number>({{chargeDetail.unit}})
-          </el-form-item>
-          <el-form-item  class="freeContent itemText" :prop="'chargeDetails.' + index + '.price'" size="mini" >
-            {{chargeDetail.price}}
-          </el-form-item>
-          <el-form-item  class="freeContent"  :prop="'chargeDetails.' + index + '.discount'" size="mini" >
-            <el-input-number style="width:100px" v-model="chargeDetail.discount"  :min="1" :max="100">
-            </el-input-number>
-          </el-form-item>
-          <el-form-item  class="freeContent itemText"  size="mini" >
-            {{chargeDetail.sellPrice}}
-          </el-form-item>
-
-          <el-form-item  class="freeContent itemText" size="mini" style="color: red;">
-            {{chargeDetail.total}}
-          </el-form-item>
-          <el-form-item  class="freeContent " :prop="'chargeDetails.' + index + '.subtractPrice'"
-            :rules="[{ validator:$validate.validateMoney}]" size="mini" >
-            <el-input-number style="width:100px" v-model="chargeDetail.subtractPrice"  :min="0" :max="chargeDetail.total">
-            </el-input-number>
-          </el-form-item>
-          <el-form-item class="freeContent" >
-              <el-button  size="mini" @click="removeChargeDetail(chargeDetail)">删除</el-button>
-          </el-form-item>
-      </el-form-item> -->
       <el-form-item style="padding-left:100px">
         <div class="accountContent">
           <div class="head" style="background-color: #eca061;">收款账户</div>
@@ -170,6 +112,7 @@
         </div>
       </el-form-item>
     </el-form>
+    <customer-form ref="customerForm" @saveSuccess="handleSaveSuccess"></customer-form>
   </div>
 </template>
 
@@ -450,7 +393,8 @@ export default {
               chargeDetail.itemType = course.standardType;
 
               chargeDetail.courseId = course.id;
-              chargeDetail.schoolId = course.schoolId;
+              // console.log(course.schoolZoneId);
+              chargeDetail.schoolId = course.schoolZoneId;
               chargeDetail.courseName = course.name;
               chargeDetail.classId = "";
               chargeDetail.theType = "1"; // 1新报，2扩科（续报）

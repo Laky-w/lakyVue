@@ -24,11 +24,16 @@
         <el-button type="mini" icon="el-icon-search" @click="search('queryForm')">搜索</el-button>
       </el-form>
     </div>
-    <div style="margin:5px;">
+    <div v-show="checkedData.length==0" style="margin:5px;">
       <el-button type="primary" icon="el-icon-edit" size="mini" @click="$refs['studentForm'].handleOpenDialog()">添加正式学员</el-button>
       <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
     </div>
-    <el-table :data="tableData" stripe v-loading="loading" :row-class-name="tableRowClassName" border @sort-change="handSortChange" style="width: 100%">
+    <div v-show="checkedData.length>0" style="margin:5px;min-height:18px">
+      <el-button v-if="$isAuthority('allort-customer')" type="primary" icon="el-icon-edit" size="mini" @click="$refs['ownerForm'].openDialog()">分配学管师</el-button>
+    </div>
+    <el-table :data="tableData" stripe v-loading="loading" :row-class-name="tableRowClassName" border @sort-change="handSortChange" @selection-change="handleSelectionChange" style="width: 100%">
+      <el-table-column type="selection" width="30">
+      </el-table-column>
       <el-table-column label="姓名" sortable="custom" prop="name">
         <template slot-scope="scope">
           <a href="javascript:void(0)" @click="handleView(scope.row.id)">{{ scope.row.name }}</a>
@@ -52,7 +57,7 @@
       </el-table-column>
       <el-table-column label="备注" sortable="custom" prop="remarks">
       </el-table-column>
-      <el-table-column label="操作" min-width="130">
+      <el-table-column label="操作" width="150px">
         <template slot-scope="scope">
           <el-button type="primary" plain size="mini" @click="handleEdit(scope.$index, scope.row)">修改</el-button>
           <el-button type="primary" plain size="mini" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
@@ -61,6 +66,7 @@
     </el-table>
     <student-view :view-id="viewId" :dialog-view-visible.sync="dialogViewVisible"></student-view>
     <student-form @saveSuccess="getData" :dialog-form-visible.sync="dialogFormVisible" ref="studentForm"></student-form>
+    <student-owner-form @saveSuccess="getData" :students="checkedData" ref="ownerForm"></student-owner-form>
     <div class="pagination">
       <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[20, 50, 100, 200]" :page-size="page_size" layout="total, sizes, prev, pager, next, jumper" :total="total">
       </el-pagination>
@@ -76,8 +82,10 @@ import SchoolTree from "../../common/system/SchoolTree.vue";
 import UserDialog from "../../common/system/UserDialog.vue";
 import StudentView from "./StudentView.vue";
 import StudentForm from "./StudentForm.vue";
+import StudentOwnerForm from "./StudentOwnerForm.vue";
 import MarketActivityDialog from "../../common/supply/MarketActivityDialog.vue";
 import CourseDialog from "../../common/teach/CourseDialog.vue";
+
 import {
   getStudentList,
   findBranchParameterValueAll,
@@ -88,6 +96,7 @@ export default {
   data() {
     return {
       tableData: [],
+      checkedData: [],
       dialogFormVisible: false,
       total: 0,
       cur_page: 1,
@@ -253,6 +262,9 @@ export default {
       }
       self.getData();
     },
+    handleSelectionChange(val) {
+      this.checkedData = val;
+    },
     handleCheckChange(allNode) {
       let self = this;
       self.queryForm.schoolZoneId2 = [];
@@ -261,6 +273,6 @@ export default {
       }
     }
   },
-  components: { SchoolTree, UserDialog, MarketActivityDialog, CourseDialog, StudentView, StudentForm } //注入组件
+  components: { SchoolTree, UserDialog, MarketActivityDialog, CourseDialog, StudentView, StudentForm, StudentOwnerForm } //注入组件
 };
 </script>

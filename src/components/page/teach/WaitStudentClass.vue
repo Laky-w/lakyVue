@@ -95,9 +95,11 @@ export default {
         updateStudentClass(this.form).then(data => {
           self.loadingForm = false;
           if (data.code == 200) {
-
+            self.visible = false;
+            self.$message.success(data.message);
+            self.$emit("saveSuccess", data.data);
           } else {
-
+            self.$message.error("分班失败！");
           }
         })
       } else {

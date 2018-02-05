@@ -13,7 +13,7 @@
       </el-form>
     </div>
     <div style="margin:5px;">
-      <el-button type="primary" icon="el-icon-edit" size="mini" @click="$router.push('/authority1');">添加职能
+      <el-button type="primary" icon="el-icon-edit" size="mini" @click="$refs['authority'].openDialog()">添加职能
       </el-button>
     </div>
     <el-table :data="tableData" stripe v-loading="loading" border style="width: 100%">
@@ -21,68 +21,32 @@
       </el-table-column>
       <el-table-column label="创建时间" prop="createTime">
       </el-table-column>
+      <el-table-column label="描述" prop="remarks">
+      </el-table-column>
       <el-table-column label="创建用户" prop="createUser.name">
       </el-table-column>
       <el-table-column label="校区" prop="schoolZone.name">
       </el-table-column>
-      <!-- <el-table-column label="操作">
-            <template slot-scope="scope">
-                <el-button
-                size="mini"
-                @click="handleEdit(scope.$index, scope.row)">添加</el-button>
-                <el-button
-                size="mini"
-                type="danger"
-                @click="handleDelete(scope.$index, scope.row)">删除</el-button>
-            </template>
-            </el-table-column> -->
+      <el-table-column label="操作" width="150px">
+        <template slot-scope="scope">
+          <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">修改</el-button>
+          <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+        </template>
+      </el-table-column>
     </el-table>
     <div class="pagination">
       <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[20, 50, 100, 200]" :page-size="page_size" layout="total, sizes, prev, pager, next, jumper" :total="total">
       </el-pagination>
     </div>
-    <el-dialog title="添加公告" :visible.sync="dialogFormVisible" :close-on-click-modal=false>
-      <el-form :model="form" ref="ruleForm">
-        <el-form-item label="名称" :label-width="formLabelWidth" prop="userName" :rules="[{ required: true, message: '名称必填'}]">
-          <el-input v-model="form.name" autofocus placeholder="名称" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="类型" :label-width="formLabelWidth" required>
-          <el-radio-group v-model="form.theType">
-            <el-radio :label="2">校区</el-radio>
-            <el-radio :label="3">部门</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="编号" prop="serial" :label-width="formLabelWidth">
-          <el-input v-model="form.serial" placeholder="内部编号" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="地址" prop="address" :label-width="formLabelWidth">
-          <el-input v-model="form.address" placeholder="地址" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="职能" prop="remarks" :label-width="formLabelWidth">
-          <el-input v-model="form.remarks" placeholder="描述、职能" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="负责人" prop="owner" :label-width="formLabelWidth">
-          <el-input v-model="form.owner" auto-complete="off" placeholder="负责人"></el-input>
-        </el-form-item>
-        <el-form-item label="联系方式" prop="phone" :label-width="formLabelWidth">
-          <el-input v-model="form.phone" auto-complete="off" placeholder="联系方式"></el-input>
-        </el-form-item>
-        <el-form-item label="上级部门" :label-width="formLabelWidth">
-          <el-input v-model="form.fatherName" disabled></el-input>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button :loading="loadingForm" type="primary" @click="submitForm('ruleForm')">保 存</el-button>
-      </div>
-    </el-dialog>
+    <authority ref="authority"></authority>
   </div>
 </template>
 
 
 <script>
 import SchoolTree from "../../common/system/SchoolTree.vue";
-import { getRoleList } from "../../api/api";
+import Authority from "./Authority.vue";
+import { getRoleList, deleteRole, getRoleDetail } from "../../api/api";
 export default {
   data() {
     return {
@@ -145,11 +109,26 @@ export default {
     },
     //控件方法
     handleEdit(index, row) {
-      this.form.fatherId = row.id;
-      this.form.fatherName = row.name;
-      this.dialogFormVisible = true;
+      this.$refs["authority"].openEditDialog(row.id);
     },
-    handleDelete(index, row) { },
+    handleDelete(index, row) {
+      let self = this;
+      self.$confirm('确定删除该职能吗，删除后拥有该职能的教师对应的职能也会消失，请谨慎操作！是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning', closeOnClickModal: false
+      }).then(() => {
+        deleteRole(row.id).then(data => {
+          if (data.code == 200) {
+            self.getData();
+            self.$message.success(data.message);
+          } else {
+            self.$message.error(data.message);
+          }
+        })
+      }).catch(() => {
+      });
+    },
     handleCheckChange(allNode) {
       this.queryForm.schoolZoneId2 = [];
       for (let i = 0; i < allNode.length; i++) {
@@ -157,6 +136,6 @@ export default {
       }
     }
   },
-  components: { SchoolTree } //注入组件
+  components: { SchoolTree, Authority } //注入组件
 };
 </script>

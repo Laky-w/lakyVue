@@ -12,7 +12,7 @@ axios.interceptors.request.use(function (config) {
   config.headers.common['token'] = sessionStorage.getItem("token");
   // config.headers.common['content-type'] = "json";
   let data = qs.stringify(config.data);
-  config.data = data.replace(/\%5B[0-9]\%5D=/g, "=");//数组过滤[0-9],加=是防止误杀[1]这样value值。通过=保证是key值，
+  config.data = data.replace(/\%5B[0-9]+\%5D=/g, "=");//数组过滤[0-9],加=是防止误杀[1]这样value值。通过=保证是key值，
   // config.data = config.data.replace(/\%5B/g, ".");//数组过滤[0-9]
   // config.data = config.data.replace(/\%5D/g, "");//数组过滤[0-9]
   console.log(config.data);

@@ -53,7 +53,7 @@
       <el-button v-if="$isAuthority('import-customer')" type="success" icon="el-icon-download" size="mini">导出信息</el-button>
     </div>
     <div v-show="checkedData.length>0" style="margin:5px;min-height:18px">
-      <el-button v-if="$isAuthority('allort-customer')" type="primary" icon="el-icon-edit" size="mini" @click="dialogOwnerVisible=true">批量分配</el-button>
+      <el-button v-if="$isAuthority('allort-customer')" type="primary" icon="el-icon-edit" size="mini" @click="dialogOwnerVisible=true">分配负责人</el-button>
     </div>
     <el-table :data="tableData" stripe v-loading="loading" @sort-change="handSortChange" border style="width: 100%" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="30">

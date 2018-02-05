@@ -34,7 +34,7 @@
               <el-form-item label="折扣：">{{item.discount}}</el-form-item>
               <el-form-item label="售价：">{{item.sellPrice}}</el-form-item>
               <el-form-item label="总价：">{{item.total}}</el-form-item>
-              <el-form-item label="减免：">{{item.subtractMoney}}</el-form-item>
+              <el-form-item label="减免：">{{item.subtractPrice}}</el-form-item>
               <!-- {{item.name}}：<span style="color:#67c23a">{{item.money}}￥</span> -->
             </el-form-item>
           </el-form>
@@ -47,6 +47,9 @@
       <el-table-column label="抹零" sortable="custom" prop="subtractMoney">
       </el-table-column>
       <el-table-column label="已交" sortable="custom" prop="receivable">
+        <template slot-scope="scope">
+          <a @click="handleOrderRecord(scope.row.id)">{{ scope.row.receivable }}</a>
+        </template>
       </el-table-column>
       <el-table-column label="欠费" prop="refund" :formatter="filterTotal">
       </el-table-column>
@@ -69,6 +72,7 @@
       </el-pagination>
     </div>
     <money-record-form ref="moneyRecordForm" @saveSuccess="getData"></money-record-form>
+    <order-record ref="orderRecord"></order-record>
   </div>
 </template>
 <style >
@@ -106,6 +110,7 @@
 import SchoolTree from "../../common/system/SchoolTree.vue";
 import MoneyRecordForm from "./MoneyRecordForm.vue";
 import DateRange from "../../common/Daterange.vue";
+import OrderRecord from "./OrderRecord.vue";
 import { getOrderList, getOrderDetailList } from "../../api/api"
 export default {
   data() {
@@ -226,6 +231,10 @@ export default {
       let self = this;
       self.$refs["moneyRecordForm"].openDialog(id);
     },
+    handleOrderRecord(id) {
+      let self = this;
+      self.$refs["orderRecord"].openDialog(id);
+    },
     filterType(value, row) {
       if (value.theType == 1) {
         row.tag = "缴费"
@@ -249,7 +258,7 @@ export default {
       return row.tag;
     },
   },
-  components: { SchoolTree, DateRange, MoneyRecordForm } //注入组件
+  components: { SchoolTree, DateRange, MoneyRecordForm, OrderRecord } //注入组件
 }
 </script>
 

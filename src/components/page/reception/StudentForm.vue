@@ -10,7 +10,7 @@
           <el-radio :label="2">女</el-radio>
         </el-radio-group>
       </el-form-item>
-      <el-form-item label="手机" :label-width="formLabelWidth" prop="phone" :rules="[{ required: true, message: '该项必填'}]">
+      <el-form-item label="手机" :label-width="formLabelWidth" prop="phone" :rules="[{ validator:validateStudent, trigger: 'blur'},{ min:11, max: 11, message: '请输入正确的手机号', trigger: 'change' }]">
         <el-input v-model="form.phone" placeholder="联系电话"></el-input>
       </el-form-item>
       <el-form-item label="联系人" :label-width="formLabelWidth" prop="contactId" :rules="[{ required: true, message: '该项必填'}]">
@@ -25,7 +25,7 @@
         <user-dialog v-model="form.ownerId" title="学管师" :the-type="3" :parent-school-id="form.schoolZoneId" :default-text="form.ownerName" placeholder-text="学管师"></user-dialog>
       </el-form-item>
       <el-form-item label="来源活动" :label-width="formLabelWidth" prop="sourceId">
-        <market-activity-dialog v-model="form.sourceId"></market-activity-dialog>
+        <market-activity-dialog v-model="form.sourceId" :default-text="form.sourceName"></market-activity-dialog>
       </el-form-item>
       <el-form-item label="备注" :label-width="formLabelWidth" prop="remarks">
         <el-input v-model="form.remarks" style="width:535px" :rows=3 type="textarea" placeholder="备注"></el-input>
@@ -46,7 +46,7 @@ import {
   findBranchParameterValueAll,
   createStudent,
   getStudentView,
-  getStudentList
+  getCustomerList
 } from "../../api/api";
 export default {
   data() {
@@ -98,15 +98,18 @@ export default {
       });
     },
     validateStudent(rule, value, callback) {//手机验证
-      if (value.length != 11) {
+      if (!value) {
+        callback(new Error("请输入正确的手机号"));
+      } else if (value.length != 11) {
         callback(new Error("请输入正确的手机号"));
       } else {
-        getStudentList(1, 20, { "phone": value }).then(data => {
+        //验证生源，演示正式学员会出现生源和正式学员冲突情况
+        getCustomerList(1, 20, { "phone": value }).then(data => {
           if (data.code == 200) {
             if (data.data.total > 0) {
               let message = "";
               data.data.list.forEach(item => {
-                if (item.id != this.form.id) {
+                if (item.id != this.form.customerId) {
                   message += item.name + "，所属校区:" + item.schoolZoneName + ";"
                 }
               })

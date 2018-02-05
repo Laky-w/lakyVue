@@ -27,6 +27,7 @@ let routesList = [{
   {
     path: '/authority1',
     name: "添加职能",
+    type: 2,
     component: resolve => require(['../components/page/system/Authority.vue'], resolve)
   },
   ]
