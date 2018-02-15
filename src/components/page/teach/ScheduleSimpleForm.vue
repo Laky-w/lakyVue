@@ -21,6 +21,11 @@
       <el-form-item label="课时" :label-width="formLabelWidth" prop="hour" :rules="[{ required: true, message: '课时必填'}]">
         <el-input-number style="width:100%" v-model="form.hour" :min="0.5" :max="10"> </el-input-number>
       </el-form-item>
+      <el-form-item label="冲突检测" style="display:inline-block;" :label-width="formLabelWidth" prop="isChecked">
+        <el-switch v-model="form.isChecked">
+        </el-switch>
+        教师，教室，班级，上课时间是否冲突
+      </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
       <el-button @click="visbile=false;">取 消</el-button>
@@ -32,7 +37,7 @@
 import UserDialog from "../../common/system/UserDialog.vue";
 import RoomDialog from "../../common/teach/RoomDialog.vue";
 //getClassSchedule
-import { getClassSchedule, updateClassSchedule } from "../../api/api";
+import { getClassSchedule, updateClassSchedule, doCheckedScheduleRepeat } from "../../api/api";
 export default {
   data() {
     return {
@@ -43,6 +48,7 @@ export default {
         teachId: "",
         teachName: "",
         helpTeacherId: [],
+        isChecked: true,
         helpTeacherName: "",
         roomId: "",
         roomName: "",
@@ -64,9 +70,20 @@ export default {
           }
           // obj.helpTeacherId = helpTeacherId;
           this.form = {
-            id: obj.id, teachId: obj.teachId, teachName: obj.teachName, helpTeacherId: helpTeacherId,
-            helpTeacherName: obj.helpTeacherName, roomName: obj.roomName, roomId: obj.roomId, hour: obj.hour, schoolZoneId: obj.schoolZoneId,
-            scheduleDate: obj.startTime.split(" ")[0], scheduleTime: [obj.startTime.split(" ")[1], obj.endTime.split(" ")[1]]
+            id: obj.id,
+            teachId: obj.teachId,
+            teachName: obj.teachName,
+            helpTeacherId: helpTeacherId,
+            isChecked: true,
+            classId: obj.schoolClassId,
+            className: obj.schoolClassName,
+            helpTeacherName: obj.helpTeacherName,
+            roomName: obj.roomName,
+            roomId: obj.roomId,
+            hour: obj.hour,
+            schoolZoneId: obj.schoolZoneId,
+            scheduleDate: obj.startTime.split(" ")[0],
+            scheduleTime: [obj.startTime.split(" ")[1], obj.endTime.split(" ")[1]]
           };
         }
       })
@@ -74,20 +91,74 @@ export default {
     },
     submitForm(refForm) {
       let self = this;
+      let scheduleDates = this.form.scheduleDate.replace(/-/g, "/");
+      let scheduleDateNext = new Date((new Date(scheduleDates) / 1000 + 86400) * 1000).Format("yyyy-MM-dd")
+      console.log(new Date(scheduleDates).getDay(), this.form.scheduleDate);
       self.$refs[refForm].validate(valid => {
         if (valid) {
-          updateClassSchedule(self.form).then(data => {
-            if (data.code == 200) {
-              self.$message.success(data.message);
-              self.$refs[refForm].resetFields();
-              self.visbile = false;
-              self.$emit("saveSuccess", data.data);
-            } else {
-              self.$message.error(data.data);
-            }
-          })
+          if (self.form.isChecked) {//检查排课冲突
+            self.loadingForm = true;
+            let checkFrom = {
+              scheduleId: self.form.id,
+              classId: self.form.classId,
+              className: self.form.className,
+              teacherId: self.form.teachId,
+              teacherName: self.form.teachName,
+              isChecked: self.form.isChecked,
+              roomId: self.form.roomId,
+              roomName: self.form.roomName,
+              helpTeacherId: self.form.helpTeacherId,
+              scheduleDate: [self.form.scheduleDate, scheduleDateNext],
+              maxCount: 1,
+              schoolZoneId: self.form.schoolZoneId,
+              classTimes: [{
+                weekDay: new Date(scheduleDates).getDay() + 1,
+                classTime: self.form.scheduleTime,
+                courseHour: self.form.hour,
+              }]
+            };
+            doCheckedScheduleRepeat({ scheduleFormStr: JSON.stringify(checkFrom) }).then(data => {
+              self.loadingForm = false;
+              if (data.code == 200) {
+                let repeatData = data.data;
+                if (repeatData.code == 200) {
+                  self.saveClassSchedule();
+                } else {
+                  this.$confirm(repeatData.message + '是否忽略继续?', '排课资源冲突检测提醒', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                    dangerouslyUseHTMLString: true
+                  }).then(() => {
+                    self.saveClassSchedule();
+                  }).catch(() => {
+                    return false;
+                  });
+                }
+              } else {
+                self.$message.error(data.data);
+              }
+            })
+          } else {
+            self.saveClassSchedule();
+          }
         } else {
           return false;
+        }
+      })
+    },
+    saveClassSchedule() {
+      let self = this;
+      self.loadingForm = true;
+      updateClassSchedule(self.form).then(data => {
+        self.loadingForm = false;
+        if (data.code == 200) {
+          self.$message.success(data.message);
+          self.$refs[refForm].resetFields();
+          self.visbile = false;
+          self.$emit("saveSuccess", data.data);
+        } else {
+          self.$message.error(data.data);
         }
       })
     }

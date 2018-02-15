@@ -3,7 +3,8 @@ import qs from 'qs';
 import router from './router';
 import { Message } from 'element-ui';
 // axios.defaults.baseURL = 'http://192.168.0.103/laky/';
-axios.defaults.baseURL = 'http://192.168.0.100/laky/';
+// axios.defaults.baseURL = 'http://192.168.0.100/laky/';
+axios.defaults.baseURL = 'http://127.0.0.1/laky/';
 // axios.defaults.baseURL = 'http://192.168.0.100:8081/laky/';
 // axios.defaults.baseURL = 'http://qfjjsk.natappfree.cc/';
 
@@ -38,7 +39,6 @@ axios.interceptors.response.use(function (response) {
   return Promise.reject(error);
 });
 Date.prototype.Format = function (fmt) {
-  console.log(fmt);
   var date = this;
   let o = {
     'M+': date.getMonth() + 1,

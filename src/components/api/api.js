@@ -218,6 +218,9 @@ export const getScheduleStandardView = id => { return axios.get(`teach/getSchedu
 export const deleteScheduleStandard = id => { return axios.delete(`teach/deleteScheduleStandard/${id}`).then(res => res.data); };
 //班级排课
 export const createClassSchedule = params => { return axios.post(`teach/createClassSchedule`, params).then(res => res.data); };
+//检查排课冲突
+export const doCheckedScheduleRepeat = params => { return axios.post(`teach/doCheckedScheduleRepeat`, params).then(res => res.data); };
+
 //查询班级排课
 export const getClassScheduleAll = (pageNumber, pageSize, params) => { return axios.post(`teach/getClassScheduleAll/${pageNumber}/${pageSize}`, params).then(res => res.data); };
 //查询排课详情

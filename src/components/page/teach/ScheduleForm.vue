@@ -1,8 +1,13 @@
 <template>
   <el-dialog title="排课" :visible.sync="visbile" :close-on-click-modal="false">
     <el-form :model="form" ref="ruleForm">
-      <el-form-item label="班级" :label-width="formLabelWidth" required>
+      <el-form-item label="班级" style="display:inline-block;" :label-width="formLabelWidth" required>
         {{form.className}}
+      </el-form-item>
+      <el-form-item label="冲突检测" style="display:inline-block;" :label-width="formLabelWidth" prop="isChecked">
+        <el-switch v-model="form.isChecked">
+        </el-switch>
+        教师，教室，班级，上课时间是否冲突
       </el-form-item>
       <el-form-item label="任课老师" :label-width="formLabelWidth" prop="teacherId" :rules="[{ required: true, message: '任课老师必填'}]">
         <user-dialog v-model="form.teacherId" title="选择任课老师" :the-type="3" :parent-school-id="form.schoolZoneId" placeholder-text="任课老师" :default-text="form.teacherName" />
@@ -125,7 +130,7 @@ import SchoolTree from "../../common/system/SchoolTree.vue";
 import UserDialog from "../../common/system/UserDialog.vue";
 import Course from "../../common/teach/Course.vue";
 import RoomDialog from "../../common/teach/RoomDialog.vue";
-import { createClassSchedule, getScheduleStandard } from "../../api/api";
+import { createClassSchedule, getScheduleStandard, doCheckedScheduleRepeat } from "../../api/api";
 export default {
   data() {
     return {
@@ -181,6 +186,7 @@ export default {
         className: "",
         teacherId: "",
         teacherName: "",
+        isChecked: true,
         roomId: "",
         roomName: "",
         helpTeacherId: [],
@@ -242,24 +248,59 @@ export default {
     //保存表单
     submitForm() {
       let self = this;
-      let message = self.checkisExistTime();
+      let message = self.checkisExistTime(); //本地上课时间重复检测
       if (message) {
         this.$message.error(message);
         return false;
       }
+      //服务器冲突检测
+
       self.$refs["ruleForm"].validate(valid => {
         if (valid) {
-          createClassSchedule({ scheduleFormStr: JSON.stringify(self.form) }).then(data => {
-            if (data.code == 200) {
-              self.visbile = false;
-              self.$message.success(data.message);
-              self.$refs["ruleForm"].resetFields();
-            } else {
-              this.$message.error(data.data);
-            }
-          });
+          if (self.form.isChecked) {//检查排课冲突
+            self.loadingForm = true;
+            doCheckedScheduleRepeat({ scheduleFormStr: JSON.stringify(self.form) }).then(data => {
+              self.loadingForm = false;
+              if (data.code == 200) {
+                let repeatData = data.data;
+                if (repeatData.code == 200) {
+                  self.saveClassSchedule();
+                } else {
+                  this.$confirm(repeatData.message + '是否忽略继续?', '排课资源冲突检测提醒', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                    dangerouslyUseHTMLString: true
+                  }).then(() => {
+                    self.saveClassSchedule();
+                  }).catch(() => {
+                    return false;
+                  });
+                }
+              } else {
+                self.$message.error(data.data);
+              }
+            })
+          } else {
+            self.saveClassSchedule();
+          }
         } else {
           return false;
+        }
+      });
+    },
+
+    saveClassSchedule() {
+      let self = this;
+      self.loadingForm = true;
+      createClassSchedule({ scheduleFormStr: JSON.stringify(self.form) }).then(data => {
+        self.loadingForm = false;
+        if (data.code == 200) {
+          self.visbile = false;
+          self.$message.success(data.message);
+          self.$refs["ruleForm"].resetFields();
+        } else {
+          this.$message.error(data.data);
         }
       });
     },

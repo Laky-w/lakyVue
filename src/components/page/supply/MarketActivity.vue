@@ -68,7 +68,7 @@
     </div>
     <el-dialog :title="titleDialog" :visible.sync="dialogFormVisible" :close-on-click-modal=false>
       <el-form :model="form" ref="ruleForm">
-        <el-form-item label="名称" :label-width="formLabelWidth" prop="name" :rules="[{ required: true, message: '班级名称必填'},{validator:validateMarketActivityName,trigger:'blur'},]">
+        <el-form-item label="名称" :label-width="formLabelWidth" prop="name" :rules="[{ required: true, message: '活动名称必填'},{validator:validateMarketActivityName,trigger:'blur'}]">
           <el-input v-model="form.name" placeholder="活动名称"></el-input>
         </el-form-item>
         <el-form-item label="活动分类" :label-width="formLabelWidth" prop="categoryId" :rules="[{ required: true, message: '该项必填'}]">
