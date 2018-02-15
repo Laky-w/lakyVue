@@ -50,6 +50,10 @@ export const findNewNoticeAll = params => { return axios.get(`organization/findN
 export const findNoticeAll = (pageNumber, pageSize, params) => { return axios.post(`organization/findNoticeAll/${pageNumber}/${pageSize}`, params).then(res => res.data); };
 //创建公告
 export const createNotice = params => { return axios.post(`organization/createNotice`, params).then(res => res.data); };
+//  修改公告
+export const getNoticeView = id => { return axios.get(`organization/getNoticeView/${id}`).then(res => res.data); };
+//  删除公告
+export const deleteNotice = id => { return axios.delete(`organization/deleteNotice/${id}`).then(res => res.data); };
 //查询全部参数
 export const findBranchParameterAll = (id, params) => { return axios.get(`organization/findBranchParameterAll`, params).then(res => res.data); };
 //查询某类参数

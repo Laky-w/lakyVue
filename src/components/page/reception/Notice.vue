@@ -25,7 +25,7 @@
       <el-button type="primary" icon="el-icon-edit" size="mini" @click="dialogFormVisible=true">添加公告</el-button>
       <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
     </div>
-    <el-table :data="tableData" stripe v-loading="loading" @sort-change="handSortChange" style="width: 100%">
+    <el-table :data="tableData" stripe v-loading="loading" @sort-change="handSortChange" border style="width: 100%">
       <el-table-column label="校区" sortable="custom" prop="schoolZoneName">
       </el-table-column>
       <el-table-column label="用户名" sortable="custom" prop="userName">
@@ -38,17 +38,12 @@
       </el-table-column>
       <el-table-column label="通知范围" sortable="custom" prop="theType" :formatter="filterType">
       </el-table-column>
-      <!-- <el-table-column label="操作">
-            <template slot-scope="scope">
-                <el-button
-                size="mini"
-                @click="handleEdit(scope.$index, scope.row)">添加</el-button>
-                <el-button
-                size="mini"
-                type="danger"
-                @click="handleDelete(scope.$index, scope.row)">删除</el-button>
-            </template>
-            </el-table-column> -->
+      <el-table-column label="操作" min-width="130">
+        <template slot-scope="scope">
+          <el-button type="primary" plain size="mini" @click="handleEdit(scope.$index, scope.row)">修改</el-button>
+          <el-button type="danger" plain size="mini" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+        </template>
+      </el-table-column>
     </el-table>
     <div class="pagination">
       <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[20, 50, 100, 200]" :page-size="page_size" layout="total, sizes, prev, pager, next, jumper" :total="total">
@@ -82,13 +77,14 @@
 <script>
 import SchoolTree from "../../common/system/SchoolTree.vue";
 import DateRange from "../../common/Daterange.vue";
-import { findNoticeAll, createNotice } from "../../api/api";
+import { findNoticeAll, createNotice, deleteNotice,getNoticeView } from "../../api/api";
 export default {
   data() {
     return {
       tableData: [],
       dialogFormVisible: false,
       cur_page: 1,
+      titleDialog:"添加公告",
       page_size: 20,
       total: 0,
       queryForm: {
@@ -140,7 +136,34 @@ export default {
     handleEdit(index, row) {
       this.form.fatherId = row.id;
       this.form.fatherName = row.name;
-      this.dialogFormVisible = true;
+      let self = this;
+      getNoticeView(row.id).then(data => {
+        if (data.code == 200) {
+          let obj = data.data;
+          self.titleDialog = "修改-公告";
+          self.form = obj;
+          this.dialogFormVisible = true;
+        }
+      })
+    },
+    handleDelete(index, row) {
+      let self = this;
+      self.$confirm('确定删除该公告吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning', closeOnClickModal: false
+      }).then(data => {
+        deleteNotice(row.id).then(data => {
+          if (data.code == 200) {
+            self.getData();
+            self.$message.success(data.message);
+          } else {
+            self.$message.error(data.message);
+          }
+        })
+      }).catch(() => {
+
+      });
     },
     filterType(value, row) {
       if (value.theType == 1) row.tag = "机构公告";
@@ -189,7 +212,6 @@ export default {
       this.cur_page = 1;
       this.getData();
     },
-    handleDelete(index, row) { }
   },
   components: {
     SchoolTree,
