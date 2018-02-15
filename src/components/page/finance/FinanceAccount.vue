@@ -52,7 +52,7 @@
     </div>
     <el-dialog :title="titleDialog" :visible.sync="dialogFormVisible" :close-on-click-modal="false">
       <el-form :model="form" ref="ruleForm" v-loading="loadingForm">
-        <el-form-item label="名称" :label-width="formLabelWidth" prop="name" :rules="[{ required: true, message: '班级名称必填'}]">
+        <el-form-item label="名称" :label-width="formLabelWidth" prop="name" :rules="[{ required: true, message: '账号名称必填'},{validator:validateFinanceAccountName,trigger:'blur'}]">
           <el-input v-model="form.name" placeholder="账户名称"></el-input>
         </el-form-item>
         <el-form-item label="类型" style="display: inline-block;" :label-width="formLabelWidth" prop="theType" :rules="[{ required: true, message: '该项必填'}]">
@@ -145,6 +145,30 @@ export default {
     }
   },
   methods: {
+    validateFinanceAccountName(rule, value, callback) {//名称验证
+      getFinanceAccountList(1, 20, { "name2": value }).then(data => {
+        if (data.code == 200) {
+          if (data.data.total > 0) {
+            let i = 0;
+            data.data.list.forEach(item => {
+              if (item.id != this.form.id) {//判断是不是当前修改的数据
+                i++;
+              }
+            })
+            if (i > 0) {
+              callback(new Error("该账号活动名称已存在！"));
+            } else {
+              callback();
+            }
+          } else {
+            callback();
+          }
+        } else {
+          callback(new Error("网络错误，请尝试刷新操作！"));
+        }
+      })
+
+    },
     //初始化属性start
     getSchoolId() {
       let self = this;
@@ -276,6 +300,7 @@ export default {
         self.queryForm.schoolZoneId2.push(allNode[i].id);
       }
     },
+
     filterSchoolZoneName(value, row) {
       if (value.thePublic == 1) row.tag = "公共";
       else row.tag = value.schoolZoneName;

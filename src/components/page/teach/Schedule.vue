@@ -173,7 +173,7 @@ export default {
     filterScheduleTime(value, row) {
       let time = value.startTime;
       let endTime = value.endTime;//2017-01-22
-      var fullDate = time.substring(0, 10).split("-");
+      let fullDate = time.substring(0, 10).split("-");
       let sDate = new Date(fullDate[0], fullDate[1] - 1, fullDate[2], 0, 0, 0);
       let str = time.substring(0, 10);
       let weekDay = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六", "星期日"];
