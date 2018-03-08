@@ -32,8 +32,8 @@
       </el-form>
     </div>
     <div style="margin:5px;">
-      <el-button type="primary" icon="el-icon-edit" size="mini" @click="$refs['courseForm'].handleAddCourse();">添加课程</el-button>
-      <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
+      <el-button type="primary" v-if="$isAuthority('add-course')" icon="el-icon-edit" size="mini" @click="$refs['courseForm'].handleAddCourse();">添加课程</el-button>
+      <el-button type="success" v-if="$isAuthority('import-course')" icon="el-icon-download" size="mini">导出信息</el-button>
     </div>
     <el-table :data="tableData" stripe v-loading="loading" border @sort-change="handSortChange" style="width: 100%">
       <el-table-column label="课程" sortable="custom" prop="name">
@@ -45,7 +45,8 @@
       </el-table-column>
       <el-table-column label="授权校区" sortable="custom" prop="schoolZoneNumber">
         <template slot-scope="scope">
-          <a @click="handleCourseShool(scope.row.id);">{{scope.row.schoolZoneNumber}}个校区</a>
+          <a @click="handleCourseShool(scope.row.id);" v-if="$isAuthority('school-course')">{{scope.row.schoolZoneNumber}}个校区</a>
+          <span v-if="!$isAuthority('school-course')">{{scope.row.schoolZoneNumber}}个校区</span>
         </template>
       </el-table-column>
       <el-table-column label="类别" sortable="custom" prop="clazzName">
@@ -64,12 +65,12 @@
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-dropdown split-button type="primary" @click="handleEdit(scope.$index, scope.row)" @command="handleCommand" size="small">
-            修改
+          <el-dropdown split-button type="primary" v-if="$isAuthority('update-course') || $isAuthority('manage-course') || $isAuthority('delete-course')" @click="handleEdit(scope.$index, scope.row)" @command="handleCommand" size="small">
+            {{$isAuthority('update-course')?'修改':'操作'}}
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item v-if="scope.row.theStatus ==2" :command="{row:scope.row,type:'normal'}">启用</el-dropdown-item>
-              <el-dropdown-item v-if="scope.row.theStatus ==1" :command="{row:scope.row,type:'sealup'}">封存</el-dropdown-item>
-              <el-dropdown-item :command="{row:scope.row,type:'delete'}">删除</el-dropdown-item>
+              <el-dropdown-item v-if="$isAuthority('manage-course') && scope.row.theStatus ==2" :command="{row:scope.row,type:'normal'}">启用</el-dropdown-item>
+              <el-dropdown-item v-if="$isAuthority('manage-course') && scope.row.theStatus ==1" :command="{row:scope.row,type:'sealup'}">封存</el-dropdown-item>
+              <el-dropdown-item v-if="$isAuthority('delete-course')" :command="{row:scope.row,type:'delete'}">删除</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </template>
@@ -186,7 +187,9 @@ export default {
       // self.$refs["courseSchool"].getSchool();
     },
     handleEdit(index, row) {
-      this.$refs['courseForm'].handleUpdateCourse(row.id);
+      if (this.$isAuthority('update-course')) { //拥有修改权限
+        this.$refs['courseForm'].handleUpdateCourse(row.id);
+      }
     },
     handleCommand(command) {
       switch (command.type) {

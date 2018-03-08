@@ -21,8 +21,8 @@
         </el-button-group>
         <el-button size="mini" icon="el-icon-refresh" @click="$refs['queryForm'].resetFields();search('queryForm');">重置</el-button>
         <div v-show="isShowMore">
-          <el-form-item>
-            <el-input v-model="queryForm.userId" placeholder="记录人" class="handle-input mr10"></el-input>
+          <el-form-item prop="userName" v-if="$isAuthority('show-all-invite')">
+            <el-input v-model="queryForm.userName" placeholder="记录人" class="handle-input mr10"></el-input>
           </el-form-item>
           <el-form-item>
             <school-tree :is-show-checkbox=true :the-type="2" place-text="校区" @handleCheckChange="handleCheckChange"></school-tree>
@@ -32,12 +32,12 @@
     </div>
     <div v-if="checkedData.length==0" style="margin:5px;">
       <div style="margin:5px;">
-        <el-button type="primary" icon="el-icon-edit" size="mini" @click="dialogFormVisible=true">添加邀约记录</el-button>
-        <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
+        <el-button type="primary" v-if="$isAuthority('add-invite')" icon="el-icon-edit" size="mini" @click="dialogFormVisible=true">添加邀约记录</el-button>
+        <el-button type="success" v-if="$isAuthority('import-invite')" icon="el-icon-download" size="mini">导出信息</el-button>
       </div>
     </div>
     <div v-if="checkedData.length>0" style="margin:5px;min-height:18px">
-      <el-button v-if="$isAuthority('allort-customer')" type="danger" icon="el-icon-delete" size="mini" @click="handleDeleteInvite">批量删除</el-button>
+      <el-button v-if="$isAuthority('delete-invite')" type="danger" icon="el-icon-delete" size="mini" @click="handleDeleteInvite">批量删除</el-button>
     </div>
     <el-table :data="tableData" stripe v-loading="loading" @sort-change="handSortChange" @selection-change="handleSelectionChange" border style="width: 100%">
       <el-table-column type="selection" width="30">
@@ -53,13 +53,13 @@
       </el-table-column>
       <el-table-column label="到访状态" sortable="custom" :formatter="filterInviteStatus" prop="inviteStatus">
       </el-table-column>
-      <el-table-column label="记录人" sortable="custom" prop="userName">
+      <el-table-column label="记录人" v-if="$isAuthority('show-all-invite')" sortable="custom" prop="userName">
       </el-table-column>
       <el-table-column label="备注" sortable="custom" prop="remarks">
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button type="primary" plain size="mini" @click="$refs['inviteForm'].editForm(scope.row.id)">修改</el-button>
+          <el-button type="primary" v-if="$isAuthority('update-invite')" plain size="mini" @click="$refs['inviteForm'].editForm(scope.row.id)">修改</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -93,7 +93,7 @@ export default {
       cur_page: 1,
       page_size: 20,
       queryForm: {
-        userId: "",
+        userName: "",
         studentId: "",
         contactTime: "",
         inviteStatus: "1",
@@ -134,6 +134,8 @@ export default {
     //加载数据
     getData() {
       let self = this;
+      let falg = this.$isAuthority('show-all-invite');
+      if (!falg) self.queryForm.ownerId = self.$user().id; //查询全部用户权限
       self.loading = true;
       getInviteList(
         self.cur_page,

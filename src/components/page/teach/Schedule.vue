@@ -21,12 +21,12 @@
           <el-form-item>
             <school-tree :is-show-checkbox=true :the-type="2" place-text="校区" @handleCheckChange="handleCheckChange"></school-tree>
           </el-form-item>
-          <el-form-item prop="teachName">
-            <el-input v-model="queryForm.teachName" placeholder="主教姓名" clearable class="handle-input mr10"></el-input>
+          <el-form-item prop="teachName" v-if="$isAuthority('show-all-schedule')">
+            <el-input v-model="queryForm.teachName" placeholder="主教/助教姓名" clearable class="handle-input mr10"></el-input>
           </el-form-item>
-          <el-form-item prop="helpTeacherName">
+          <!-- <el-form-item prop="helpTeacherName">
             <el-input v-model="queryForm.helpTeacherName" placeholder="助教姓名" clearable class="handle-input mr10"></el-input>
-          </el-form-item>
+          </el-form-item> -->
         </div>
       </el-form>
     </div>
@@ -50,9 +50,9 @@
       <el-table-column label="教室" sortable="custom" prop="roomName">
       </el-table-column>
 
-      <el-table-column label="主教" sortable="custom" prop="teachName">
+      <el-table-column label="主教" sortable="custom" prop="teachName" v-if="$isAuthority('show-all-schedule')">
       </el-table-column>
-      <el-table-column label="助教" sortable="custom" prop="helpTeacherName">
+      <el-table-column label="助教" sortable="custom" prop="helpTeacherName" v-if="$isAuthority('show-all-schedule')">
       </el-table-column>
       <el-table-column label="考勤状态" sortable="custom" prop="attendanceStatus" :formatter="filterAttendanceStatus">
       </el-table-column>
@@ -132,6 +132,12 @@ export default {
     //加载数据
     getData() {
       let self = this;
+      let falg = this.$isAuthority('show-all-schedule');
+      if (!falg) {
+        self.queryForm.teachId = self.$user().id; //查询全部用户权限
+        self.queryForm.helpTeacherId = self.$user().id;
+      }
+
       self.loading = true;
       getClassScheduleAll(
         self.cur_page,

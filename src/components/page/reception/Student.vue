@@ -20,16 +20,25 @@
         <el-form-item>
           <school-tree :is-show-checkbox=true @handleCheckChange="handleCheckChange" :the-type="2" place-text="校区"></school-tree>
         </el-form-item>
-
-        <el-button type="mini" icon="el-icon-search" @click="search('queryForm')">搜索</el-button>
+        <el-button-group>
+          <el-button size="mini" icon="el-icon-search" @click="search('queryForm')">搜索</el-button>
+          <el-button size="mini" style="padding:7px" v-if="isShowMore==false" type="primary" icon="el-icon-arrow-down" @click="isShowMore=true"></el-button>
+          <el-button size="mini" style="padding:7px" v-if="isShowMore==true" type="primary" icon="el-icon-arrow-up" @click="isShowMore=false"></el-button>
+        </el-button-group>
+        <el-button size="mini" icon="el-icon-refresh" @click="refresh('queryForm')">重置</el-button>
+        <div v-show="isShowMore">
+          <el-form-item prop="ownerName" v-if="$isAuthority('show-all-student')">
+            <el-input v-model="queryForm.ownerName" clearable placeholder="学管师 " class="handle-input mr10 "></el-input>
+          </el-form-item>
+        </div>
       </el-form>
     </div>
     <div v-show="checkedData.length==0" style="margin:5px;">
-      <el-button type="primary" icon="el-icon-edit" size="mini" @click="$refs['studentForm'].handleOpenDialog()">添加正式学员</el-button>
-      <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
+      <el-button type="primary" v-if="$isAuthority('add-student')" icon="el-icon-edit" size="mini" @click="$refs['studentForm'].handleOpenDialog()">添加正式学员</el-button>
+      <el-button type="success" v-if="$isAuthority('import-student')" icon="el-icon-download" size="mini">导出信息</el-button>
     </div>
     <div v-show="checkedData.length>0" style="margin:5px;min-height:18px">
-      <el-button v-if="$isAuthority('allort-customer')" type="primary" icon="el-icon-edit" size="mini" @click="$refs['ownerForm'].openDialog()">分配学管师</el-button>
+      <el-button v-if="$isAuthority('delete-student')" type="primary" icon="el-icon-edit" size="mini" @click="$refs['ownerForm'].openDialog()">分配学管师</el-button>
     </div>
     <el-table :data="tableData" stripe v-loading="loading" :row-class-name="tableRowClassName" border @sort-change="handSortChange" @selection-change="handleSelectionChange" style="width: 100%">
       <el-table-column type="selection" width="30">
@@ -47,7 +56,7 @@
       </el-table-column>
       <el-table-column label="联系人" sortable="custom" prop="contactName">
       </el-table-column>
-      <el-table-column label="学管师" sortable="custom" prop="ownerName">
+      <el-table-column label="学管师" sortable="custom" prop="ownerName" v-if="$isAuthority('show-all-student')">
       </el-table-column>
       <el-table-column label="报名状态" sortable="custom" prop="classStatus" :formatter="filterClassStatus">
       </el-table-column>
@@ -59,8 +68,8 @@
       </el-table-column>
       <el-table-column label="操作" width="150px">
         <template slot-scope="scope">
-          <el-button type="primary" plain size="mini" @click="handleEdit(scope.$index, scope.row)">修改</el-button>
-          <el-button type="primary" plain size="mini" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+          <el-button type="primary" plain size="mini" v-if="$isAuthority('update-student')" @click="handleEdit(scope.$index, scope.row)">修改</el-button>
+          <el-button type="primary" plain size="mini" v-if="$isAuthority('delete-student')" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -97,6 +106,7 @@ export default {
     return {
       tableData: [],
       checkedData: [],
+      isShowMore: false,
       dialogFormVisible: false,
       total: 0,
       cur_page: 1,
@@ -104,7 +114,10 @@ export default {
       titleDialog: "添加正式学员",
       queryForm: {
         name: "",
-        schoolZoneId2: []
+        sex: "",
+        classStatus: "",
+        schoolZoneId2: [],
+        ownerName: ""
       },
       dialogViewVisible: false,
       viewId: "",//详情id
@@ -171,9 +184,15 @@ export default {
       this.cur_page = 1;
       this.getData();
     },
+    refresh(form) {
+      this.$refs[form].resetFields();
+      this.search(form);
+    },
     //加载数据
     getData() {
       let self = this;
+      let falg = this.$isAuthority('show-all-student');
+      if (!falg) self.queryForm.ownerId = self.$user().id; //查询全部用户权限
       self.loading = true;
       getStudentList(
         self.cur_page,

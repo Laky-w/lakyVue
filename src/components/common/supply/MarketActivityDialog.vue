@@ -85,7 +85,7 @@ export default {
         name: "",
         schoolZoneId2: [],
         categoryId: "",
-        theType: "1"
+        theType: "2"
       },
       loading: false,
       schoolId: "" //添加用户默认学校id

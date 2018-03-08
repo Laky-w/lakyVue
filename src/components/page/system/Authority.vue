@@ -25,7 +25,7 @@
         </el-table-column>
         <el-table-column label="权限">
           <template slot-scope="scope">
-            <el-checkbox v-if="scope.row.authoritiyCount>0" v-model="scope.row.checkAll" :indeterminate="scope.row.isIndeterminate" :true-label="scope.row.id+':true'" :false-label="scope.row.id+':false'" @change="handleCheckAllChange">全选
+            <el-checkbox style="margin-right: 30px;" v-if="scope.row.authoritiyCount>0" v-model="scope.row.checkAll" :indeterminate="scope.row.isIndeterminate" :true-label="scope.row.id+':true'" :false-label="scope.row.id+':false'" @change="handleCheckAllChange">全选
             </el-checkbox>
             <el-checkbox-group style="display: inline-block;" v-model="scope.row.checkedAuthorities" @change="handleCheckedCitiesChange">
               <el-checkbox v-for="(item, levelIndex) in scope.row.authorities" :label="item.id" :key="item.id">{{item.name}}
@@ -175,7 +175,6 @@ export default {
         self.loading = false;
         if (data.code == 200) {
           let treeData = self.parseSchoolTree(data.data, null, null, true);
-          console.log(treeData);
           self.tableData = treeData;
         } else {
           self.$message.error(data.data);
@@ -221,11 +220,9 @@ export default {
         record["checkedAuthorities"] = [];//已选择的
         self.oldAuthorities.forEach(item => {
           if (item.menuId == record.id) {
-            console.log(item.menuId);
             record["checkedAuthorities"].push(item.authorityId);
           }
         })
-        console.log(record["checkedAuthorities"]);
         record["authoritiyCount"] = record.authorities
           ? record.authorities.length
           : 0;
@@ -317,7 +314,6 @@ export default {
     handleDelete(index, row) { },
     handleCheckAllChange(val) {
       let vals = val.split(":");
-      console.log(vals);
       //改变选中值。
       let self = this;
       Array.from(self.tableData).forEach(function (record) {
@@ -360,7 +356,6 @@ export default {
       });
     },
     handleCheckedCitiesChange(value) {
-      console.log("====");
       // let checkedCount = value.length;
       // this.checkAll = checkedCount === this.cities.length;
       // this.isIndeterminate = checkedCount > 0 && checkedCount < this.cities.length;

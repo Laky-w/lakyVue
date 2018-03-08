@@ -38,7 +38,7 @@
       <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[20, 50, 100, 200]" :page-size="page_size" layout="total, sizes, prev, pager, next, jumper" :total="total">
       </el-pagination>
     </div>
-    <authority ref="authority"></authority>
+    <authority ref="authority" @saveSuccess="getData"></authority>
   </div>
 </template>
 

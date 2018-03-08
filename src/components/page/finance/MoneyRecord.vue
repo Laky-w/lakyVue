@@ -18,8 +18,8 @@
       </el-form>
     </div>
     <div style="margin:5px;">
-      <el-button type="primary" icon="el-icon-edit" size="mini" @click="$refs['moneyRecordForm'].handleOpenDialog()">添加流水</el-button>
-      <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
+      <el-button type="primary" v-if="$isAuthority('add-money-record')" icon="el-icon-edit" size="mini" @click="$refs['moneyRecordForm'].handleOpenDialog()">添加流水</el-button>
+      <el-button type="success" v-if="$isAuthority('import-money-record')" icon="el-icon-download" size="mini">导出信息</el-button>
     </div>
     <el-table :data="tableData" stripe :summary-method="getSummaries" show-summary v-loading="loading" border @expand-change="handleExpandChange" @sort-change="handSortChange" style="width: 100%">
       <el-table-column type="expand">
@@ -49,8 +49,8 @@
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button v-if="scope.row.billType==2" type="primary" plain size="mini" @click="handleEdit(scope.$index, scope.row)">修改</el-button>
-          <el-button v-if="scope.row.billType==2" type="danger" plain size="mini" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+          <el-button v-if="scope.row.billType==2 && $isAuthority('update-money-record')" type="primary" plain size="mini" @click="handleEdit(scope.$index, scope.row)">修改</el-button>
+          <el-button v-if="scope.row.billType==2 && $isAuthority('delete-money-record')" type="danger" plain size="mini" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
         </template>
       </el-table-column>
 
@@ -83,7 +83,7 @@
 import SchoolTree from "../../common/system/SchoolTree.vue";
 import DateRange from "../../common/Daterange.vue";
 import MoneyRecordForm from "./MoneyRecordForm.vue";
-import { getMoneyRecordList, getMoneyRecordAccountList, findBranchParameterValueAll, createMoneyRecord, getFinanceAccountList,deleteMoneyRecord} from "../../api/api"
+import { getMoneyRecordList, getMoneyRecordAccountList, findBranchParameterValueAll, createMoneyRecord, getFinanceAccountList, deleteMoneyRecord } from "../../api/api"
 export default {
   data() {
     return {

@@ -18,8 +18,8 @@
         </el-button-group>
         <el-button size="mini" icon="el-icon-refresh" @click="$refs['queryForm'].resetFields();search('queryForm');">重置</el-button>
         <div v-show="isShowMore">
-          <el-form-item>
-            <el-input v-model="queryForm.userName " clearable placeholder="记录人 " class="handle-input mr10 "></el-input>
+          <el-form-item v-if="$isAuthority('show-all-contact')">
+            <el-input v-model="queryForm.userName" clearable placeholder="记录人 " class="handle-input mr10 "></el-input>
           </el-form-item>
           <el-form-item>
             <school-tree :is-show-checkbox=true @handleCheckChange="handleCheckChange " :the-type="2 " place-text="校区 "></school-tree>
@@ -33,11 +33,11 @@
       </el-form>
     </div>
     <div v-if="checkedData.length==0" style="margin:5px;">
-      <el-button type="primary" icon="el-icon-edit" size="mini" @click="dialogContactVisible=true ">添加沟通记录</el-button>
-      <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
+      <el-button type="primary" v-if="$isAuthority('add-contact')" icon="el-icon-edit" size="mini" @click="dialogContactVisible=true ">添加沟通记录</el-button>
+      <el-button type="success" v-if="$isAuthority('import-contact')" icon="el-icon-download" size="mini">导出信息</el-button>
     </div>
     <div v-if="checkedData.length>0" style="margin:5px;min-height:18px">
-      <el-button v-if="$isAuthority('allort-customer')" type="danger" icon="el-icon-delete" size="mini" @click="handleDeleteInvite">批量删除</el-button>
+      <el-button v-if="$isAuthority('delete-contact')" type="danger" icon="el-icon-delete" size="mini" @click="handleDeleteInvite">批量删除</el-button>
     </div>
     <el-table :data="tableData" @sort-change="handSortChange" @selection-change="handleSelectionChange" stripe v-loading="loading" border style="width: 100%">
       <el-table-column type="selection" width="30">
@@ -47,7 +47,7 @@
           <a href="javascript:void(0)" @click="viewId=scope.row.studentId;dialogStudentVisible=true;">{{ scope.row.studentName }}</a>
         </template>
       </el-table-column>
-      <el-table-column label="记录人" sortable="custom" prop="userName">
+      <el-table-column label="记录人" v-if="$isAuthority('show-all-contact')" sortable="custom" prop="userName">
       </el-table-column>
       <el-table-column label="联系时间" sortable="custom" prop="contactTime">
       </el-table-column>
@@ -57,7 +57,7 @@
       </el-table-column>
       <el-table-column label="操作 ">
         <template slot-scope="scope ">
-          <el-button type="primary" plain size="mini" @click="$refs['contactForm'].editForm(scope.row.id)">修改</el-button>
+          <el-button type="primary" v-if="$isAuthority('update-contact')" plain size="mini" @click="$refs['contactForm'].editForm(scope.row.id)">修改</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -145,6 +145,8 @@ export default {
     getData() {
       let self = this;
       self.loading = true;
+      let falg = self.$isAuthority('show-all-contact');
+      if (!falg) self.queryForm.userId = self.$user().id; //查询全部用户权限
       getContactList(
         self.cur_page,
         self.page_size,

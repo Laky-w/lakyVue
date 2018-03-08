@@ -19,8 +19,8 @@
       </el-form>
     </div>
     <div style="margin:5px;">
-      <el-button type="primary" icon="el-icon-edit" size="mini" @click="handleAdd">添加账户</el-button>
-      <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
+      <el-button type="primary" v-if="$isAuthority('add-account')" icon="el-icon-edit" size="mini" @click="handleAdd">添加账户</el-button>
+      <el-button type="success" v-if="$isAuthority('import-account')" icon="el-icon-download" size="mini">导出信息</el-button>
     </div>
     <el-table :data="tableData" stripe v-loading="loading" border @sort-change="handSortChange" style="width: 100%">
       <el-table-column label="账户名称" sortable="custom" prop="name">
@@ -40,8 +40,8 @@
       </el-table-column>
       <el-table-column>
         <template slot-scope="scope">
-          <el-button type="primary" plain size="mini" @click="handleEdit(scope.$index,scope.row)">编辑</el-button>
-          <el-button type="primary" plain size="mini" @click="handleDelete(scope.$index,scope.row)">删除</el-button>
+          <el-button type="primary" v-if="$isAuthority('update-account')" plain size="mini" @click="handleEdit(scope.$index,scope.row)">修改</el-button>
+          <el-button type="primary" v-if="$isAuthority('delete-account')" plain size="mini" @click="handleDelete(scope.$index,scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>

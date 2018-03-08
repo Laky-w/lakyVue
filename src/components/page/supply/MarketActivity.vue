@@ -2,33 +2,38 @@
   <div class="table">
     <div class="handle-box">
       <el-form ref="queryForm" :inline="true" :model="queryForm" label-width="80px" size="mini">
-        <el-form-item>
+        <el-form-item prop="name">
           <el-input v-model="queryForm.name" clearable placeholder="活动名称" class="handle-input mr10"></el-input>
         </el-form-item>
         <el-form-item>
           <school-tree :is-show-checkbox=true @handleCheckChange="handleCheckChange" :the-type="2" place-text="校区"></school-tree>
         </el-form-item>
-        <el-form-item>
+        <el-form-item prop="theType">
           <el-select v-model="queryForm.theType" value=1 clearable placeholder="活动状态" class="handle-select mr10">
             <el-option key="1" label="计划中" value="1"></el-option>
             <el-option key="2" label="进行中" value="2"></el-option>
             <el-option key="3" label="已结束" value="3"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item>
+        <el-form-item prop="categoryId">
           <el-select v-model="queryForm.categoryId" style="width:100%" placeholder="活动分类" clearable>
             <el-option v-for="(item,index) in parameterValue" :key="item.id" :label="item.name" :value="item.id"></el-option>
           </el-select>
+        </el-form-item>
+        <el-form-item prop="userName">
+          <el-form-item v-if="$isAuthority('show-all-activity')">
+            <el-input v-model="queryForm.userName" clearable placeholder="负责人 " class="handle-input mr10 "></el-input>
+          </el-form-item>
         </el-form-item>
         <el-button type="mini" icon="el-icon-search" @click="search('queryForm')">搜索</el-button>
       </el-form>
     </div>
     <div v-if="checkedData.length==0" style="margin:5px;">
-      <el-button type="primary" icon="el-icon-edit" size="mini" @click="handleAdd">添加活动</el-button>
-      <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
+      <el-button type="primary" v-if="$isAuthority('add-activity')" icon="el-icon-edit" size="mini" @click="handleAdd">添加活动</el-button>
+      <el-button type="success" v-if="$isAuthority('import-activity')" icon="el-icon-download" size="mini">导出信息</el-button>
     </div>
     <div v-if="checkedData.length>0" style="margin:5px;min-height:18px">
-      <el-button v-if="$isAuthority('allort-customer')" type="danger" icon="el-icon-delete" size="mini" @click="handleDeleteInvite">批量删除</el-button>
+      <el-button v-if="$isAuthority('delete-actitvity')" type="danger" icon="el-icon-delete" size="mini" @click="handleDeleteInvite">批量删除</el-button>
     </div>
     <el-table :data="tableData" stripe v-loading="loading" @sort-change="handSortChange" @selection-change="handleSelectionChange" border style="width: 100%">
       <el-table-column type="selection" width="30">
@@ -40,7 +45,7 @@
       </el-table-column>
       <el-table-column label="校区" sortable="custom" prop="schoolZoneName">
       </el-table-column>
-      <el-table-column label="负责人" sortable="custom" prop="userName">
+      <el-table-column label="负责人" v-if="$isAuthority('show-all-activity')" sortable="custom" prop="userName">
       </el-table-column>
       <el-table-column sortable="custom" label="状态" prop="theType" :formatter="filterType">
       </el-table-column>
@@ -124,6 +129,7 @@ export default {
       parameterValue: [],
       queryForm: {
         name: "",
+        userName: "",
         schoolZoneId2: [],
         categoryId: "",
         theType: "",
@@ -242,6 +248,8 @@ export default {
     //加载数据
     getData() {
       let self = this;
+      let falg = this.$isAuthority('show-all-activity');
+      if (!falg) self.queryForm.userId = self.$user().id; //查询全部用户权限
       self.loading = true;
       getActivityList(
         self.cur_page,

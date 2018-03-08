@@ -40,7 +40,9 @@
               <el-option key="2" label="已邀约" value="2"></el-option>
             </el-select>
           </el-form-item>
-
+          <el-form-item prop="ownerName" v-if="$isAuthority('show-all-customer')">
+            <el-input v-model="queryForm.ownerName" clearable placeholder="负责人 " class="handle-input mr10 "></el-input>
+          </el-form-item>
           <el-form-item prop="theType">
             <el-select v-model="queryForm.theType" clearable placeholder="转换状态" class="handle-select mr10">
               <el-option key="1" label="生源" value="1"></el-option>
@@ -164,6 +166,7 @@ export default {
       dialogInviteVisible: false,
       queryForm: {
         name: "",
+        ownerName: "",
         schoolZoneId2: [],
         sex: "",
         allotStatus: "",

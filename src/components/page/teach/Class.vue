@@ -5,9 +5,9 @@
         <el-form-item prop="name">
           <el-input v-model="queryForm.name" placeholder="班级名称" clearable class="handle-input mr10"></el-input>
         </el-form-item>
-        <el-form-item prop="teacherName">
+        <!-- <el-form-item prop="teacherName">
           <el-input v-model="queryForm.teacherName" placeholder="班主任" clearable class="handle-input mr10"></el-input>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item prop="courseName">
           <el-input v-model="queryForm.courseName" placeholder="课程" clearable class="handle-input mr10"></el-input>
         </el-form-item>
@@ -25,15 +25,15 @@
           <el-form-item prop="roomName">
             <el-input v-model="queryForm.roomName" placeholder="教室" clearable class="handle-input mr10"></el-input>
           </el-form-item>
-          <el-form-item prop="mainTeacherName">
-            <el-input v-model="queryForm.mainTeacherName" placeholder="主教" clearable class="handle-input mr10"></el-input>
+          <el-form-item prop="teacherName" v-if="$isAuthority('show-all-class')">
+            <el-input v-model="queryForm.teacherName" placeholder="班主任/主教" clearable class="handle-input mr10"></el-input>
           </el-form-item>
         </div>
       </el-form>
     </div>
     <div style="margin:5px;">
-      <el-button type="primary" icon="el-icon-edit" size="mini" @click="$refs['classForm'].handleOpenDialog()">开班</el-button>
-      <el-button type="success" icon="el-icon-download" size="mini">导出信息</el-button>
+      <el-button type="primary" v-if="$isAuthority('add-class')" icon="el-icon-edit" size="mini" @click="$refs['classForm'].handleOpenDialog()">开班</el-button>
+      <el-button type="success" v-if="$isAuthority('import-class')" icon="el-icon-download" size="mini">导出信息</el-button>
     </div>
     <el-table :data="tableData" stripe v-loading="loading" border @sort-change="handSortChange" style="width: 100%">
       <el-table-column label="名称" sortable="custom" prop="name">
@@ -47,9 +47,9 @@
       </el-table-column>
       <el-table-column label="教室" sortable="custom" prop="roomName">
       </el-table-column>
-      <el-table-column label="班主任" sortable="custom" prop="teacherName">
+      <el-table-column label="班主任" sortable="custom" prop="teacherName" v-if="$isAuthority('show-all-class')">
       </el-table-column>
-      <el-table-column label="主教" sortable="custom" prop="mainTeacherName">
+      <el-table-column label="主教" sortable="custom" prop="mainTeacherName" v-if="$isAuthority('show-all-class')">
       </el-table-column>
       <el-table-column label="创建时间" sortable="custom" prop="createTime" min-width="155px">
       </el-table-column>
@@ -64,11 +64,11 @@
       </el-table-column>
       <el-table-column label="操作" min-width="120px">
         <template slot-scope="scope">
-          <el-dropdown split-button type="primary" @click="handleEdit(scope.$index, scope.row)" @command="handleCommand" size="small">
-            修改
+          <el-dropdown split-button type="primary" v-if="$isAuthority('update-class') || $isAuthority('add-schedule-class') || $isAuthority('delete-class')" @click="handleEdit(scope.$index, scope.row)" @command="handleCommand" size="small">
+            {{$isAuthority('update-class')?'修改':'操作'}}
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item :command="{item:'course',row:scope.row}">排课</el-dropdown-item>
-              <el-dropdown-item :command="{item:'delete',row:scope.row}">删除</el-dropdown-item>
+              <el-dropdown-item v-if="$isAuthority('add-schedule-class')" :command="{item:'course',row:scope.row}">排课</el-dropdown-item>
+              <el-dropdown-item v-if="$isAuthority('delete-class')" :command="{item:'delete',row:scope.row}">删除</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </template>
@@ -155,6 +155,8 @@ export default {
     //加载数据
     getData() {
       let self = this;
+      let falg = this.$isAuthority('show-all-class');//所有班主任或者主教的
+      if (!falg) self.queryForm.teacherId = self.$user().id; //查询全部用户权限
       self.loading = true;
       getSchoolClassList(
         self.cur_page,
@@ -196,7 +198,9 @@ export default {
     },
     //控件方法
     handleEdit(index, row) {
-      this.$refs['classForm'].handleEditOpenDialog(row.id);
+      if (this.$isAuthority('update-class')) {
+        this.$refs['classForm'].handleEditOpenDialog(row.id);
+      }
     },
     handleDelete(row) {
       let self = this;
