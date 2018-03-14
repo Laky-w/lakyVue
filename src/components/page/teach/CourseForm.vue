@@ -17,7 +17,7 @@
           <el-option label="一对多" value="2"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="类别" :label-width="formLabelWidth" prop="course.clazzId" :rules="[{ required: true, message: '科目必填'}]">
+      <el-form-item label="类别" :label-width="formLabelWidth" prop="course.clazzId" :rules="[{ required: true, message: '类别必填'}]">
         <el-select v-model="form.course.clazzId" style="width:100%" placeholder="类别">
           <el-option v-for="(item,index) in parameterValue" :key="item.id" :label="item.name" :value="item.id"></el-option>
         </el-select>

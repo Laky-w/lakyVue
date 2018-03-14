@@ -46,6 +46,11 @@ export default {
       mVal: ""
     };
   },
+  created() {
+    if (this.value) { //默认值处理
+      this.mVal = this.value;
+    }
+  },
   methods: {
     handleDateChange: function (val) {
       if (val) {

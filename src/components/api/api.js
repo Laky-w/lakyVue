@@ -233,8 +233,14 @@ export const getClassSchedule = id => { return axios.get(`teach/getClassSchedule
 export const updateClassSchedule = params => { return axios.put(`teach/updateClassSchedule`, params).then(res => res.data); };
 //删除排课记录
 export const deleteClassSchedule = ids => { return axios.delete(`teach/deleteClassSchedule/${ids}`).then(res => res.data); };
+//保存考勤信息
+export const doSaveAttendance = params => { return axios.post(`teach/doSaveAttendance`, params).then(res => res.data); };
 //保存分班 信息
 export const updateStudentClass = params => { return axios.put(`teach/updateStudentClass`, params).then(res => res.data); };
+
+//查询班级排课学生考勤记录
+export const getStudentAttendanceAll = (pageNumber, pageSize, params) => { return axios.post(`teach/getStudentAttendanceAll/${pageNumber}/${pageSize}`, params).then(res => res.data); };
+
 //教学=============>>>
 
 //财务=============>>>

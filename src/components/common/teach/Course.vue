@@ -18,11 +18,17 @@ export default {
       if (!val) {
         this.selectedOptions = [];
       } else {
-        this.selectedOptions = this.defaultValue;
+        // this.selectedOptions = this.defaultValue;
       }
     },
+    defaultValue(val) {
+      this.selectedOptions = val;
+    },
     selectedOptions(val) {
-      if (val.length > 0) this.$emit("input", val[2]);
+      if (val.length > 0) {
+        this.$emit("input", val[2]);
+        // alert(val[2]);
+      }
     }
   },
 

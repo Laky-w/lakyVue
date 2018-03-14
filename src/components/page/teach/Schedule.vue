@@ -49,7 +49,11 @@
       </el-table-column>
       <el-table-column label="教室" sortable="custom" prop="roomName">
       </el-table-column>
-
+      <el-table-column label="考勤人数" sortable="custom" prop="attendanceNumber">
+        <template slot-scope="scope">
+          <a @click="$refs['studentTable'].handleOpenDialog(scope.row.id)">{{scope.row.attendanceNumber}}/{{scope.row.studentNumber}}</a>
+        </template>
+      </el-table-column>
       <el-table-column label="主教" sortable="custom" prop="teachName" v-if="$isAuthority('show-all-schedule')">
       </el-table-column>
       <el-table-column label="助教" sortable="custom" prop="helpTeacherName" v-if="$isAuthority('show-all-schedule')">
@@ -59,6 +63,7 @@
       <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button type="primary" plain size="mini" @click="$refs['simpleForm'].openDialog(scope.row.id)">修改</el-button>
+          <el-button type="primary" plain size="mini" @click="$refs['attendanceForm'].openDialog(scope.row.id)">考勤</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -67,6 +72,8 @@
       </el-pagination>
     </div>
     <schedule-simple-form ref="simpleForm" @saveSuccess="getData"></schedule-simple-form>
+    <schedule-attendance-form ref="attendanceForm" @saveSuccess="getData"></schedule-attendance-form>
+    <student-attendance ref="studentTable"></student-attendance>
   </div>
 </template>
 
@@ -81,6 +88,8 @@ import SchoolTree from "../../common/system/SchoolTree.vue";
 import DateRange from "../../common/Daterange.vue";
 import ScheduleForm from "./ScheduleForm.vue";
 import ScheduleSimpleForm from "./ScheduleSimpleForm.vue";
+import StudentAttendance from "./ScheduleAttendanceStudent.vue";
+import ScheduleAttendanceForm from "./ScheduleAttendanceForm.vue";
 import { getClassScheduleAll, deleteClassSchedule } from "../../api/api";
 export default {
   data() {
@@ -252,6 +261,6 @@ export default {
       }
     }
   },
-  components: { SchoolTree, ScheduleForm, ScheduleSimpleForm, DateRange } //注入组件
+  components: { SchoolTree, ScheduleForm, ScheduleSimpleForm, DateRange, StudentAttendance, ScheduleAttendanceForm } //注入组件
 };
 </script>

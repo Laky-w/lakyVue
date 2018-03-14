@@ -53,7 +53,7 @@
       </el-pagination>
     </div>
     <student-view :view-id="viewId" :dialog-view-visible.sync="dialogViewVisible"></student-view>
-    <wait-student-class ref="waitStudentClass"></wait-student-class>
+    <wait-student-class ref="waitStudentClass" @saveSuccess="getData"></wait-student-class>
   </div>
 </template>
 

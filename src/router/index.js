@@ -101,7 +101,7 @@ let routesList = [{
 let $router = new Router({
   routes: routesList
 })
-let currentRout = "";
+
 function getRoutesSub(params) {
   let newRoutes = [];
   for (let i = 0; i < params.length; i++) {
