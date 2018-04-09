@@ -36,7 +36,7 @@
       <el-button type="success" v-if="$isAuthority('import-class')" icon="el-icon-download" size="mini">导出信息</el-button>
     </div>
     <el-table :data="tableData" stripe v-loading="loading" border @sort-change="handSortChange" style="width: 100%">
-      <el-table-column label="名称" sortable="custom" prop="name">
+      <el-table-column label="名称" sortable="custom" prop="name" fixed>
         <template slot-scope="scope">
           <a href="javascript:void(0)" @click="handleView(scope.row.id,'class-info')">{{scope.row.name}}</a>
         </template>

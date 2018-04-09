@@ -1,6 +1,5 @@
 import axios from 'axios';
 
-let base = '';
 //获取当前登录用户
 export const _getCurrentUserInfo = params => {
   let userInfo = sessionStorage.getItem("userInfo");
@@ -100,6 +99,8 @@ export const createUser = params => { return axios.post(`organization/createUser
 export const deleteUser = id => { return axios.delete(`organization/deleteUser/${id}`).then(res => res.data); };
 //更新用户在职离职状态
 export const updateUserQuitStatus = params => { return axios.put(`organization/updateUserQuitStatus`, params).then(res => res.data); };
+//导入Excel记录
+export const getImportRecordList = (pageNumber, pageSize, params) => { return axios.post(`organization/getImportRecordList/${pageNumber}/${pageSize}`, params).then(res => res.data); };
 //系统=============
 
 //日志=============
@@ -116,6 +117,8 @@ export const getCustomerList = (pageNumber, pageSize, params) => { return axios.
 export const getCustomerView = id => { return axios.get(`supply/getCustomerView/${id}`).then(res => res.data); };
 //创建生源
 export const createCustomer = params => { return axios.post(`supply/createCustomer`, params).then(res => res.data); };
+//导入生源
+export const importCustomer = params => { return axios.post(`supply/importCustomer`, params, { headers: { 'Content-Type': 'multipart/form-data' } }).then(res => res.data); };
 //删除生源
 export const deleteCustomer = (id) => { return axios.delete(`supply/deleteCustomer/${id}`).then(res => res.data); };
 //分配生源

@@ -49,7 +49,7 @@
           <el-table-column label="数量(单位)" min-width="120px">
             <template slot-scope="scope">
               <el-form-item :prop="'chargeDetails.' + scope.$index + '.number'" size="mini" class="clean-bottom" :rules="[{ validator:$validate.validateMoney}]">
-                <el-input-number style="width:80px" v-model="scope.row.number" :min="1">
+                <el-input-number style="width:120px" v-model="scope.row.number" :min="1">
                 </el-input-number>({{scope.row.unit}})
               </el-form-item>
             </template>

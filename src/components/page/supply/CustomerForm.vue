@@ -181,7 +181,6 @@ export default {
     handleSchool(data) {
       this.form.schoolZoneName = data.name;
       this.form.schoolZoneId = data.id;
-      this.form.roles = [];
     },
   },
   props: {

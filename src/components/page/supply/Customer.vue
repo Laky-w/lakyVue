@@ -59,6 +59,7 @@
     <div v-if="checkedData.length==0" style="margin:5px;">
       <el-button v-if="$isAuthority('add-customer')" type="primary" icon="el-icon-edit" size="mini" @click="$refs['customerForm'].handleOpenDialog()">添加生源</el-button>
       <el-button v-if="$isAuthority('import-customer')" type="success" icon="el-icon-download" size="mini">导出信息</el-button>
+      <el-button type="warning" icon="el-icon-upload2" @click="$refs['customerFormImport'].handleOpenDialog()" size="mini">导入生源</el-button>
     </div>
     <div v-if="checkedData.length>0" style="margin:5px;min-height:18px">
       <el-button v-if="$isAuthority('allort-customer')" type="primary" icon="el-icon-edit" size="mini" @click="dialogFormVisible=true">批量修改</el-button>
@@ -126,6 +127,7 @@
     </el-table>
     <customer-view :view-id="viewId" :dialog-view-visible.sync="dialogViewVisible"></customer-view>
     <customer-form @saveSuccess="getData" :dialog-form-visible.sync="dialogFormVisible" ref="customerForm"></customer-form>
+    <customer-form-import @saveSuccess="getData" ref="customerFormImport"></customer-form-import>
     <contact-form :student-add-id="studentId" @saveSuccess="getData" :studnet-name="studentName" :the-type="2" :dialog-form-visible.sync="dialogContactVisible"></contact-form>
     <invite-form :student-add-id="studentId" @saveSuccess="getData" :studnet-name="studentName" :the-type="2" :dialog-form-visible.sync="dialogInviteVisible"></invite-form>
     <div class="pagination">
@@ -139,6 +141,7 @@
 <script>
 import SchoolTree from "../../common/system/SchoolTree.vue";
 import CustomerForm from "./CustomerForm.vue";
+import CustomerFormImport from "./CustomerFormImport.vue";
 import InviteForm from "./InviteForm.vue";
 import CustomerView from "./CustomerView.vue";
 import ContactForm from "./ContactForm.vue";
@@ -345,6 +348,6 @@ export default {
       }
     }
   },
-  components: { CustomerForm, CustomerView, ContactForm, InviteForm, SchoolTree } //注入组件
+  components: { CustomerForm, CustomerView, ContactForm, InviteForm, SchoolTree, CustomerFormImport } //注入组件
 };
 </script>

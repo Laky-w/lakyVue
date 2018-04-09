@@ -12,11 +12,14 @@ axios.interceptors.request.use(function (config) {
   // 在发送请求之前做些什么
   config.headers.common['token'] = sessionStorage.getItem("token");
   // config.headers.common['content-type'] = "json";
-  let data = qs.stringify(config.data);
-  config.data = data.replace(/\%5B[0-9]+\%5D=/g, "=");//数组过滤[0-9],加=是防止误杀[1]这样value值。通过=保证是key值，
-  // config.data = config.data.replace(/\%5B/g, ".");//数组过滤[0-9]
-  // config.data = config.data.replace(/\%5D/g, "");//数组过滤[0-9]
-  console.log(config.data);
+  //文件上传类型排序参数处理
+  if (config.headers["Content-Type"] != "multipart/form-data") {
+    let data = qs.stringify(config.data);
+    config.data = data.replace(/\%5B[0-9]+\%5D=/g, "=");//数组过滤[0-9],加=是防止误杀[1]这样value值。通过=保证是key值，
+    // config.data = config.data.replace(/\%5B/g, ".");//数组过滤[0-9]
+    // config.data = config.data.replace(/\%5D/g, "");//数组过滤[0-9]
+    console.log(config.data);
+  }
   return config;
 });
 // 添加响应拦截器
@@ -191,7 +194,7 @@ function accDiv(arg1, arg2) {
   }
   r1 = Number(arg1.toString().replace(".", ""));
   r2 = Number(arg2.toString().replace(".", ""));
-  return Number((r1 / r2) * pow(10, t2 - t1));
+  return Number((r1 / r2) * Math.pow(10, t2 - t1));
 }
 //给Number类型增加一个div方法，，使用时直接用 .div 即可完成计算。
 Number.prototype.div = function (arg) {
