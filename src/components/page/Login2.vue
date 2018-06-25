@@ -1,16 +1,13 @@
 
 <template>
+
   <div class="login-wrap1">
-    <!-- <div class="ms-title">后台管理系统</div> -->
+    <vue-particles color="#B2363E" :particleOpacity="0.7" :particlesNumber="120" shapeType="circle" :particleSize="4" linesColor="#EA343B" :linesWidth="1" :lineLinked="true" :lineOpacity="0.4" :linesDistance="150" :moveSpeed="3" :hoverEffect="true" hoverMode="grab" :clickEffect="true" clickMode="push">
+    </vue-particles>
     <div class="ms-login">
       <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="0px" class="demo-ruleForm">
         <div class="message-title">湖之教育</div>
-        <!-- <div id="darkbannerwrap"></div> -->
         <el-form-item prop="serial">
-          <!-- <el-input id="password" v-model="password" type="password" placeholder="请输入密码">
-                        <template slot="prepend">密码</template>
-                    </el-input>   -->
-          <!-- <el-time-picker type="fixed-time" placeholder="选择时间" v-model="form.date2" style="width: 100%;"></el-time-picker> -->
           <el-input v-model="ruleForm.serial" name="serial" placeholder="机构代码">
             <template slot="prepend">
               <i class="el-icon-laky-branch"></i>
@@ -37,7 +34,7 @@
         <p style="font-size:12px;line-height:30px;color:#fff000;"></p>
       </el-form>
     </div>
-    <div style="position: fixed;bottom: 150px;text-align: center;margin: 0 auto;width: 100%;">技术支持@湖之教育工作室.2018/01/01</div>
+    <div style="position: fixed;bottom: 150px;text-align: center;margin: 0 auto;width: 100%;">技术支持@湖之教育工作室.2018/06/21</div>
   </div>
 </template>
 

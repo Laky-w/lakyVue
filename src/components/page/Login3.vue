@@ -1,7 +1,6 @@
+
 <template>
   <div class="login-wrap">
-    <vue-particles color="#FFFFFF" :particleOpacity="0.7" :particlesNumber="80" shapeType="circle" :particleSize="4" linesColor="#F69A9F" :linesWidth="1" :lineLinked="true" :lineOpacity="0.4" :linesDistance="150" :moveSpeed="3" :hoverEffect="true" hoverMode="grab" :clickEffect="true" clickMode="push">
-    </vue-particles>
     <!-- <div class="ms-title">后台管理系统</div> -->
     <div class="ms-login">
       <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="0px" class="demo-ruleForm">
@@ -38,9 +37,10 @@
         <p style="font-size:12px;line-height:30px;color:#fff000;"></p>
       </el-form>
     </div>
-    <div style="position: fixed;bottom: 150px;text-align: center;margin: 0 auto;width: 100%;">技术支持@湖之教育工作室.2018/01/01</div>
+    <div style="position: fixed;bottom: 150px;text-align: center;margin: 0 auto;width: 100%;">技术支持@湖之教育工作室.2018/06/21</div>
   </div>
 </template>
+
 <script>
 import { requestLogin } from "../api/api";
 export default {
@@ -95,8 +95,6 @@ export default {
           return false;
         }
       });
-    },
-    loadAinmate() {
     }
   },
   mounted: function () {
@@ -115,10 +113,6 @@ export default {
 </script>
 
 <style scoped>
-#paper {
-  width: 100%;
-  height: 100%;
-}
 .login-wrap {
   position: relative;
   width: 100%;

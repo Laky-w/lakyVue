@@ -63,10 +63,10 @@ let routesList = [{
     path: '/baseform',
     component: resolve => require(['../components/page/demo/BaseForm.vue'], resolve)
   },
-  {
-    path: '/vueeditor',
-    component: resolve => require(['../components/page/demo/VueEditor.vue'], resolve) // Vue-Quill-Editor组件
-  },
+  // {
+  //   path: '/vueeditor',
+  //   component: resolve => require(['../components/page/demo/VueEditor.vue'], resolve) // Vue-Quill-Editor组件
+  // },
   {
     path: '/markdown',
     component: resolve => require(['../components/page/demo/Markdown.vue'], resolve) // Vue-Quill-Editor组件

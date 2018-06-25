@@ -4,6 +4,7 @@ import router from './router';
 import ElementUI from 'element-ui';
 // import "../static/js/common.js";
 import axios from 'axios';
+import VueParticles from 'vue-particles';
 import validateLaky from "./validate";
 import { _getCurrentUserInfo, _getCurrentSchoolZone, _getUserAuthority } from "./components/api/api";
 import "common.js";
@@ -13,6 +14,7 @@ import "../static/css/main.css";
 // import '../static/css/theme-green/index.css';       // 浅绿色主题
 import "babel-polyfill";
 Vue.use(ElementUI);
+Vue.use(VueParticles);
 Vue.prototype.$validate = validateLaky;
 Vue.prototype.$axios = axios;
 Vue.prototype.$user = _getCurrentUserInfo;//获取用户
