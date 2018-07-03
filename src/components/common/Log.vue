@@ -1,6 +1,8 @@
 <template>
   <div style="height:800px">
-    <p class="title" style="color:#2d2f33">项目重要节点记录</p>
+    <vue-particles style="position: absolute;z-index: 22;width:100%;height:800px" color="#fff" :particleOpacity="0.7" :particlesNumber="120" shapeType="circle" :particleSize="4" linesColor="#409eff" :linesWidth="1" :lineLinked="true" :lineOpacity="0.4" :linesDistance="150" :moveSpeed="3" :hoverEffect="true" hoverMode="grab" :clickEffect="true" clickMode="push">
+    </vue-particles>
+    <p class="title" style="color:#2d2f33;">项目重要节点记录</p>
     <div style="width:300px; float: left;">
       <p class="title">项目第一阶段————核心流程搭建</p>
       <el-steps direction="vertical" :active="16" align-center>
@@ -38,6 +40,8 @@
         <el-step title="2018/02/15" description="第二阶段基本完工————by laky-w"></el-step>
       </el-steps>
     </div>
+    <div style="clear: both;"></div>
+
   </div>
 </template>
 <style scoped>

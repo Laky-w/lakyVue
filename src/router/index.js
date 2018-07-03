@@ -25,6 +25,11 @@ let routesList = [{
     component: resolve => require(['../components/common/Wait.vue'], resolve)
   },
   {
+    path: '/IM',
+    name: "及时通信",
+    component: resolve => require(['../components/common/IM.vue'], resolve)
+  },
+  {
     path: '/authority1',
     name: "添加职能",
     type: 2,

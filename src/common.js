@@ -5,6 +5,7 @@ import { Message } from 'element-ui';
 // axios.defaults.baseURL = 'http://192.168.0.103/laky/';
 // axios.defaults.baseURL = 'http://192.168.0.100/laky/';
 axios.defaults.baseURL = 'http://127.0.0.1/laky/';
+axios.defaults.webSocketBaseURL = 'ws://127.0.0.1/laky/';
 // axios.defaults.baseURL = 'http://192.168.0.100:8081/laky/';
 // axios.defaults.baseURL = 'http://qfjjsk.natappfree.cc/';
 
